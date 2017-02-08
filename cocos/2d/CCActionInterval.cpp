@@ -1440,6 +1440,58 @@ void JumpTo::startWithTarget(Node *target)
     _delta.set(_endPosition.x - _startPosition.x, _endPosition.y - _startPosition.y);
 }
 
+
+//
+// JumpRoateTo
+//
+
+JumpRoateTo* JumpRoateTo::create(float duration, const Vec2& position, float height, int jumps)
+{
+    JumpRoateTo *jumpRoateTo = new (std::nothrow) JumpRoateTo();
+    if (jumpRoateTo && jumpRoateTo->initWithDuration(duration, position, height, jumps))
+    {
+        jumpRoateTo->autorelease();
+        return jumpRoateTo;
+    }
+    
+    delete jumpRoateTo;
+    return nullptr;
+}
+
+void JumpRoateTo::update(float t)
+{
+    // parabolic jump (since v0.8.2)
+    if (_target)
+    {
+        float frac = fmodf( t * _jumps, 1.0f );
+        float y = _height * 4 * frac * (1 - frac);
+        y += _delta.y * t;
+        
+        float x = _delta.x * t;
+#if CC_ENABLE_STACKABLE_ACTIONS
+        Vec2 currentPos = _target->getPosition();
+        
+        Vec2 diff = currentPos - _previousPos;
+        _startPosition = diff + _startPosition;
+        
+        Vec2 newPos = _startPosition + Vec2(x,y);
+        _target->setPosition(newPos);
+        
+        _previousPos = newPos;
+        
+        if (fabsf(t) > 0.000001) {
+            Vec2 vector = currentPos - newPos;
+            float radians = vector.getAngle();
+            float degrees = CC_RADIANS_TO_DEGREES(-1 * radians);
+            _target->setRotation(degrees - 180);
+        }
+#else
+        _target->setPosition(_startPosition + Vec2(x,y));
+#endif // !CC_ENABLE_STACKABLE_ACTIONS
+    }
+}
+
+
 // Bezier cubic formula:
 //    ((1 - t) + t)3 = 1
 // Expands to ...

@@ -19,6 +19,20 @@
                   "*.cpp",
                   "*.hpp"
                ]
+            },
+            {
+               "from":"custom/CPP/",
+               "to":"frameworks/runtime-src/Classes",
+               "include": [
+                  "*"
+               ]
+            },
+            {
+               "from":"custom/JS/",
+               "to":"frameworks/cocos2d-x/cocos/scripting/js-bindings/auto/api",
+               "include": [
+                  "*"
+               ]
             }
          ]
 

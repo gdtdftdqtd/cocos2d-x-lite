@@ -50,6 +50,18 @@
 		509D4AE717EBB81800697056 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 509D4AE617EBB81800697056 /* OpenGL.framework */; };
 		509D4AE917EBB82000697056 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 509D4AE817EBB82000697056 /* AppKit.framework */; };
 		509D4AEB17EBB82600697056 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 509D4AEA17EBB82600697056 /* IOKit.framework */; };
+		870083751E124928008EAA84 /* jsb_RVO_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083651E124928008EAA84 /* jsb_RVO_auto.cpp */; };
+		870083761E124928008EAA84 /* jsb_RVO_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083651E124928008EAA84 /* jsb_RVO_auto.cpp */; };
+		870083771E124928008EAA84 /* Agent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083681E124928008EAA84 /* Agent.cpp */; };
+		870083781E124928008EAA84 /* Agent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083681E124928008EAA84 /* Agent.cpp */; };
+		870083791E124928008EAA84 /* KdTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8700836B1E124928008EAA84 /* KdTree.cpp */; };
+		8700837A1E124928008EAA84 /* KdTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8700836B1E124928008EAA84 /* KdTree.cpp */; };
+		8700837B1E124928008EAA84 /* Obstacle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8700836D1E124928008EAA84 /* Obstacle.cpp */; };
+		8700837C1E124928008EAA84 /* Obstacle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8700836D1E124928008EAA84 /* Obstacle.cpp */; };
+		8700837D1E124928008EAA84 /* RVO_For_Cocos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083701E124928008EAA84 /* RVO_For_Cocos.cpp */; };
+		8700837E1E124928008EAA84 /* RVO_For_Cocos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083701E124928008EAA84 /* RVO_For_Cocos.cpp */; };
+		8700837F1E124928008EAA84 /* RVOSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083721E124928008EAA84 /* RVOSimulator.cpp */; };
+		870083801E124928008EAA84 /* RVOSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 870083721E124928008EAA84 /* RVOSimulator.cpp */; };
 		A92275421517C094001B78AA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A92275411517C094001B78AA /* QuartzCore.framework */; };
 		A92275441517C094001B78AA /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A92275431517C094001B78AA /* OpenGLES.framework */; };
 		A92275461517C094001B78AA /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A92275451517C094001B78AA /* OpenAL.framework */; };
@@ -284,6 +296,21 @@
 		509D4AE617EBB81800697056 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		509D4AE817EBB82000697056 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		509D4AEA17EBB82600697056 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		870083651E124928008EAA84 /* jsb_RVO_auto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_RVO_auto.cpp; sourceTree = "<group>"; };
+		870083661E124928008EAA84 /* jsb_RVO_auto.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_RVO_auto.hpp; sourceTree = "<group>"; };
+		870083681E124928008EAA84 /* Agent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Agent.cpp; sourceTree = "<group>"; };
+		870083691E124928008EAA84 /* Agent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Agent.h; sourceTree = "<group>"; };
+		8700836A1E124928008EAA84 /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
+		8700836B1E124928008EAA84 /* KdTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KdTree.cpp; sourceTree = "<group>"; };
+		8700836C1E124928008EAA84 /* KdTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KdTree.h; sourceTree = "<group>"; };
+		8700836D1E124928008EAA84 /* Obstacle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Obstacle.cpp; sourceTree = "<group>"; };
+		8700836E1E124928008EAA84 /* Obstacle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Obstacle.h; sourceTree = "<group>"; };
+		8700836F1E124928008EAA84 /* RVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RVO.h; sourceTree = "<group>"; };
+		870083701E124928008EAA84 /* RVO_For_Cocos.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RVO_For_Cocos.cpp; sourceTree = "<group>"; };
+		870083711E124928008EAA84 /* RVO_For_Cocos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RVO_For_Cocos.h; sourceTree = "<group>"; };
+		870083721E124928008EAA84 /* RVOSimulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RVOSimulator.cpp; sourceTree = "<group>"; };
+		870083731E124928008EAA84 /* RVOSimulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RVOSimulator.h; sourceTree = "<group>"; };
+		870083741E124928008EAA84 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector2.h; sourceTree = "<group>"; };
 		A922753D1517C094001B78AA /* HelloJavascript-mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HelloJavascript-mobile.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A92275411517C094001B78AA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A92275431517C094001B78AA /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -306,7 +333,7 @@
 		AB45A0FE1D34F7C000033ACB /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		AB45A1001D34F7CC00033ACB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		AB45A1021D34F7E100033ACB /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/GameController.framework; sourceTree = DEVELOPER_DIR; };
-		ABE457001D35194300F1F400 /* libPluginProtocol.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPluginProtocol.a; path = ../../cocos2d-x/external/ios/libs//libPluginProtocol.a; sourceTree = "<group>"; };
+		ABE457001D35194300F1F400 /* libPluginProtocol.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPluginProtocol.a; path = "../../cocos2d-x/external/ios/libs//libPluginProtocol.a"; sourceTree = "<group>"; };
 		BA3A85EB1A724AE900924D24 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		BA4E718019EB6E3E00932425 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.0.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
 		BA4E718219EB6E4600932425 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.0.sdk/System/Library/Frameworks/GameController.framework; sourceTree = DEVELOPER_DIR; };
@@ -442,6 +469,26 @@
 			path = mac;
 			sourceTree = "<group>";
 		};
+		870083671E124928008EAA84 /* RVO */ = {
+			isa = PBXGroup;
+			children = (
+				870083681E124928008EAA84 /* Agent.cpp */,
+				870083691E124928008EAA84 /* Agent.h */,
+				8700836A1E124928008EAA84 /* Definitions.h */,
+				8700836B1E124928008EAA84 /* KdTree.cpp */,
+				8700836C1E124928008EAA84 /* KdTree.h */,
+				8700836D1E124928008EAA84 /* Obstacle.cpp */,
+				8700836E1E124928008EAA84 /* Obstacle.h */,
+				8700836F1E124928008EAA84 /* RVO.h */,
+				870083701E124928008EAA84 /* RVO_For_Cocos.cpp */,
+				870083711E124928008EAA84 /* RVO_For_Cocos.h */,
+				870083721E124928008EAA84 /* RVOSimulator.cpp */,
+				870083731E124928008EAA84 /* RVOSimulator.h */,
+				870083741E124928008EAA84 /* Vector2.h */,
+			);
+			path = RVO;
+			sourceTree = "<group>";
+		};
 		A92275321517C094001B78AA = {
 			isa = PBXGroup;
 			children = (
@@ -534,6 +581,9 @@
 		D4545214156E28EF00887EB5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				870083651E124928008EAA84 /* jsb_RVO_auto.cpp */,
+				870083661E124928008EAA84 /* jsb_RVO_auto.hpp */,
+				870083671E124928008EAA84 /* RVO */,
 				AB2EB9DB1D34F56100695C92 /* jsb_anysdk_basic_conversions.cpp */,
 				AB2EB9DC1D34F56100695C92 /* jsb_anysdk_basic_conversions.h */,
 				AB2EB9DD1D34F56100695C92 /* jsb_anysdk_protocols_auto.cpp */,
@@ -768,8 +818,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				870083801E124928008EAA84 /* RVOSimulator.cpp in Sources */,
+				8700837E1E124928008EAA84 /* RVO_For_Cocos.cpp in Sources */,
 				509D4A8117EBB24E00697056 /* AppDelegate.cpp in Sources */,
+				870083781E124928008EAA84 /* Agent.cpp in Sources */,
+				8700837C1E124928008EAA84 /* Obstacle.cpp in Sources */,
+				8700837A1E124928008EAA84 /* KdTree.cpp in Sources */,
 				C06E23CC18CEFE680093C81A /* main.cpp in Sources */,
+				870083761E124928008EAA84 /* jsb_RVO_auto.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,13 +833,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8700837D1E124928008EAA84 /* RVO_For_Cocos.cpp in Sources */,
 				509D4AC917EBB2AB00697056 /* RootViewController.mm in Sources */,
 				AB2EB9E51D34F56100695C92 /* manualanysdkbindings.cpp in Sources */,
+				8700837B1E124928008EAA84 /* Obstacle.cpp in Sources */,
 				D4545227156E28EF00887EB5 /* AppDelegate.cpp in Sources */,
 				AB2EB9E41D34F56100695C92 /* jsb_anysdk_protocols_auto.cpp in Sources */,
 				AB2EB9E61D34F56100695C92 /* SDKManager.cpp in Sources */,
+				870083771E124928008EAA84 /* Agent.cpp in Sources */,
+				870083791E124928008EAA84 /* KdTree.cpp in Sources */,
+				870083751E124928008EAA84 /* jsb_RVO_auto.cpp in Sources */,
 				AB2EB9E31D34F56100695C92 /* jsb_anysdk_basic_conversions.cpp in Sources */,
 				509D4AC817EBB2AB00697056 /* main.m in Sources */,
+				8700837F1E124928008EAA84 /* RVOSimulator.cpp in Sources */,
 				509D4ABC17EBB2AB00697056 /* AppController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

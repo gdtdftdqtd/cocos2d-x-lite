@@ -851,6 +851,35 @@ private:
     CC_DISALLOW_COPY_AND_ASSIGN(JumpTo);
 };
 
+/** @class JumpRoateTo
+ * @brief Moves a Node object to a parabolic position simulating a jump movement by modifying it's position attribute.
+ */
+class CC_DLL JumpRoateTo : public JumpTo
+{
+public:
+    /**
+     * Creates the action.
+     * @param duration Duration time, in seconds.
+     * @param position The jumping destination position.
+     * @param height The jumping height.
+     * @param jumps The jumping times.
+     * @return An autoreleased JumpTo object.
+     */
+    static JumpRoateTo* create(float duration, const Vec2& position, float height, int jumps);
+    
+    /**
+     * @param time In seconds.
+     */
+    virtual void update(float time) override;
+    
+CC_CONSTRUCTOR_ACCESS:
+    JumpRoateTo() {}
+    virtual ~JumpRoateTo() {}
+    
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(JumpRoateTo);
+};
+
 /** @struct Bezier configuration structure
  */
 typedef struct _ccBezierConfig {
