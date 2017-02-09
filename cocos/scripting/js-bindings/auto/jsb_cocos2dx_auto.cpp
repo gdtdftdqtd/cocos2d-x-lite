@@ -18107,6 +18107,114 @@ void js_register_cocos2dx_JumpTo(JSContext *cx, JS::HandleObject global) {
     anonEvaluate(cx, global, "(function () { cc.JumpTo.extend = cc.Class.extend; })()");
 }
 
+JSClass  *jsb_cocos2d_JumpRoateTo_class;
+JSObject *jsb_cocos2d_JumpRoateTo_prototype;
+
+bool js_cocos2dx_JumpRoateTo_create(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    if (argc == 4) {
+        double arg0 = 0;
+        cocos2d::Vec2 arg1;
+        double arg2 = 0;
+        int arg3 = 0;
+        ok &= JS::ToNumber( cx, args.get(0), &arg0) && !std::isnan(arg0);
+        ok &= jsval_to_vector2(cx, args.get(1), &arg1);
+        ok &= JS::ToNumber( cx, args.get(2), &arg2) && !std::isnan(arg2);
+        ok &= jsval_to_int32(cx, args.get(3), (int32_t *)&arg3);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_JumpRoateTo_create : Error processing arguments");
+
+        auto ret = cocos2d::JumpRoateTo::create(arg0, arg1, arg2, arg3);
+        js_type_class_t *typeClass = js_get_type_from_native<cocos2d::JumpRoateTo>(ret);
+        JS::RootedObject jsret(cx, jsb_ref_autoreleased_create_jsobject(cx, ret, typeClass, "cocos2d::JumpRoateTo"));
+        args.rval().set(OBJECT_TO_JSVAL(jsret));
+        return true;
+    }
+    JS_ReportError(cx, "js_cocos2dx_JumpRoateTo_create : wrong number of arguments");
+    return false;
+}
+
+bool js_cocos2dx_JumpRoateTo_constructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    cocos2d::JumpRoateTo* cobj = new (std::nothrow) cocos2d::JumpRoateTo();
+
+    js_type_class_t *typeClass = js_get_type_from_native<cocos2d::JumpRoateTo>(cobj);
+
+    // link the native object with the javascript object
+    JS::RootedObject jsobj(cx, jsb_ref_create_jsobject(cx, cobj, typeClass, "cocos2d::JumpRoateTo"));
+    args.rval().set(OBJECT_TO_JSVAL(jsobj));
+    if (JS_HasProperty(cx, jsobj, "_ctor", &ok) && ok)
+        ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(jsobj), "_ctor", args);
+    return true;
+}
+static bool js_cocos2dx_JumpRoateTo_ctor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    cocos2d::JumpRoateTo *nobj = new (std::nothrow) cocos2d::JumpRoateTo();
+    auto newproxy = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::JumpRoateTo");
+    bool isFound = false;
+    if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
+        ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
+    args.rval().setUndefined();
+    return true;
+}
+
+
+extern JSObject *jsb_cocos2d_JumpTo_prototype;
+
+    
+void js_register_cocos2dx_JumpRoateTo(JSContext *cx, JS::HandleObject global) {
+    jsb_cocos2d_JumpRoateTo_class = (JSClass *)calloc(1, sizeof(JSClass));
+    jsb_cocos2d_JumpRoateTo_class->name = "JumpRoateTo";
+    jsb_cocos2d_JumpRoateTo_class->addProperty = JS_PropertyStub;
+    jsb_cocos2d_JumpRoateTo_class->delProperty = JS_DeletePropertyStub;
+    jsb_cocos2d_JumpRoateTo_class->getProperty = JS_PropertyStub;
+    jsb_cocos2d_JumpRoateTo_class->setProperty = JS_StrictPropertyStub;
+    jsb_cocos2d_JumpRoateTo_class->enumerate = JS_EnumerateStub;
+    jsb_cocos2d_JumpRoateTo_class->resolve = JS_ResolveStub;
+    jsb_cocos2d_JumpRoateTo_class->convert = JS_ConvertStub;
+    jsb_cocos2d_JumpRoateTo_class->flags = JSCLASS_HAS_RESERVED_SLOTS(2);
+
+    static JSPropertySpec properties[] = {
+        JS_PS_END
+    };
+
+    static JSFunctionSpec funcs[] = {
+        JS_FN("ctor", js_cocos2dx_JumpRoateTo_ctor, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FS_END
+    };
+
+    static JSFunctionSpec st_funcs[] = {
+        JS_FN("create", js_cocos2dx_JumpRoateTo_create, 4, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FS_END
+    };
+
+    JS::RootedObject parent_proto(cx, jsb_cocos2d_JumpTo_prototype);
+    jsb_cocos2d_JumpRoateTo_prototype = JS_InitClass(
+        cx, global,
+        parent_proto,
+        jsb_cocos2d_JumpRoateTo_class,
+        js_cocos2dx_JumpRoateTo_constructor, 0, // constructor
+        properties,
+        funcs,
+        NULL, // no static properties
+        st_funcs);
+
+    JS::RootedObject proto(cx, jsb_cocos2d_JumpRoateTo_prototype);
+    JS::RootedValue className(cx, std_string_to_jsval(cx, "JumpRoateTo"));
+    JS_SetProperty(cx, proto, "_className", className);
+    JS_SetProperty(cx, proto, "__nativeObj", JS::TrueHandleValue);
+    JS_SetProperty(cx, proto, "__is_ref", JS::TrueHandleValue);
+    // add the proto and JSClass to the type->js info hash table
+    jsb_register_class<cocos2d::JumpRoateTo>(cx, jsb_cocos2d_JumpRoateTo_class, proto, parent_proto);
+    anonEvaluate(cx, global, "(function () { cc.JumpRoateTo.extend = cc.Class.extend; })()");
+}
+
 JSClass  *jsb_cocos2d_BezierBy_class;
 JSObject *jsb_cocos2d_BezierBy_prototype;
 
@@ -60635,6 +60743,7 @@ void register_all_cocos2dx(JSContext* cx, JS::HandleObject obj) {
     js_register_cocos2dx_Properties(cx, ns);
     js_register_cocos2dx_BezierBy(cx, ns);
     js_register_cocos2dx_BezierTo(cx, ns);
+    js_register_cocos2dx_JumpRoateTo(cx, ns);
     js_register_cocos2dx_ParticleMeteor(cx, ns);
     js_register_cocos2dx_SpriteFrame(cx, ns);
     js_register_cocos2dx_Liquid(cx, ns);

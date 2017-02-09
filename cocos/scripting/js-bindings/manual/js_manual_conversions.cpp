@@ -1392,6 +1392,41 @@ bool jsval_to_std_vector_float( JSContext *cx, JS::HandleValue vp, std::vector<f
     return true;
 }
 
+bool jsval_to_std_vector_vector2( JSContext *cx, JS::HandleValue vp, std::vector<cocos2d::Vec2>* ret)
+{
+    JS::RootedObject jsobj(cx);
+    bool ok = vp.isObject() && JS_ValueToObject( cx, vp, &jsobj );
+    JSB_PRECONDITION3( ok, cx, false, "Error converting value to object");
+    JSB_PRECONDITION3( jsobj && JS_IsArrayObject( cx, jsobj),  cx, false, "Object must be an array");
+    
+    uint32_t len = 0;
+    JS_GetArrayLength(cx, jsobj, &len);
+    ret->reserve(len);
+    for (uint32_t i=0; i < len; i++)
+    {
+        JS::RootedValue value(cx);
+        if (JS_GetElement(cx, jsobj, i, &value))
+        {
+            if (value.isObject())
+            {
+                cocos2d::Vec2 v2;
+                ok = jsval_to_vector2(cx, value, &v2);
+                if (ok)
+                {
+                    ret->push_back(v2);
+                }
+            }
+            else
+            {
+                JS_ReportError(cx, "not supported type in array");
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
 bool jsval_to_matrix(JSContext *cx, JS::HandleValue vp, cocos2d::Mat4* ret)
 {
     JS::RootedObject jsobj(cx);
@@ -2485,6 +2520,26 @@ jsval std_vector_float_to_jsval( JSContext *cx, const std::vector<float>& v)
     }
     return OBJECT_TO_JSVAL(jsretArr);
 }
+
+//add by chl
+jsval std_vector_vector2_to_jsval( JSContext *cx, const std::vector<cocos2d::Vec2>& v)
+{
+    JS::RootedObject jsretArr(cx, JS_NewArrayObject(cx, v.size()));
+    
+    int i = 0;
+    for (const auto& obj : v)
+    {
+        JS::RootedValue arrElement(cx);
+        arrElement = vector2_to_jsval(cx, obj);
+        
+        if (!JS_SetElement(cx, jsretArr, i, arrElement)) {
+            break;
+        }
+        ++i;
+    }
+    return OBJECT_TO_JSVAL(jsretArr);
+}
+//add end
 
 jsval matrix_to_jsval(JSContext *cx, const cocos2d::Mat4& v)
 {

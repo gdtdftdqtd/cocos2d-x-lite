@@ -162,6 +162,7 @@ def main():
                     'cocos2dx_experimental_video.ini' : ('cocos2dx_experimental_video', 'jsb_cocos2dx_experimental_video_auto'), \
                     'creator.ini': ('creator', 'jsb_creator_auto'),
                     }
+        # cmd_args = {'cocos2dx.ini' : ('cocos2d-x', 'jsb_cocos2dx_auto')}
         target = 'spidermonkey'
         generator_py = '%s/generator.py' % cxx_generator_root
         for key in cmd_args.keys():
