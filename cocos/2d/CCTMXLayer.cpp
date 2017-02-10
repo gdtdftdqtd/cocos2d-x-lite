@@ -102,7 +102,18 @@ bool TMXLayer::initWithTilesetInfo(TMXTilesetInfo *tilesetInfo, TMXLayerInfo *la
                 width = _mapTileSize.width * (_layerSize.width + 0.5);
                 height = (_mapTileSize.height + _hexSideLength) * ((int)(_layerSize.height / 2)) + _mapTileSize.height * ((int)_layerSize.height % 2);
             }
-        } else {
+        }
+        else if (mapInfo->getOrientation() == TMXOrientationStaggered)
+        {
+            if (_staggerAxis == TMXStaggerAxis_X) {
+                height = _mapTileSize.height * (_layerSize.height + 0.5);
+                width = (_mapTileSize.width / 2) * (_layerSize.width + 1);
+            } else {
+                width = _mapTileSize.width * (_layerSize.width + 0.5);
+                height = (_mapTileSize.height / 2) * (_layerSize.height + 1);
+            }
+        }
+        else {
             width = _layerSize.width * _mapTileSize.width;
             height = _layerSize.height * _mapTileSize.height;
         }
