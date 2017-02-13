@@ -58662,6 +58662,28 @@ bool js_cocos2dx_TMXLayer_getPositionAt(JSContext *cx, uint32_t argc, jsval *vp)
     JS_ReportError(cx, "js_cocos2dx_TMXLayer_getPositionAt : wrong number of arguments: %d, was expecting %d", argc, 1);
     return false;
 }
+bool js_cocos2dx_TMXLayer_removeTilesAway(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_TMXLayer_removeTilesAway : Invalid Native Object");
+    if (argc == 2) {
+        cocos2d::Vec2 arg0;
+        int arg1 = 0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        ok &= jsval_to_int32(cx, args.get(1), (int32_t *)&arg1);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_removeTilesAway : Error processing arguments");
+        cobj->removeTilesAway(arg0, arg1);
+        args.rval().setUndefined();
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_TMXLayer_removeTilesAway : wrong number of arguments: %d, was expecting %d", argc, 2);
+    return false;
+}
 bool js_cocos2dx_TMXLayer_setLayerOrientation(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -58700,6 +58722,40 @@ bool js_cocos2dx_TMXLayer_setTileOpacity(JSContext *cx, uint32_t argc, jsval *vp
     }
 
     JS_ReportError(cx, "js_cocos2dx_TMXLayer_setTileOpacity : wrong number of arguments: %d, was expecting %d", argc, 1);
+    return false;
+}
+bool js_cocos2dx_TMXLayer_getBigMapTileGIDAt(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_TMXLayer_getBigMapTileGIDAt : Invalid Native Object");
+    if (argc == 1) {
+        cocos2d::Vec2 arg0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_getBigMapTileGIDAt : Error processing arguments");
+        unsigned int ret = cobj->getBigMapTileGIDAt(arg0);
+        JS::RootedValue jsret(cx);
+        jsret = uint32_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+    if (argc == 2) {
+        cocos2d::Vec2 arg0;
+        cocos2d::TMXTileFlags_* arg1 = nullptr;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        uint32_t tempData;arg1=(cocos2d::TMXTileFlags_*)&tempData;ok &= jsval_to_uint32(cx, args.get(1), (uint32_t *)&arg1);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_getBigMapTileGIDAt : Error processing arguments");
+        unsigned int ret = cobj->getBigMapTileGIDAt(arg0, arg1);
+        JS::RootedValue jsret(cx);
+        jsret = uint32_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_TMXLayer_getBigMapTileGIDAt : wrong number of arguments: %d, was expecting %d", argc, 1);
     return false;
 }
 bool js_cocos2dx_TMXLayer_releaseMap(JSContext *cx, uint32_t argc, jsval *vp)
@@ -58900,6 +58956,24 @@ bool js_cocos2dx_TMXLayer_setupTiles(JSContext *cx, uint32_t argc, jsval *vp)
     JS_ReportError(cx, "js_cocos2dx_TMXLayer_setupTiles : wrong number of arguments: %d, was expecting %d", argc, 0);
     return false;
 }
+bool js_cocos2dx_TMXLayer_getIsBigMap(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_TMXLayer_getIsBigMap : Invalid Native Object");
+    if (argc == 0) {
+        bool ret = cobj->getIsBigMap();
+        JS::RootedValue jsret(cx);
+        jsret = BOOLEAN_TO_JSVAL(ret);
+        args.rval().set(jsret);
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_TMXLayer_getIsBigMap : wrong number of arguments: %d, was expecting %d", argc, 0);
+    return false;
+}
 bool js_cocos2dx_TMXLayer_setTileGID(JSContext *cx, uint32_t argc, jsval *vp)
 {
     cocos2d::TMXLayer* cobj = nullptr;
@@ -58944,6 +59018,28 @@ bool js_cocos2dx_TMXLayer_setTileGID(JSContext *cx, uint32_t argc, jsval *vp)
     } while(0);
 
     JS_ReportError(cx, "js_cocos2dx_TMXLayer_setTileGID : wrong number of arguments");
+    return false;
+}
+bool js_cocos2dx_TMXLayer_showTilesBeyond(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_TMXLayer_showTilesBeyond : Invalid Native Object");
+    if (argc == 2) {
+        cocos2d::Vec2 arg0;
+        int arg1 = 0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        ok &= jsval_to_int32(cx, args.get(1), (int32_t *)&arg1);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_showTilesBeyond : Error processing arguments");
+        cobj->showTilesBeyond(arg0, arg1);
+        args.rval().setUndefined();
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_TMXLayer_showTilesBeyond : wrong number of arguments: %d, was expecting %d", argc, 2);
     return false;
 }
 bool js_cocos2dx_TMXLayer_getMapTileSize(JSContext *cx, uint32_t argc, jsval *vp)
@@ -59133,6 +59229,26 @@ bool js_cocos2dx_TMXLayer_getTileAt(JSContext *cx, uint32_t argc, jsval *vp)
     JS_ReportError(cx, "js_cocos2dx_TMXLayer_getTileAt : wrong number of arguments: %d, was expecting %d", argc, 1);
     return false;
 }
+bool js_cocos2dx_TMXLayer_removeBigMapTileAt(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_TMXLayer_removeBigMapTileAt : Invalid Native Object");
+    if (argc == 1) {
+        cocos2d::Vec2 arg0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_removeBigMapTileAt : Error processing arguments");
+        cobj->removeBigMapTileAt(arg0);
+        args.rval().setUndefined();
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_TMXLayer_removeBigMapTileAt : wrong number of arguments: %d, was expecting %d", argc, 1);
+    return false;
+}
 bool js_cocos2dx_TMXLayer_create(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -59232,8 +59348,10 @@ void js_register_cocos2dx_TMXLayer(JSContext *cx, JS::HandleObject global) {
     static JSFunctionSpec funcs[] = {
         JS_FN("getTileGIDAt", js_cocos2dx_TMXLayer_getTileGIDAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getPositionAt", js_cocos2dx_TMXLayer_getPositionAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("removeTilesAway", js_cocos2dx_TMXLayer_removeTilesAway, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setLayerOrientation", js_cocos2dx_TMXLayer_setLayerOrientation, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setTileOpacity", js_cocos2dx_TMXLayer_setTileOpacity, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("getBigMapTileGIDAt", js_cocos2dx_TMXLayer_getBigMapTileGIDAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("releaseMap", js_cocos2dx_TMXLayer_releaseMap, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getLayerSize", js_cocos2dx_TMXLayer_getLayerSize, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setMapTileSize", js_cocos2dx_TMXLayer_setMapTileSize, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
@@ -59243,7 +59361,9 @@ void js_register_cocos2dx_TMXLayer(JSContext *cx, JS::HandleObject global) {
         JS_FN("removeTileAt", js_cocos2dx_TMXLayer_removeTileAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("initWithTilesetInfo", js_cocos2dx_TMXLayer_initWithTilesetInfo, 3, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setupTiles", js_cocos2dx_TMXLayer_setupTiles, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("getIsBigMap", js_cocos2dx_TMXLayer_getIsBigMap, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setTileGID", js_cocos2dx_TMXLayer_setTileGID, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("showTilesBeyond", js_cocos2dx_TMXLayer_showTilesBeyond, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getMapTileSize", js_cocos2dx_TMXLayer_getMapTileSize, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getProperty", js_cocos2dx_TMXLayer_getProperty, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setLayerSize", js_cocos2dx_TMXLayer_setLayerSize, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
@@ -59252,6 +59372,7 @@ void js_register_cocos2dx_TMXLayer(JSContext *cx, JS::HandleObject global) {
         JS_FN("getTileSet", js_cocos2dx_TMXLayer_getTileSet, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getProperties", js_cocos2dx_TMXLayer_getProperties, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getTileAt", js_cocos2dx_TMXLayer_getTileAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("removeBigMapTileAt", js_cocos2dx_TMXLayer_removeBigMapTileAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("ctor", js_cocos2dx_TMXLayer_ctor, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FS_END
     };

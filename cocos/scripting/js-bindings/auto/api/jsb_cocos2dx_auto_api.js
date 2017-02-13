@@ -21373,6 +21373,18 @@ vec2
 },
 
 /**
+ * @method removeTilesAway
+ * @param {vec2_object} arg0
+ * @param {int} arg1
+ */
+removeTilesAway : function (
+vec2, 
+int 
+)
+{
+},
+
+/**
  * @method setLayerOrientation
  * @param {int} arg0
  */
@@ -21390,6 +21402,20 @@ setTileOpacity : function (
 char 
 )
 {
+},
+
+/**
+ * @method getBigMapTileGIDAt
+ * @param {vec2_object} arg0
+ * @param {cc.TMXTileFlags_} arg1
+ * @return {unsigned int}
+ */
+getBigMapTileGIDAt : function (
+vec2, 
+tmxtileflags_ 
+)
+{
+    return 0;
 },
 
 /**
@@ -21485,6 +21511,16 @@ setupTiles : function (
 },
 
 /**
+ * @method getIsBigMap
+ * @return {bool}
+ */
+getIsBigMap : function (
+)
+{
+    return false;
+},
+
+/**
  * @method setTileGID
 * @param {unsigned int|unsigned int} int
 * @param {vec2_object|vec2_object} vec2
@@ -21494,6 +21530,18 @@ setTileGID : function(
 int,
 vec2,
 tmxtileflags_ 
+)
+{
+},
+
+/**
+ * @method showTilesBeyond
+ * @param {vec2_object} arg0
+ * @param {int} arg1
+ */
+showTilesBeyond : function (
+vec2, 
+int 
 )
 {
 },
@@ -21580,6 +21628,16 @@ vec2
 )
 {
     return cc.Sprite;
+},
+
+/**
+ * @method removeBigMapTileAt
+ * @param {vec2_object} arg0
+ */
+removeBigMapTileAt : function (
+vec2 
+)
+{
 },
 
 /**

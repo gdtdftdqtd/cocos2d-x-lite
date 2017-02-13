@@ -299,6 +299,22 @@ public:
     * @js NA
     */
     virtual std::string getDescription() const override;
+    
+    //add by chl
+    bool getIsBigMap();
+    uint32_t getBigMapTileGIDAt(const Vec2& tileCoordinate, TMXTileFlags* flags = nullptr);
+    /** showTiles a tile at given tile coordinate.
+     *
+     * @param tileCoordinate The tile Coordinate.
+     */
+    void showTilesBeyond(const Vec2& tileCoordinate, int distance);
+    /** removeTilesAway a tile at given tile coordinate.
+     *
+     * @param tileCoordinate The tile Coordinate.
+     */
+    void removeTilesAway(const Vec2& tileCoordinate, int distance);
+    
+    void removeBigMapTileAt(const Vec2& pos);
 
 protected:
     Vec2 getPositionForIsoAt(const Vec2& pos);
@@ -357,6 +373,8 @@ protected:
     int _hexSideLength;
     /** properties from the layer. They can be added using Tiled */
     ValueMap _properties;
+    //add by chl
+    std::map<intptr_t/*index*/, uint32_t/*gid*/> _bigMapTiles;
 };
 
 // end of tilemap_parallax_nodes group

@@ -143,7 +143,9 @@ TMXLayer::TMXLayer()
 ,_staggerAxis(TMXStaggerAxis_Y)
 ,_staggerIndex(TMXStaggerIndex_Even)
 ,_hexSideLength(0)
-{}
+{
+    this->_bigMapTiles.clear();
+}
 
 TMXLayer::~TMXLayer()
 {
@@ -157,6 +159,7 @@ TMXLayer::~TMXLayer()
     }
 
     CC_SAFE_DELETE_ARRAY(_tiles);
+    this->_bigMapTiles.clear();
 }
 
 void TMXLayer::releaseMap()
@@ -191,24 +194,26 @@ void TMXLayer::setupTiles()
 
     // Parse cocos2d properties
     this->parseInternalProperties();
-
-    for (int y=0; y < _layerSize.height; y++)
-    {
-        for (int x=0; x < _layerSize.width; x++)
+    
+    if (!getIsBigMap()) {
+        for (int y=0; y < _layerSize.height; y++)
         {
-            int pos = static_cast<int>(x + _layerSize.width * y);
-            int gid = _tiles[ pos ];
-
-            // gid are stored in little endian.
-            // if host is big endian, then swap
-            //if( o == CFByteOrderBigEndian )
-            //    gid = CFSwapInt32( gid );
-            /* We support little endian.*/
-
-            // FIXME:: gid == 0 --> empty tile
-            if (gid != 0) 
+            for (int x=0; x < _layerSize.width; x++)
             {
-                this->appendTileForGID(gid, Vec2(x, y));
+                int pos = static_cast<int>(x + _layerSize.width * y);
+                int gid = _tiles[ pos ];
+                
+                // gid are stored in little endian.
+                // if host is big endian, then swap
+                //if( o == CFByteOrderBigEndian )
+                //    gid = CFSwapInt32( gid );
+                /* We support little endian.*/
+                
+                // FIXME:: gid == 0 --> empty tile
+                if (gid != 0)
+                {
+                    this->appendTileForGID(gid, Vec2(x, y));
+                }
             }
         }
     }
@@ -437,6 +442,9 @@ Sprite * TMXLayer::insertTileForGID(uint32_t gid, const Vec2& pos)
         }
         
         _tiles[z] = gid;
+        if (getIsBigMap()) {
+            _bigMapTiles[z] = gid;
+        }
         return tile;
     }
     
@@ -459,6 +467,9 @@ Sprite * TMXLayer::updateTileForGID(uint32_t gid, const Vec2& pos)
     tile->setDirty(true);
     tile->updateTransform();
     _tiles[z] = gid;
+    if (getIsBigMap()) {
+        _bigMapTiles[z] = gid;
+    }
 
     return tile;
 }
@@ -541,7 +552,13 @@ void TMXLayer::setTileGID(uint32_t gid, const Vec2& pos, TMXTileFlags flags)
     CCASSERT(gid == 0 || (int)gid >= _tileSet->_firstGid, "TMXLayer: invalid gid" );
 
     TMXTileFlags currentFlags;
-    uint32_t currentGID = getTileGIDAt(pos, &currentFlags);
+    uint32_t currentGID = 0;
+    if (!getIsBigMap()) {
+        currentGID = getTileGIDAt(pos, &currentFlags);
+    }
+    else{
+        currentGID = getBigMapTileGIDAt(pos, &currentFlags);
+    }
 
     if (currentGID != gid || currentFlags != flags) 
     {
@@ -573,6 +590,9 @@ void TMXLayer::setTileGID(uint32_t gid, const Vec2& pos, TMXTileFlags flags)
                     setupTileSprite(sprite, sprite->getPosition(), gidAndFlags);
                 }
                 _tiles[z] = gidAndFlags;
+                if (getIsBigMap()) {
+                    _bigMapTiles[z] = gidAndFlags;
+                }
             } 
             else 
             {
@@ -604,6 +624,12 @@ void TMXLayer::removeChild(Node* node, bool cleanup)
     ssize_t atlasIndex = sprite->getAtlasIndex();
     ssize_t zz = (ssize_t)_atlasIndexArray->arr[atlasIndex];
     _tiles[zz] = 0;
+    if (getIsBigMap()) {
+        std::map<intptr_t/*index*/, uint32_t/*gid*/>::iterator it = _bigMapTiles.find(zz);
+        if (it != _bigMapTiles.end()) {
+            _bigMapTiles.erase(it);
+        }
+    }
     ccCArrayRemoveValueAtIndex(_atlasIndexArray, atlasIndex);
     SpriteBatchNode::removeChild(sprite, cleanup);
 }
@@ -809,6 +835,128 @@ int TMXLayer::getVertexZForPos(const Vec2& pos)
 std::string TMXLayer::getDescription() const
 {
     return StringUtils::format("<TMXLayer | tag = %d, size = %d,%d>", _tag, (int)_mapTileSize.width, (int)_mapTileSize.height);
+}
+
+//add by chl
+bool TMXLayer::getIsBigMap()
+{
+    return (((int)_layerSize.width) >= 128 && ((int)_layerSize.height) >= 128) || ((int)_layerSize.width)*((int)_layerSize.height) >= 128*128 ;
+}
+
+uint32_t TMXLayer::getBigMapTileGIDAt(const Vec2& pos, TMXTileFlags* flags/* = nullptr*/)
+{
+    CCASSERT(pos.x < _layerSize.width && pos.y < _layerSize.height && pos.x >=0 && pos.y >=0, "TMXLayer: invalid position");
+    CCASSERT(_tiles && _atlasIndexArray, "TMXLayer: the tiles map has been released");
+    
+    ssize_t idx = static_cast<int>(((int) pos.x + (int) pos.y * _layerSize.width));
+    // Bits on the far end of the 32-bit global tile ID are used for tile flags
+    uint32_t tile = 0;
+    auto it = _bigMapTiles.find(idx);
+    if (it != _bigMapTiles.end()){
+        tile = it->second;
+    }
+    
+    // issue1264, flipped tiles can be changed dynamically
+    if (flags)
+    {
+        *flags = (TMXTileFlags)(tile & kTMXFlipedAll);
+    }
+    
+    return (tile & kTMXFlippedMask);
+}
+
+void TMXLayer::showTilesBeyond(const Vec2& tileCoordinate, int distance)
+{
+    if (!getIsBigMap()) {
+        return;
+    }
+    int _minX = tileCoordinate.x - distance;
+    int _maxX = tileCoordinate.x + distance;
+    int _minY = tileCoordinate.y - distance;
+    int _maxY = tileCoordinate.y + distance;
+    
+    _minX = _minX < 0 ? 0 : _minX;
+    _maxX = _maxX > _layerSize.width - 1 ? _layerSize.width - 1 : _maxX;
+    _minY = _minY < 0 ? 0 : _minY;
+    _maxY = _maxY > _layerSize.height - 1 ? _layerSize.height - 1 : _maxY;
+    
+    int _y;
+    int _x;
+    int _gid;
+    for (_y = _minY; _y <= _maxY; _y++) {
+        for (_x = _minX; _x <= _maxX; _x++) {
+            _gid = this->getTileGIDAt(Vec2(_x, _y));
+            if (0 != _gid) {
+                setTileGID(_gid, Vec2(_x, _y));
+            }
+        }
+    }
+    this->removeTilesAway(tileCoordinate, distance);
+}
+
+void TMXLayer::removeTilesAway(const Vec2& tileCoordinate, int distance)
+{
+    std::map<long, Vec2> _needRemoveMap;
+    for(auto it = _bigMapTiles.begin(); it != _bigMapTiles.end(); ++it)
+    {
+        intptr_t tileIndex = it->first;
+        intptr_t _x = tileIndex % int(_layerSize.width);
+        intptr_t _y = (tileIndex - _x) / int(_layerSize.width);
+        if (std::abs(_x - tileCoordinate.x) > distance || std::abs(_y - tileCoordinate.y) > distance) {
+            _needRemoveMap[tileIndex] = Vec2(_x, _y);
+        }
+    }
+    for(auto it = _needRemoveMap.begin(); it != _needRemoveMap.end();++it)
+    {
+        this->removeBigMapTileAt(it->second);
+    }
+    _needRemoveMap.clear();
+}
+
+void TMXLayer::removeBigMapTileAt(const Vec2& pos)
+{
+    CCASSERT(pos.x < _layerSize.width && pos.y < _layerSize.height && pos.x >=0 && pos.y >=0, "TMXLayer: invalid position");
+    CCASSERT(_tiles && _atlasIndexArray, "TMXLayer: the tiles map has been released");
+    
+    int gid = getTileGIDAt(pos);
+    
+    if (gid)
+    {
+        int z = pos.x + pos.y * _layerSize.width;
+        ssize_t atlasIndex = atlasIndexForExistantZ(z);
+        
+        // remove tile from GID map
+        if (getIsBigMap()) {
+            std::map<intptr_t/*index*/, uint32_t/*gid*/>::iterator it = _bigMapTiles.find(z);
+            if (it != _bigMapTiles.end()) {
+                _bigMapTiles.erase(it);
+            }
+        }
+        
+        // remove tile from atlas position array
+        ccCArrayRemoveValueAtIndex(_atlasIndexArray, atlasIndex);
+        
+        // remove it from sprites and/or texture atlas
+        Sprite *sprite = (Sprite*)getChildByTag(z);
+        if (sprite)
+        {
+            SpriteBatchNode::removeChild(sprite, true);
+        }
+        else
+        {
+            _textureAtlas->removeQuadAtIndex(atlasIndex);
+            
+            // update possible children
+            for(const auto &obj : _children) {
+                Sprite* child = static_cast<Sprite*>(obj);
+                ssize_t ai = child->getAtlasIndex();
+                if ( ai >= atlasIndex )
+                {
+                    child->setAtlasIndex(ai-1);
+                }
+            }
+        }
+    }
 }
 
 
