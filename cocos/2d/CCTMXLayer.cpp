@@ -959,5 +959,172 @@ void TMXLayer::removeBigMapTileAt(const Vec2& pos)
     }
 }
 
+Vec2 TMXLayer::getTileCoords(const Vec2& position)
+{
+    switch (_layerOrientation)
+    {
+    case TMXOrientationIso:
+        return getTileCoordsForIso(position);
+        break;
+    case TMXOrientationOrtho:
+        return getTileCoordsForOrtho(position);
+        break;
+    case TMXOrientationStaggered:
+        return getTileCoordsForStaggered(position);
+        break;
+    case TMXOrientationHex:
+        CCASSERT(0, "Not supported ");
+//        return getTileCoordsForHex(position);
+        break;
+    default:
+        CCASSERT(0, "Not supported ");
+        break;
+    }
+    return Vec2();
+}
+
+Vec2 TMXLayer::getTileCoordsForIso(const Vec2 &position)
+{
+    Vec2 pos = position;
+    const int tileWidth = this->_mapTileSize.width;
+    const int tileHeight = this->_mapTileSize.height;
+    
+    pos.x -= this->_layerSize.height * tileWidth / 2;
+    const double tileY = (this->getContentSize().height - pos.y) / tileHeight;
+    const double tileX = pos.x / tileWidth;
+//    CCLOG("tilecoords %lf, %lf",std::floor(tileY + tileX), std::floor(tileY - tileX));
+    return Vec2(std::floor(tileY + tileX), std::floor(tileY - tileX));
+}
+
+Vec2 TMXLayer::getTileCoordsForOrtho(const Vec2 &position)
+{
+    Vec2 pos = position;
+    return Vec2(std::floor(pos.x / this->_mapTileSize.width),std::floor((this->getContentSize().height - pos.y) / this->_mapTileSize.height));
+}
+
+
+
+Vec2 TMXLayer::getTileCoordsForHex(const Vec2 &position)
+{
+    return Vec2();
+}
+
+Vec2 TMXLayer::getTileCoordsForStaggered(const Vec2 &position)
+{
+    Vec2 pos = position;
+    if (this->_staggerAxis == TMXStaggerAxis_X) {
+        pos.x -= this->_staggerIndex == TMXStaggerIndex_Even ? this->_mapTileSize.width/2 : 0;
+    }
+    else{
+        pos.y -= this->_staggerIndex == TMXStaggerIndex_Even ? this->_mapTileSize.height/2 : 0;
+    }
+    // Start with the coordinates of a grid-aligned tile
+    Vec2 referencePoint = Vec2((intptr_t)std::floor(pos.x / this->_mapTileSize.width),(intptr_t)std::floor((this->getContentSize().height - pos.y) / this->_mapTileSize.height));
+
+    // Relative x and y position on the base square of the grid-aligned tile
+    const Vec2 rel(pos.x - referencePoint.x * this->_mapTileSize.width, (this->getContentSize().height - pos.y) - referencePoint.y * this->_mapTileSize.height);
+
+    // Adjust the reference point to the correct tile coordinates
+    auto& staggerAxisIndex = this->_staggerAxis == TMXStaggerAxis_X ? referencePoint.x : referencePoint.y;
+    staggerAxisIndex *= 2;
+    if (this->_staggerIndex == TMXStaggerIndex_Even){
+        ++staggerAxisIndex;
+    }
+
+    const double y_pos = rel.x * ((double) this->_mapTileSize.height / this->_mapTileSize.width);
+
+    // Check whether the cursor is in any of the corners (neighboring tiles)
+    if (this->_mapTileSize.height/2 - y_pos > rel.y){
+        return topLeft(referencePoint.x, referencePoint.y);
+    }
+    if (-this->_mapTileSize.height/2 + y_pos > rel.y){
+        return topRight(referencePoint.x, referencePoint.y);
+    }
+    if (this->_mapTileSize.height/2 + y_pos < rel.y){
+        return bottomLeft(referencePoint.x, referencePoint.y);
+    }
+    if (this->_mapTileSize.height/2 * 3 - y_pos < rel.y){
+        return bottomRight(referencePoint.x, referencePoint.y);
+    }
+
+    return referencePoint;
+}
+
+Vec2 TMXLayer::topLeft(int x, int y) const
+{
+    if (this->_staggerAxis == TMXStaggerAxis_Y) {
+        if ((y & 1) ^ this->_staggerIndex){
+            return Vec2(x, y - 1);
+        }
+        else{
+            return Vec2(x - 1, y - 1);
+        }
+    } else {
+        if ((x & 1) ^ this->_staggerIndex){
+            return Vec2(x - 1, y);
+        }
+        else{
+            return Vec2(x - 1, y - 1);
+        }
+    }
+}
+
+Vec2 TMXLayer::topRight(int x, int y) const
+{
+    if (this->_staggerAxis == TMXStaggerAxis_Y) {
+        if ((y & 1) ^ this->_staggerIndex){
+            return Vec2(x + 1, y - 1);
+        }
+        else{
+            return Vec2(x, y - 1);
+        }
+    } else {
+        if ((x & 1) ^ this->_staggerIndex){
+            return Vec2(x + 1, y);
+        }
+        else{
+            return Vec2(x + 1, y - 1);
+        }
+    }
+}
+
+Vec2 TMXLayer::bottomLeft(int x, int y) const
+{
+    if (this->_staggerAxis == TMXStaggerAxis_Y) {
+        if ((y & 1) ^ this->_staggerIndex){
+            return Vec2(x, y + 1);
+        }
+        else{
+            return Vec2(x - 1, y + 1);
+        }
+    } else {
+        if ((x & 1) ^ this->_staggerIndex){
+            return Vec2(x - 1, y + 1);
+        }
+        else{
+            return Vec2(x - 1, y);
+        }
+    }
+}
+
+Vec2 TMXLayer::bottomRight(int x, int y) const
+{
+    if (this->_staggerAxis == TMXStaggerAxis_Y) {
+        if ((y & 1) ^ this->_staggerIndex){
+            return Vec2(x + 1, y + 1);
+        }
+        else{
+            return Vec2(x, y + 1);
+        }
+    } else {
+        if ((x & 1) ^ this->_staggerIndex){
+            return Vec2(x + 1, y + 1);
+        }
+        else{
+            return Vec2(x + 1, y);
+        }
+    }
+}
+
 
 NS_CC_END

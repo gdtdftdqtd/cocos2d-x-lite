@@ -315,6 +315,18 @@ public:
     void removeTilesAway(const Vec2& tileCoordinate, int distance);
     
     void removeBigMapTileAt(const Vec2& pos);
+    
+    Vec2 getTileCoords(const Vec2& position);
+protected:
+    Vec2 getTileCoordsForIso(const Vec2& position);
+    Vec2 getTileCoordsForOrtho(const Vec2& position);
+    Vec2 getTileCoordsForHex(const Vec2& position);
+    Vec2 getTileCoordsForStaggered(const Vec2& position);
+    // Functions specific to this type of renderer
+    Vec2 topLeft(int x, int y) const;
+    Vec2 topRight(int x, int y) const;
+    Vec2 bottomLeft(int x, int y) const;
+    Vec2 bottomRight(int x, int y) const;
 
 protected:
     Vec2 getPositionForIsoAt(const Vec2& pos);

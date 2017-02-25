@@ -58956,6 +58956,28 @@ bool js_cocos2dx_TMXLayer_setupTiles(JSContext *cx, uint32_t argc, jsval *vp)
     JS_ReportError(cx, "js_cocos2dx_TMXLayer_setupTiles : wrong number of arguments: %d, was expecting %d", argc, 0);
     return false;
 }
+bool js_cocos2dx_TMXLayer_getTileCoords(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_TMXLayer_getTileCoords : Invalid Native Object");
+    if (argc == 1) {
+        cocos2d::Vec2 arg0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_getTileCoords : Error processing arguments");
+        cocos2d::Vec2 ret = cobj->getTileCoords(arg0);
+        JS::RootedValue jsret(cx);
+        jsret = vector2_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_TMXLayer_getTileCoords : wrong number of arguments: %d, was expecting %d", argc, 1);
+    return false;
+}
 bool js_cocos2dx_TMXLayer_getIsBigMap(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -59361,6 +59383,7 @@ void js_register_cocos2dx_TMXLayer(JSContext *cx, JS::HandleObject global) {
         JS_FN("removeTileAt", js_cocos2dx_TMXLayer_removeTileAt, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("initWithTilesetInfo", js_cocos2dx_TMXLayer_initWithTilesetInfo, 3, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setupTiles", js_cocos2dx_TMXLayer_setupTiles, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("getTileCoords", js_cocos2dx_TMXLayer_getTileCoords, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getIsBigMap", js_cocos2dx_TMXLayer_getIsBigMap, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setTileGID", js_cocos2dx_TMXLayer_setTileGID, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("showTilesBeyond", js_cocos2dx_TMXLayer_showTilesBeyond, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),

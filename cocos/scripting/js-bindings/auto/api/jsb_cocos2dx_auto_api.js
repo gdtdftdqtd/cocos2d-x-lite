@@ -21511,6 +21511,18 @@ setupTiles : function (
 },
 
 /**
+ * @method getTileCoords
+ * @param {vec2_object} arg0
+ * @return {vec2_object}
+ */
+getTileCoords : function (
+vec2 
+)
+{
+    return cc.Vec2;
+},
+
+/**
  * @method getIsBigMap
  * @return {bool}
  */

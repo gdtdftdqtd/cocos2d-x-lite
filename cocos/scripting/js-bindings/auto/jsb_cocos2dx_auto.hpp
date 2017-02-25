@@ -3822,6 +3822,7 @@ bool js_cocos2dx_TMXLayer_setLayerName(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_TMXLayer_removeTileAt(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_TMXLayer_initWithTilesetInfo(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_TMXLayer_setupTiles(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_TMXLayer_getTileCoords(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_TMXLayer_getIsBigMap(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_TMXLayer_setTileGID(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_TMXLayer_showTilesBeyond(JSContext *cx, uint32_t argc, jsval *vp);
