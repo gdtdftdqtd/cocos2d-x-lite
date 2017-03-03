@@ -3964,6 +3964,18 @@ str
 },
 
 /**
+ * @method listFiles
+ * @param {String} arg0
+ * @return {Array}
+ */
+listFiles : function (
+str 
+)
+{
+    return new Array();
+},
+
+/**
  * @method getValueMapFromFile
  * @param {String} arg0
  * @return {map_object}
@@ -4219,6 +4231,18 @@ str
 )
 {
     return false;
+},
+
+/**
+ * @method listFilesRecursively
+ * @param {String} arg0
+ * @param {Array} arg1
+ */
+listFilesRecursively : function (
+str, 
+array 
+)
+{
 },
 
 /**
@@ -12066,12 +12090,14 @@ getOutlineSize : function (
 /**
  * @method setBMFontFilePath
  * @param {String} arg0
- * @param {vec2_object} arg1
- * @param {float} arg2
+ * @param {cc.SpriteFrame} arg1
+ * @param {vec2_object} arg2
+ * @param {float} arg3
  * @return {bool}
  */
 setBMFontFilePath : function (
 str, 
+spriteframe, 
 vec2, 
 float 
 )
@@ -12537,14 +12563,16 @@ float
  * @method createWithBMFont
  * @param {String} arg0
  * @param {String} arg1
- * @param {cc.TextHAlignment} arg2
- * @param {int} arg3
- * @param {vec2_object} arg4
+ * @param {cc.SpriteFrame} arg2
+ * @param {cc.TextHAlignment} arg3
+ * @param {int} arg4
+ * @param {vec2_object} arg5
  * @return {cc.Label}
  */
 createWithBMFont : function (
 str, 
 str, 
+spriteframe, 
 texthalignment, 
 int, 
 vec2 

@@ -86,9 +86,7 @@ jsval spbonedata_to_jsval(JSContext* cx, const spBoneData* v)
         JS_DefineProperty(cx, tmp, "y", v->y, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
         JS_DefineProperty(cx, tmp, "rotation", v->rotation, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
         JS_DefineProperty(cx, tmp, "scaleX", v->scaleX, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
-        JS_DefineProperty(cx, tmp, "scaleY", v->scaleY, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
-        JS_DefineProperty(cx, tmp, "inheritScale", v->inheritScale, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
-        JS_DefineProperty(cx, tmp, "inheritRotation", v->inheritRotation, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+        JS_DefineProperty(cx, tmp, "scaleY", v->scaleY, JSPROP_ENUMERATE | JSPROP_PERMANENT);
 
     if (ok)
     {
@@ -124,8 +122,6 @@ jsval spbone_to_jsval(JSContext* cx, spBone& v)
         JS_DefineProperty(cx, tmp, "m10", v.c, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
         JS_DefineProperty(cx, tmp, "m11", v.d, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
         JS_DefineProperty(cx, tmp, "worldY", v.worldY, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-        JS_DefineProperty(cx, tmp, "worldSignX", v.worldSignX, JSPROP_ENUMERATE | JSPROP_PERMANENT);
-        JS_DefineProperty(cx, tmp, "worldSignY", v.worldSignY, JSPROP_ENUMERATE | JSPROP_PERMANENT);
     /*
         JS_DefineProperty(cx, tmp, "worldRotation", v.worldRotation, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
         JS_DefineProperty(cx, tmp, "worldScaleX", v.worldScaleX, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
@@ -169,6 +165,63 @@ jsval spattachment_to_jsval(JSContext* cx, spAttachment& v)
     JS::RootedValue jsname(cx, c_string_to_jsval(cx, v.name));
     bool ok = JS_DefineProperty(cx, tmp, "name", jsname, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
         JS_DefineProperty(cx, tmp, "type", v.type, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+
+    if (ok)
+    {
+        return OBJECT_TO_JSVAL(tmp);
+    }
+
+    return JSVAL_NULL;
+}
+
+jsval spregionattachment_to_jsval(JSContext* cx, spRegionAttachment& v)
+{
+    JS::RootedObject tmp(cx, JS_NewObject(cx, nullptr, JS::NullPtr(), JS::NullPtr()));
+    if (!tmp) return JSVAL_NULL;
+
+    JS::RootedValue jsname(cx, c_string_to_jsval(cx, v.super.name));
+    bool ok = JS_DefineProperty(cx, tmp, "name", jsname, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "type", v.super.type, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "x", v.x, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "y", v.y, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "scaleX", v.scaleX, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "scaleY", v.scaleY, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "rotation", v.rotation, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "width", v.width, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "height", v.height, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "r", v.r, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "g", v.g, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "b", v.b, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "a", v.a, JSPROP_ENUMERATE | JSPROP_PERMANENT);
+
+    if (ok)
+    {
+        return OBJECT_TO_JSVAL(tmp);
+    }
+
+    return JSVAL_NULL;
+}
+
+jsval spmeshattachment_to_jsval(JSContext* cx, spMeshAttachment& v)
+{
+    JS::RootedObject tmp(cx, JS_NewObject(cx, nullptr, JS::NullPtr(), JS::NullPtr()));
+    if (!tmp) return JSVAL_NULL;
+
+    JS::RootedValue jsname(cx, c_string_to_jsval(cx, v.super.super.name));
+    bool ok = JS_DefineProperty(cx, tmp, "name", jsname, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "type", v.super.super.type, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "regionOffsetX", v.regionOffsetX, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "regionOffsetY", v.regionOffsetY, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "regionWidth", v.regionWidth, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "regionHeight", v.regionHeight, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "regionOriginalWidth", v.regionOriginalWidth, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "regionOriginalHeight", v.regionOriginalHeight, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "width", v.width, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "height", v.height, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "r", v.r, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "g", v.g, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "b", v.b, JSPROP_ENUMERATE | JSPROP_PERMANENT) &&
+        JS_DefineProperty(cx, tmp, "a", v.a, JSPROP_ENUMERATE | JSPROP_PERMANENT);
 
     if (ok)
     {
@@ -303,7 +356,7 @@ bool jsb_spine_TrackEntry_get_next(JSContext *cx, uint32_t argc, jsval *vp)
     }
 }
 
-bool jsb_spine_TrackEntry_get_previous(JSContext *cx, uint32_t argc, jsval *vp)
+bool jsb_spine_TrackEntry_get_mixingFrom(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject jsthis(cx, args.thisv().toObjectOrNull());
@@ -311,15 +364,15 @@ bool jsb_spine_TrackEntry_get_previous(JSContext *cx, uint32_t argc, jsval *vp)
     spTrackEntry* cobj = (spTrackEntry *)(proxy ? proxy->ptr : NULL);
     if (cobj) {
         JS::RootedValue jsret(cx, JS::NullValue());
-        if (cobj->previous)
+        if (cobj->mixingFrom)
         {
-            jsret = sptrackentry_to_jsval(cx, *cobj->previous);
+            jsret = sptrackentry_to_jsval(cx, *cobj->mixingFrom);
         }
         args.rval().set(jsret);
         return true;
     }
     else {
-        CCLOGERROR("jsb_spine_TrackEntry_get_previous : Invalid Native Object");
+        CCLOGERROR("jsb_spine_TrackEntry_get_mixingFrom : Invalid Native Object");
         return false;
     }
 }
@@ -352,7 +405,7 @@ void js_register_spine_TrackEntry(JSContext *cx, JS::HandleObject global)
     
     static JSPropertySpec properties[] =
     {
-        JS_PSG("previous", jsb_spine_TrackEntry_get_previous, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_PSG("mixingFrom", jsb_spine_TrackEntry_get_mixingFrom, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_PSG("next", jsb_spine_TrackEntry_get_next, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_PS_END
     };
@@ -380,19 +433,31 @@ jsval sptrackentry_to_jsval(JSContext* cx, spTrackEntry& v)
     {
         JS::RootedValue val(cx, DOUBLE_TO_JSVAL(v.delay));
         bool ok = JS_SetProperty(cx, entry, "delay", val);
-        val.set(DOUBLE_TO_JSVAL(v.time));
-        ok &= JS_SetProperty(cx, entry, "time", val);
-        val.set(DOUBLE_TO_JSVAL(v.lastTime));
-        ok &= JS_SetProperty(cx, entry, "lastTime", val);
-        val.set(DOUBLE_TO_JSVAL(v.endTime));
-        ok &= JS_SetProperty(cx, entry, "endTime", val);
+        val.set(DOUBLE_TO_JSVAL(v.trackIndex));
+        ok &= JS_SetProperty(cx, entry, "trackIndex", val);
+        val.set(DOUBLE_TO_JSVAL(v.trackTime));
+        ok &= JS_SetProperty(cx, entry, "trackTime", val);
+        val.set(DOUBLE_TO_JSVAL(v.trackLast));
+        ok &= JS_SetProperty(cx, entry, "trackLast", val);
+        val.set(DOUBLE_TO_JSVAL(v.trackEnd));
+        ok &= JS_SetProperty(cx, entry, "trackEnd", val);
+        val.set(DOUBLE_TO_JSVAL(v.nextTrackLast));
+        ok &= JS_SetProperty(cx, entry, "nextTrackLast", val);
         val.set(DOUBLE_TO_JSVAL(v.timeScale));
         ok &= JS_SetProperty(cx, entry, "timeScale", val);
         val.set(DOUBLE_TO_JSVAL(v.mixTime));
         ok &= JS_SetProperty(cx, entry, "mixTime", val);
         val.set(DOUBLE_TO_JSVAL(v.mixDuration));
         ok &= JS_SetProperty(cx, entry, "mixDuration", val);
-        val.set(spanimation_to_jsval(cx, *v.animation));
+        val.set(DOUBLE_TO_JSVAL(v.animationStart));
+        ok &= JS_SetProperty(cx, entry, "animationStart", val);
+        val.set(DOUBLE_TO_JSVAL(v.animationEnd));
+        ok &= JS_SetProperty(cx, entry, "animationEnd", val);
+        val.set(DOUBLE_TO_JSVAL(v.animationLast));
+        ok &= JS_SetProperty(cx, entry, "animationLast", val);
+        val.set(DOUBLE_TO_JSVAL(v.nextAnimationLast));
+        ok &= JS_SetProperty(cx, entry, "nextAnimationLast", val);
+        val.set(v.animation == nullptr ? JSVAL_NULL : spanimation_to_jsval(cx, *v.animation));
         ok &= JS_SetProperty(cx, entry, "animation", val);
         
         if (ok)
@@ -523,7 +588,16 @@ bool jsb_cocos2dx_spine_getAttachment(JSContext *cx, uint32_t argc, jsval *vp)
         do {
             if (ret)
             {
-                jsret = spattachment_to_jsval(cx, *ret);
+                if (ret->type == spAttachmentType::SP_ATTACHMENT_REGION) {
+                    jsret = spregionattachment_to_jsval(cx, *((spRegionAttachment*)ret));
+                }
+                else if (ret->type == spAttachmentType::SP_ATTACHMENT_MESH ||
+                         ret->type == spAttachmentType::SP_ATTACHMENT_LINKED_MESH) {
+                    jsret = spmeshattachment_to_jsval(cx, *((spMeshAttachment*)ret));
+                }
+                else {
+                    jsret = spattachment_to_jsval(cx, *ret);
+                }
             }
         } while(0);
 

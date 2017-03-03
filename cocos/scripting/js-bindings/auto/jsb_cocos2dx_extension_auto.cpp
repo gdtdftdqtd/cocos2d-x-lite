@@ -496,13 +496,13 @@ bool js_cocos2dx_extension_AssetsManagerEx_setVerifyCallback(JSContext *cx, uint
     cocos2d::extension::AssetsManagerEx* cobj = (cocos2d::extension::AssetsManagerEx *)(proxy ? proxy->ptr : NULL);
     JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_extension_AssetsManagerEx_setVerifyCallback : Invalid Native Object");
     if (argc == 1) {
-        std::function<bool (const std::basic_string<char> &, cocos2d::extension::Manifest::Asset)> arg0;
+        std::function<bool (const std::basic_string<char> &, cocos2d::extension::ManifestAsset)> arg0;
         do {
 		    if(JS_TypeOfValue(cx, args.get(0)) == JSTYPE_FUNCTION)
 		    {
 		        JS::RootedObject jstarget(cx, args.thisv().toObjectOrNull());
 		        std::shared_ptr<JSFunctionWrapper> func(new JSFunctionWrapper(cx, jstarget, args.get(0), args.thisv()));
-		        auto lambda = [=](const std::basic_string<char> & larg0, cocos2d::extension::Manifest::Asset larg1) -> bool {
+		        auto lambda = [=](const std::basic_string<char> & larg0, cocos2d::extension::ManifestAsset larg1) -> bool {
 		            JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
 		            jsval largv[2];
 		            largv[0] = std_string_to_jsval(cx, larg0);
@@ -512,8 +512,10 @@ bool js_cocos2dx_extension_AssetsManagerEx_setVerifyCallback(JSContext *cx, uint
 		            if (!succeed && JS_IsExceptionPending(cx)) {
 		                JS_ReportPendingException(cx);
 		            }
+		            bool ok = true;
 		            bool ret;
 		            ret = JS::ToBoolean(rval);
+		            JSB_PRECONDITION2(ok, cx, false, "lambda function : Error processing return value with type bool");
 		            return ret;
 		        };
 		        arg0 = lambda;
@@ -576,13 +578,13 @@ bool js_cocos2dx_extension_AssetsManagerEx_setVersionCompareHandle(JSContext *cx
     cocos2d::extension::AssetsManagerEx* cobj = (cocos2d::extension::AssetsManagerEx *)(proxy ? proxy->ptr : NULL);
     JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_extension_AssetsManagerEx_setVersionCompareHandle : Invalid Native Object");
     if (argc == 1) {
-        std::function<bool (const std::basic_string<char> &, const std::basic_string<char> &)> arg0;
+        std::function<int (const std::basic_string<char> &, const std::basic_string<char> &)> arg0;
         do {
 		    if(JS_TypeOfValue(cx, args.get(0)) == JSTYPE_FUNCTION)
 		    {
 		        JS::RootedObject jstarget(cx, args.thisv().toObjectOrNull());
 		        std::shared_ptr<JSFunctionWrapper> func(new JSFunctionWrapper(cx, jstarget, args.get(0), args.thisv()));
-		        auto lambda = [=](const std::basic_string<char> & larg0, const std::basic_string<char> & larg1) -> bool {
+		        auto lambda = [=](const std::basic_string<char> & larg0, const std::basic_string<char> & larg1) -> int {
 		            JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
 		            jsval largv[2];
 		            largv[0] = std_string_to_jsval(cx, larg0);
@@ -592,8 +594,10 @@ bool js_cocos2dx_extension_AssetsManagerEx_setVersionCompareHandle(JSContext *cx
 		            if (!succeed && JS_IsExceptionPending(cx)) {
 		                JS_ReportPendingException(cx);
 		            }
-		            bool ret;
-		            ret = JS::ToBoolean(rval);
+		            bool ok = true;
+		            int ret;
+		            ok &= jsval_to_int32(cx, rval, (int32_t *)&ret);
+		            JSB_PRECONDITION2(ok, cx, false, "lambda function : Error processing return value with type int");
 		            return ret;
 		        };
 		        arg0 = lambda;
@@ -2242,8 +2246,8 @@ static bool js_cocos2dx_extension_ControlButton_ctor(JSContext *cx, uint32_t arg
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ControlButton *nobj = new (std::nothrow) cocos2d::extension::ControlButton();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ControlButton");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ControlButton");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -3198,8 +3202,8 @@ static bool js_cocos2dx_extension_ControlColourPicker_ctor(JSContext *cx, uint32
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ControlColourPicker *nobj = new (std::nothrow) cocos2d::extension::ControlColourPicker();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ControlColourPicker");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ControlColourPicker");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -3726,8 +3730,8 @@ static bool js_cocos2dx_extension_ControlPotentiometer_ctor(JSContext *cx, uint3
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ControlPotentiometer *nobj = new (std::nothrow) cocos2d::extension::ControlPotentiometer();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ControlPotentiometer");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ControlPotentiometer");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -4523,8 +4527,8 @@ static bool js_cocos2dx_extension_ControlSlider_ctor(JSContext *cx, uint32_t arg
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ControlSlider *nobj = new (std::nothrow) cocos2d::extension::ControlSlider();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ControlSlider");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ControlSlider");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -5113,8 +5117,8 @@ static bool js_cocos2dx_extension_ControlStepper_ctor(JSContext *cx, uint32_t ar
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ControlStepper *nobj = new (std::nothrow) cocos2d::extension::ControlStepper();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ControlStepper");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ControlStepper");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -5610,8 +5614,8 @@ static bool js_cocos2dx_extension_ControlSwitch_ctor(JSContext *cx, uint32_t arg
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ControlSwitch *nobj = new (std::nothrow) cocos2d::extension::ControlSwitch();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ControlSwitch");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ControlSwitch");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -6438,8 +6442,8 @@ static bool js_cocos2dx_extension_ScrollView_ctor(JSContext *cx, uint32_t argc, 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::ScrollView *nobj = new (std::nothrow) cocos2d::extension::ScrollView();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::ScrollView");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::ScrollView");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -6622,8 +6626,8 @@ static bool js_cocos2dx_extension_TableViewCell_ctor(JSContext *cx, uint32_t arg
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::TableViewCell *nobj = new (std::nothrow) cocos2d::extension::TableViewCell();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::TableViewCell");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::TableViewCell");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);
@@ -6974,8 +6978,8 @@ static bool js_cocos2dx_extension_TableView_ctor(JSContext *cx, uint32_t argc, j
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
     cocos2d::extension::TableView *nobj = new (std::nothrow) cocos2d::extension::TableView();
-    auto newproxy = jsb_new_proxy(nobj, obj);
-    jsb_ref_init(cx, &newproxy->obj, nobj, "cocos2d::extension::TableView");
+    js_proxy_t* p = jsb_new_proxy(nobj, obj);
+    jsb_ref_init(cx, &p->obj, nobj, "cocos2d::extension::TableView");
     bool isFound = false;
     if (JS_HasProperty(cx, obj, "_ctor", &isFound) && isFound)
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(obj), "_ctor", args);

@@ -72,7 +72,8 @@ public:
     enum DownloadState {
         UNSTARTED,
         DOWNLOADING,
-        SUCCESSED
+        SUCCESSED,
+        UNMARKED
     };
     
     //! Asset object
@@ -145,7 +146,7 @@ protected:
      * @param [handle]  Customized comparasion handle function
      * @return Greater or not
      */
-    bool versionGreater(const Manifest *b, const std::function<bool(const std::string& versionA, const std::string& versionB)>& handle) const;
+    bool versionGreater(const Manifest *b, const std::function<int(const std::string& versionA, const std::string& versionB)>& handle) const;
     
     /** @brief Generate difference between this Manifest and another.
      * @param b   The other manifest
@@ -156,10 +157,6 @@ protected:
      * @param units   The download units reference to be modified by the generation result
      */
     void genResumeAssetsList(DownloadUnits *units) const;
-    
-    /** @brief Cleanup assets that is in downloading state for resuming
-     */
-    void cleanupDownloadingAssets() const;
     
     /** @brief Prepend all search paths to the FileUtils.
      */
@@ -199,6 +196,8 @@ protected:
      * @param state The current download state of the asset
      */
     void setAssetDownloadState(const std::string &key, const DownloadState &state);
+    
+    void setManifestRoot(const std::string &root) {_manifestRoot = root;};
     
 private:
     

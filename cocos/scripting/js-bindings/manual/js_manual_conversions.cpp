@@ -101,76 +101,85 @@ const char* JSStringWrapper::get()
 
 // JSFunctionWrapper
 JSFunctionWrapper::JSFunctionWrapper(JSContext* cx, JS::HandleObject jsthis, JS::HandleValue fval)
-: _cx(cx)
+: _cppOwner(nullptr)
+, _cx(cx)
 {
     _jsthis = jsthis;
     _fval = fval;
-
-    JS::RootedObject root(cx);
-    get_or_create_js_obj("jsb._root", &root);
-    JS::RootedValue valRoot(cx, OBJECT_TO_JSVAL(root));
-    _owner = valRoot;
-
-    if (!valRoot.isNullOrUndefined())
-    {
-        JS::RootedValue thisVal(cx, OBJECT_TO_JSVAL(_jsthis));
-        if (!thisVal.isNullOrUndefined())
-        {
-            js_add_object_reference(valRoot, thisVal);
-        }
-        JS::RootedValue funcVal(cx, _fval);
-        if (!funcVal.isNullOrUndefined())
-        {
-            js_add_object_reference(valRoot, funcVal);
-        }
-    }
 }
 JSFunctionWrapper::JSFunctionWrapper(JSContext* cx, JS::HandleObject jsthis, JS::HandleValue fval, JS::HandleValue owner)
-: _cx(cx)
+: _cppOwner(nullptr)
+, _cx(cx)
 {
     _jsthis = jsthis;
     _fval = fval;
-    _owner = owner;
-    JS::RootedValue ownerVal(cx, owner);
-
-    JS::RootedValue thisVal(cx, OBJECT_TO_JSVAL(jsthis));
-    if (!thisVal.isNullOrUndefined())
-    {
-        js_add_object_reference(ownerVal, thisVal);
-    }
-    JS::RootedValue funcVal(cx, _fval);
-    if (!funcVal.isNullOrUndefined())
-    {
-        js_add_object_reference(ownerVal, funcVal);
-    }
+    setOwner(cx, JS::RootedValue(cx, owner));
 }
 
 JSFunctionWrapper::~JSFunctionWrapper()
 {
+    ScriptingCore* sc = ScriptingCore::getInstance();
+    JSContext* cx = sc->getGlobalContext();
+    JSAutoCompartment(cx, sc->getGlobalObject());
     JS::RootedValue ownerVal(_cx, _owner);
     
-    if (!ScriptingCore::getInstance()->getFinalizing() && !ownerVal.isNullOrUndefined())
+    if (sc->getFinalizing() || ownerVal.isNullOrUndefined())
     {
-        JS::RootedValue thisVal(_cx, OBJECT_TO_JSVAL(_jsthis));
+        return;
+    }
+    if (_cppOwner != nullptr)
+    {
+        JS::RootedObject ownerObj(cx, ownerVal.toObjectOrNull());
+        js_proxy *t = jsb_get_js_proxy(ownerObj);
+        // JS object already released, no need to do the following release anymore, gc will take care of everything
+        if (t == nullptr || _cppOwner != t->ptr)
+        {
+            return;
+        }
+    }
+
+    JS::RootedValue thisVal(_cx, OBJECT_TO_JSVAL(_jsthis));
+    if (!thisVal.isNullOrUndefined())
+    {
+        js_remove_object_reference(ownerVal, thisVal);
+    }
+    JS::RootedValue funcVal(_cx, _fval);
+    if (!funcVal.isNullOrUndefined())
+    {
+        js_remove_object_reference(ownerVal, funcVal);
+    }
+}
+
+void JSFunctionWrapper::setOwner(JSContext* cx, JS::HandleValue owner)
+{
+    JSAutoCompartment(cx, ScriptingCore::getInstance()->getGlobalObject());
+    JS::RootedValue ownerVal(cx, owner);
+    if (!owner.isNullOrUndefined())
+    {
+        _owner = owner;
+        
+        JS::RootedObject ownerObj(cx, owner.toObjectOrNull());
+        js_proxy *t = jsb_get_js_proxy(ownerObj);
+        if (t) {
+            _cppOwner = t->ptr;
+        }
+        
+        JS::RootedValue thisVal(cx, OBJECT_TO_JSVAL(_jsthis));
         if (!thisVal.isNullOrUndefined())
         {
-            js_remove_object_reference(ownerVal, thisVal);
+            js_add_object_reference(ownerVal, thisVal);
         }
-        JS::RootedValue funcVal(_cx, _fval);
+        JS::RootedValue funcVal(cx, _fval);
         if (!funcVal.isNullOrUndefined())
         {
-            js_remove_object_reference(ownerVal, funcVal);
+            js_add_object_reference(ownerVal, funcVal);
         }
     }
 }
 
 bool JSFunctionWrapper::invoke(unsigned int argc, jsval *argv, JS::MutableHandleValue rval)
 {
-    JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
-
-    JS::RootedObject thisObj(_cx, _jsthis);
-    JS::RootedValue fval(_cx, _fval);
-    return JS_CallFunctionValue(_cx, thisObj, fval, JS::HandleValueArray::fromMarkedLocation(argc, argv), rval);
+    return invoke(JS::HandleValueArray::fromMarkedLocation(argc, argv), rval);
 }
 
 bool JSFunctionWrapper::invoke(JS::HandleValueArray args, JS::MutableHandleValue rval)
