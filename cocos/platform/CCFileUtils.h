@@ -317,6 +317,7 @@ public:
     //add by chl
     std::string basename(const std::string& path) const;
     std::string RemoveFileSuffix(const std::string& filePath) const;
+    std::string getReverseSuffixFilename(const std::string& filePath) const;
     std::string fullPathForFilenameByReverseSuffix(const std::string &filename) const;
 
     /**

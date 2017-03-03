@@ -179,6 +179,7 @@ storage/local-storage/LocalStorage-android.cpp \
 ../external/sources/unzip/unzip.cpp \
 ../external/sources/edtaa3func/edtaa3func.cpp \
 ../external/sources/xxhash/xxhash.c \
+../external/sources/md5/md5.cpp \
 ../external/sources/poly2tri/common/shapes.cc \
 ../external/sources/poly2tri/sweep/advancing_front.cc \
 ../external/sources/poly2tri/sweep/cdt.cc \

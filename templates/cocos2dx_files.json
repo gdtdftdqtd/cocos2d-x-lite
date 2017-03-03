@@ -2850,6 +2850,8 @@
         "external/sources/xxhash/xxhash.h", 
         "external/sources/xxtea/xxtea.cpp", 
         "external/sources/xxtea/xxtea.h", 
+        "external/sources/md5/md5.hpp", 
+        "external/sources/md5/md5.cpp", 
         "external/versions.txt", 
         "external/win32/include/OpenalSoft/al.h", 
         "external/win32/include/OpenalSoft/alc.h", 

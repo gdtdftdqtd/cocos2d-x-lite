@@ -42,6 +42,8 @@ THE SOFTWARE.
 #endif
 #include <sys/stat.h>
 
+#include "md5/md5.hpp"
+
 NS_CC_BEGIN
 
 // Implement DictMaker
@@ -639,21 +641,20 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
 
     auto fs = FileUtils::getInstance();
     std::string fullPath;
-    std::string tempSuffix = getFileExtension(filename);
-    std::string suffix = tempSuffix;
-    if (tempSuffix == ".js" || tempSuffix == ".jsc" || tempSuffix == ".json" || tempSuffix == ".png" || tempSuffix == ".jpg") {
-        std::string tempName = RemoveFileSuffix(filename);
-        std::reverse(tempSuffix.begin()+1, tempSuffix.end());
-        fullPath = fullPathForFilenameByReverseSuffix(tempName + tempSuffix);
-        if (!fullPath.empty())
-        {
-            ssize_t size = 0;
-            unsigned char* buff = getFileDataFromZip(fullPath, basename(filename), &size);
-            if (buff && size > 0) {
-                buffer->resize(size);
-                memcpy(buffer->buffer(), buff, size);
-                return Status::OK;
-            }
+    std::string tempFilename = getReverseSuffixFilename(filename);
+    fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+    if (!fullPath.empty())
+    {
+        std::string baseFileName = basename(filename);
+        std::string suffix = getFileExtension(baseFileName);
+        std::string password = "CHL^" + baseFileName.substr(0,3) + suffix + "^CHL";
+        password = password + "_" + md5::getStringMd5(password);
+        ssize_t size = 0;
+        unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
+        if (buff && size > 0) {
+            buffer->resize(size);
+            memcpy(buffer->buffer(), buff, size);
+            return Status::OK;
         }
     }
     fullPath = fs->fullPathForFilename(filename);
@@ -834,19 +835,12 @@ std::string FileUtils::getPathForFilename(const std::string& filename, const std
 std::string FileUtils::fullPathForFilename(const std::string &filename) const
 {
     std::string fullpath;
-    
-    std::string tempSuffix = getFileExtension(filename);
-    std::string suffix = tempSuffix;
-    if (tempSuffix == ".js" || tempSuffix == ".jsc" || tempSuffix == ".json" || tempSuffix == ".png" || tempSuffix == ".jpg") {
-        std::string tempName = RemoveFileSuffix(filename);
-        std::reverse(tempSuffix.begin()+1, tempSuffix.end());
-        fullpath = fullPathForFilenameByReverseSuffix(tempName + tempSuffix);
-        if (!fullpath.empty())
-        {
-            tempName = RemoveFileSuffix(fullpath);
-            fullpath = tempName + suffix;
-            return fullpath;
-        }
+    std::string tempFilename = getReverseSuffixFilename(filename);
+    fullpath = fullPathForFilenameByReverseSuffix(tempFilename);
+    if (!fullpath.empty())
+    {
+        fullpath = getReverseSuffixFilename(fullpath);
+        return fullpath;
     }
     
     if (filename.empty())
@@ -918,6 +912,16 @@ std::string FileUtils::RemoveFileSuffix(const std::string& filePath) const
     }
 }
 
+std::string FileUtils::getReverseSuffixFilename(const std::string& filePath) const
+{
+    std::string tempFilename = filePath;
+    std::string tempSuffix = getFileExtension(tempFilename);
+    std::string tempName = RemoveFileSuffix(tempFilename);
+    std::reverse(tempSuffix.begin()+1, tempSuffix.end());
+    tempFilename = tempName + tempSuffix;
+    return tempFilename;
+}
+
 std::string FileUtils::fullPathForFilenameByReverseSuffix(const std::string &filename) const
 {
     if (filename.empty())
@@ -927,7 +931,9 @@ std::string FileUtils::fullPathForFilenameByReverseSuffix(const std::string &fil
     
     if (isAbsolutePath(filename))
     {
-        return filename;
+        if (isFileExist(filename)) {
+            return filename;
+        }
     }
     
     // Already Cached ?
@@ -1129,14 +1135,12 @@ bool FileUtils::isFileExist(const std::string& filename) const
 {
     if (isAbsolutePath(filename))
     {
-        std::string tempFilename = filename;
-        std::string tempSuffix = getFileExtension(filename);
-        if (tempSuffix == ".js" || tempSuffix == ".jsc" || tempSuffix == ".json" || tempSuffix == ".png" || tempSuffix == ".jpg") {
-            std::string tempName = RemoveFileSuffix(filename);
-            std::reverse(tempSuffix.begin()+1, tempSuffix.end());
-            tempFilename = tempName + tempSuffix;
+        std::string tempFilename = getReverseSuffixFilename(filename);
+        bool isExist = isFileExistInternal(tempFilename);
+        if (isExist) {
+            return isExist;
         }
-        return isFileExistInternal(tempFilename);
+        return isFileExistInternal(filename);
     }
     else
     {

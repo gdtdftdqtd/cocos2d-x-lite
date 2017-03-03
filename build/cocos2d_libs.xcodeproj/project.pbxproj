@@ -1087,6 +1087,10 @@
 		85505F071B60E3BA003F2CD4 /* CCSkeletonNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C50306661B60B583001E6D43 /* CCSkeletonNode.h */; };
 		85505F081B60E3BD003F2CD4 /* CCSkinNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C50306671B60B583001E6D43 /* CCSkinNode.cpp */; };
 		85505F091B60E3C1003F2CD4 /* CCSkinNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C50306681B60B583001E6D43 /* CCSkinNode.h */; };
+		87AA2CB51E69B09A0075C391 /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87AA2CB31E69B09A0075C391 /* md5.cpp */; };
+		87AA2CB61E69B09A0075C391 /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87AA2CB31E69B09A0075C391 /* md5.cpp */; };
+		87AA2CB71E69B09A0075C391 /* md5.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 87AA2CB41E69B09A0075C391 /* md5.hpp */; };
+		87AA2CB81E69B09A0075C391 /* md5.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 87AA2CB41E69B09A0075C391 /* md5.hpp */; };
 		A0534A651B872FFD006B03E5 /* CCDownloader-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = A0534A631B872FFD006B03E5 /* CCDownloader-apple.h */; };
 		A0534A661B872FFD006B03E5 /* CCDownloader-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = A0534A631B872FFD006B03E5 /* CCDownloader-apple.h */; };
 		A0534A671B872FFD006B03E5 /* CCDownloader-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = A0534A641B872FFD006B03E5 /* CCDownloader-apple.mm */; };
@@ -2306,6 +2310,8 @@
 		52B47A2B1A5349A3004E4C60 /* HttpClient-apple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "HttpClient-apple.mm"; sourceTree = "<group>"; };
 		52B47A2C1A5349A3004E4C60 /* HttpCookie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HttpCookie.cpp; sourceTree = "<group>"; };
 		52B47A2D1A5349A3004E4C60 /* HttpCookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpCookie.h; sourceTree = "<group>"; };
+		87AA2CB31E69B09A0075C391 /* md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cpp; sourceTree = "<group>"; };
+		87AA2CB41E69B09A0075C391 /* md5.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = md5.hpp; sourceTree = "<group>"; };
 		A0534A631B872FFD006B03E5 /* CCDownloader-apple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCDownloader-apple.h"; sourceTree = "<group>"; };
 		A0534A641B872FFD006B03E5 /* CCDownloader-apple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "CCDownloader-apple.mm"; sourceTree = "<group>"; };
 		A0534A691B87306E006B03E5 /* CCIDownloaderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIDownloaderImpl.h; sourceTree = "<group>"; };
@@ -3096,6 +3102,7 @@
 		1A57033E180BD0490088DEC7 /* external */ = {
 			isa = PBXGroup;
 			children = (
+				87AA2CB21E69B09A0075C391 /* md5 */,
 				BAEA45511E279D5C00FA219F /* tinydir */,
 				BA68D7951D62F4B600B7A3F9 /* clipper */,
 				BA68D76E1D62F4A500B7A3F9 /* poly2tri */,
@@ -3970,6 +3977,16 @@
 			path = apple;
 			sourceTree = "<group>";
 		};
+		87AA2CB21E69B09A0075C391 /* md5 */ = {
+			isa = PBXGroup;
+			children = (
+				87AA2CB31E69B09A0075C391 /* md5.cpp */,
+				87AA2CB41E69B09A0075C391 /* md5.hpp */,
+			);
+			name = md5;
+			path = ../external/sources/md5;
+			sourceTree = "<group>";
+		};
 		A60A9D5A1C200DD00070800A /* PhysicsSprite */ = {
 			isa = PBXGroup;
 			children = (
@@ -4648,6 +4665,7 @@
 				BAFF7CB21D59E0DA0051B92F /* CCComExtensionData.h in Headers */,
 				15AE188B19AAD33D00C27E9E /* CCControlLoader.h in Headers */,
 				BAFF7DC81D5C1CF80051B92F /* SlotData.h in Headers */,
+				87AA2CB71E69B09A0075C391 /* md5.hpp in Headers */,
 				15AE1BCA19AAE01E00C27E9E /* CCControl.h in Headers */,
 				50ABBDBF1925AB4100A911A9 /* CCTextureCache.h in Headers */,
 				15AE186719AAD31D00C27E9E /* CDXMacOSXSupport.h in Headers */,
@@ -5159,6 +5177,7 @@
 				38B8E2E419E671D2002D7CE7 /* UILayoutComponent.h in Headers */,
 				50ABBD4F1925AB0000A911A9 /* MathUtil.h in Headers */,
 				15AE1C0619AAE01E00C27E9E /* CCTableViewCell.h in Headers */,
+				87AA2CB81E69B09A0075C391 /* md5.hpp in Headers */,
 				50ABBEBE1925AB6F00A911A9 /* ccUtils.h in Headers */,
 				FA6F1B8C1D80F858007DD223 /* Point.h in Headers */,
 				BAFF7CA51D59E0DA0051B92F /* CCComAttribute.h in Headers */,
@@ -5646,6 +5665,7 @@
 				15AE188619AAD33D00C27E9E /* CCBSequenceProperty.cpp in Sources */,
 				15AE1B4F19AADA9900C27E9E /* UILoadingBar.cpp in Sources */,
 				299754F4193EC95400A54AC3 /* ObjectFactory.cpp in Sources */,
+				87AA2CB51E69B09A0075C391 /* md5.cpp in Sources */,
 				15AE1BA119AADFDF00C27E9E /* UILayoutParameter.cpp in Sources */,
 				BAFF7D961D5C1CF80051B92F /* PathConstraint.c in Sources */,
 				50ABC0211926664800A911A9 /* CCGLViewImpl-desktop.cpp in Sources */,
@@ -5825,6 +5845,7 @@
 				A6F0D7A31C2796060029CC44 /* CCStencilStateManager.cpp in Sources */,
 				BA68D7991D62F4B600B7A3F9 /* clipper.cpp in Sources */,
 				BAFF7CE51D59E0DB0051B92F /* CCUtilMath.cpp in Sources */,
+				87AA2CB61E69B09A0075C391 /* md5.cpp in Sources */,
 				1A57008E180BC5A10088DEC7 /* CCActionTiledGrid.cpp in Sources */,
 				FA6F1B9A1D80F858007DD223 /* DragonBonesData.cpp in Sources */,
 				1A570092180BC5A10088DEC7 /* CCActionTween.cpp in Sources */,
