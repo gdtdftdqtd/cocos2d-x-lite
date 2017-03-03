@@ -263,7 +263,9 @@ public:
      *  @warning Recall: you are responsible for calling free() on any Non-nullptr pointer returned.
      */
     virtual unsigned char* getFileDataFromZip(const std::string& zipFilePath, const std::string& filename, ssize_t *size);
-
+    
+    //add by chl
+    unsigned char* getFileDataFromZipByPassword(const std::string& zipFilePath, const std::string& filename, ssize_t *size, const std::string& password);
 
     /** Returns the fullpath for a given filename.
 
@@ -311,6 +313,11 @@ public:
      @since v2.1
      */
     virtual std::string fullPathForFilename(const std::string &filename) const;
+    
+    //add by chl
+    std::string basename(const std::string& path) const;
+    std::string RemoveFileSuffix(const std::string& filePath) const;
+    std::string fullPathForFilenameByReverseSuffix(const std::string &filename) const;
 
     /**
      * Loads the filenameLookup dictionary from the contents of a filename.

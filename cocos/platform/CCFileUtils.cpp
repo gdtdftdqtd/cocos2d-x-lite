@@ -636,8 +636,25 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
         return Status::NotExists;
 
     auto fs = FileUtils::getInstance();
-
-    std::string fullPath = fs->fullPathForFilename(filename);
+    std::string fullPath;
+    std::string tempSuffix = getFileExtension(filename);
+    std::string suffix = tempSuffix;
+    if (tempSuffix == ".js" || tempSuffix == ".jsc" || tempSuffix == ".json" || tempSuffix == ".png" || tempSuffix == ".jpg") {
+        std::string tempName = RemoveFileSuffix(filename);
+        std::reverse(tempSuffix.begin()+1, tempSuffix.end());
+        fullPath = fullPathForFilenameByReverseSuffix(tempName + tempSuffix);
+        if (!fullPath.empty())
+        {
+            ssize_t size = 0;
+            unsigned char* buff = getFileDataFromZip(fullPath, basename(filename), &size);
+            if (buff && size > 0) {
+                buffer->resize(size);
+                memcpy(buffer->buffer(), buff, size);
+                return Status::OK;
+            }
+        }
+    }
+    fullPath = fs->fullPathForFilename(filename);
     if (fullPath.empty())
         return Status::NotExists;
 
@@ -728,6 +745,51 @@ unsigned char* FileUtils::getFileDataFromZip(const std::string& zipFilePath, con
     return buffer;
 }
 
+unsigned char* FileUtils::getFileDataFromZipByPassword(const std::string& zipFilePath, const std::string& filename, ssize_t *size, const std::string& password)
+{
+    unsigned char * buffer = nullptr;
+    unzFile file = nullptr;
+    *size = 0;
+    
+    do
+    {
+        CC_BREAK_IF(zipFilePath.empty());
+        
+        file = unzOpen(FileUtils::getInstance()->getSuitableFOpen(zipFilePath).c_str());
+        CC_BREAK_IF(!file);
+        
+        // FIXME: Other platforms should use upstream minizip like mingw-w64
+#ifdef MINIZIP_FROM_SYSTEM
+        int ret = unzLocateFile(file, filename.c_str(), NULL);
+#else
+        int ret = unzLocateFile(file, filename.c_str(), 1);
+#endif
+        CC_BREAK_IF(UNZ_OK != ret);
+        
+        char filePathA[260];
+        unz_file_info fileInfo;
+        ret = unzGetCurrentFileInfo(file, &fileInfo, filePathA, sizeof(filePathA), nullptr, 0, nullptr, 0);
+        CC_BREAK_IF(UNZ_OK != ret);
+        
+        ret = unzOpenCurrentFilePassword(file, password.c_str());
+        CC_BREAK_IF(UNZ_OK != ret);
+        
+        buffer = (unsigned char*)malloc(fileInfo.uncompressed_size);
+        int CC_UNUSED readedSize = unzReadCurrentFile(file, buffer, static_cast<unsigned>(fileInfo.uncompressed_size));
+        CCASSERT(readedSize == 0 || readedSize == (int)fileInfo.uncompressed_size, "the file size is wrong");
+        
+        *size = fileInfo.uncompressed_size;
+        unzCloseCurrentFile(file);
+    } while (0);
+    
+    if (file)
+    {
+        unzClose(file);
+    }
+    
+    return buffer;
+}
+
 std::string FileUtils::getNewFilename(const std::string &filename) const
 {
     std::string newFileName;
@@ -769,6 +831,22 @@ std::string FileUtils::getPathForFilename(const std::string& filename, const std
 
 std::string FileUtils::fullPathForFilename(const std::string &filename) const
 {
+    std::string fullpath;
+    
+    std::string tempSuffix = getFileExtension(filename);
+    std::string suffix = tempSuffix;
+    if (tempSuffix == ".js" || tempSuffix == ".jsc" || tempSuffix == ".json" || tempSuffix == ".png" || tempSuffix == ".jpg") {
+        std::string tempName = RemoveFileSuffix(filename);
+        std::reverse(tempSuffix.begin()+1, tempSuffix.end());
+        fullpath = fullPathForFilenameByReverseSuffix(tempName + tempSuffix);
+        if (!fullpath.empty())
+        {
+            tempName = RemoveFileSuffix(fullpath);
+            fullpath = tempName + suffix;
+            return fullpath;
+        }
+    }
+    
     if (filename.empty())
     {
         return "";
@@ -788,8 +866,6 @@ std::string FileUtils::fullPathForFilename(const std::string &filename) const
 
     // Get the new file name.
     const std::string newFilename( getNewFilename(filename) );
-
-    std::string fullpath;
 
     for (const auto& searchIt : _searchPathArray)
     {
@@ -811,6 +887,79 @@ std::string FileUtils::fullPathForFilename(const std::string &filename) const
         CCLOG("cocos2d: fullPathForFilename: No file found at %s. Possible missing file.", filename.c_str());
     }
 
+    // The file wasn't found, return empty string.
+    return "";
+}
+
+std::string FileUtils::basename(const std::string& path) const
+{
+    size_t found = path.find_last_of("/\\");
+    
+    if (std::string::npos != found)
+    {
+        return path.substr(found+1, path.length());
+    }
+    else
+    {
+        return path;
+    }
+}
+
+std::string FileUtils::RemoveFileSuffix(const std::string& filePath) const
+{
+    size_t pos = filePath.rfind('.');
+    if (0 < pos) {
+        return filePath.substr(0, pos);
+    }
+    else {
+        return filePath;
+    }
+}
+
+std::string FileUtils::fullPathForFilenameByReverseSuffix(const std::string &filename) const
+{
+    if (filename.empty())
+    {
+        return "";
+    }
+    
+    if (isAbsolutePath(filename))
+    {
+        return filename;
+    }
+    
+    // Already Cached ?
+    auto cacheIter = _fullPathCache.find(filename);
+    if(cacheIter != _fullPathCache.end())
+    {
+        return cacheIter->second;
+    }
+    
+    // Get the new file name.
+    const std::string newFilename( getNewFilename(filename) );
+    
+    std::string fullpath;
+    
+    for (const auto& searchIt : _searchPathArray)
+    {
+        for (const auto& resolutionIt : _searchResolutionsOrderArray)
+        {
+            fullpath = this->getPathForFilename(newFilename, resolutionIt, searchIt);
+            
+            if (!fullpath.empty())
+            {
+                // Using the filename passed in as key.
+                _fullPathCache.insert(std::make_pair(filename, fullpath));
+                return fullpath;
+            }
+            
+        }
+    }
+    
+    if(isPopupNotify()){
+        CCLOG("cocos2d: fullPathForFilename: No file found at %s. Possible missing file.", filename.c_str());
+    }
+    
     // The file wasn't found, return empty string.
     return "";
 }
@@ -978,7 +1127,14 @@ bool FileUtils::isFileExist(const std::string& filename) const
 {
     if (isAbsolutePath(filename))
     {
-        return isFileExistInternal(filename);
+        std::string tempFilename = filename;
+        std::string tempSuffix = getFileExtension(filename);
+        if (tempSuffix == ".js" || tempSuffix == ".jsc" || tempSuffix == ".json" || tempSuffix == ".png" || tempSuffix == ".jpg") {
+            std::string tempName = RemoveFileSuffix(filename);
+            std::reverse(tempSuffix.begin()+1, tempSuffix.end());
+            tempFilename = tempName + tempSuffix;
+        }
+        return isFileExistInternal(tempFilename);
     }
     else
     {
