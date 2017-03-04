@@ -3844,15 +3844,13 @@ vec4
 cc.FileUtils = {
 
 /**
- * @method fullPathForFilename
- * @param {String} arg0
- * @return {String}
+ * @method setPopupNotify
+ * @param {bool} arg0
  */
-fullPathForFilename : function (
-str 
+setPopupNotify : function (
+bool 
 )
 {
-    return ;
 },
 
 /**
@@ -3868,6 +3866,30 @@ str
 },
 
 /**
+ * @method basename
+ * @param {String} arg0
+ * @return {String}
+ */
+basename : function (
+str 
+)
+{
+    return ;
+},
+
+/**
+ * @method getFileSize
+ * @param {String} arg0
+ * @return {long}
+ */
+getFileSize : function (
+str 
+)
+{
+    return 0;
+},
+
+/**
  * @method removeFile
  * @param {String} arg0
  * @return {bool}
@@ -3877,6 +3899,20 @@ str
 )
 {
     return false;
+},
+
+/**
+ * @method getReverseSuffixContents
+ * @param {String} arg0
+ * @param {cc.ResizableBuffer} arg1
+ * @return {cc.FileUtils::Status}
+ */
+getReverseSuffixContents : function (
+str, 
+resizablebuffer 
+)
+{
+    return 0;
 },
 
 /**
@@ -3905,6 +3941,18 @@ str
 )
 {
     return false;
+},
+
+/**
+ * @method addSearchPath
+ * @param {String} arg0
+ * @param {bool} arg1
+ */
+addSearchPath : function (
+str, 
+bool 
+)
+{
 },
 
 /**
@@ -3940,6 +3988,18 @@ str
 },
 
 /**
+ * @method removeDirectory
+ * @param {String} arg0
+ * @return {bool}
+ */
+removeDirectory : function (
+str 
+)
+{
+    return false;
+},
+
+/**
  * @method getSearchPaths
  * @return {Array}
  */
@@ -3947,6 +4007,18 @@ getSearchPaths : function (
 )
 {
     return new Array();
+},
+
+/**
+ * @method basedir
+ * @param {String} arg0
+ * @return {String}
+ */
+basedir : function (
+str 
+)
+{
+    return ;
 },
 
 /**
@@ -3964,6 +4036,18 @@ str
 },
 
 /**
+ * @method getReverseSuffixFilePassword
+ * @param {String} arg0
+ * @return {String}
+ */
+getReverseSuffixFilePassword : function (
+str 
+)
+{
+    return ;
+},
+
+/**
  * @method listFiles
  * @param {String} arg0
  * @return {Array}
@@ -3976,27 +4060,29 @@ str
 },
 
 /**
- * @method getValueMapFromFile
- * @param {String} arg0
- * @return {map_object}
+ * @method writeValueVectorToFile
+ * @param {Array} arg0
+ * @param {String} arg1
+ * @return {bool}
  */
-getValueMapFromFile : function (
+writeValueVectorToFile : function (
+array, 
 str 
 )
 {
-    return map_object;
+    return false;
 },
 
 /**
- * @method getFileSize
+ * @method getReverseSuffixFilename
  * @param {String} arg0
- * @return {long}
+ * @return {String}
  */
-getFileSize : function (
+getReverseSuffixFilename : function (
 str 
 )
 {
-    return 0;
+    return ;
 },
 
 /**
@@ -4014,15 +4100,15 @@ int
 },
 
 /**
- * @method removeDirectory
+ * @method getValueMapFromFile
  * @param {String} arg0
- * @return {bool}
+ * @return {map_object}
  */
-removeDirectory : function (
+getValueMapFromFile : function (
 str 
 )
 {
-    return false;
+    return map_object;
 },
 
 /**
@@ -4033,6 +4119,16 @@ setSearchPaths : function (
 array 
 )
 {
+},
+
+/**
+ * @method getWritableUpdatePath
+ * @return {String}
+ */
+getWritableUpdatePath : function (
+)
+{
+    return ;
 },
 
 /**
@@ -4060,41 +4156,39 @@ array
 },
 
 /**
- * @method addSearchResolutionsOrder
+ * @method fullPathForFilename
  * @param {String} arg0
- * @param {bool} arg1
+ * @return {String}
  */
-addSearchResolutionsOrder : function (
-str, 
-bool 
-)
-{
-},
-
-/**
- * @method addSearchPath
- * @param {String} arg0
- * @param {bool} arg1
- */
-addSearchPath : function (
-str, 
-bool 
-)
-{
-},
-
-/**
- * @method writeValueVectorToFile
- * @param {Array} arg0
- * @param {String} arg1
- * @return {bool}
- */
-writeValueVectorToFile : function (
-array, 
+fullPathForFilename : function (
 str 
 )
 {
-    return false;
+    return ;
+},
+
+/**
+ * @method RemoveFileSuffix
+ * @param {String} arg0
+ * @return {String}
+ */
+RemoveFileSuffix : function (
+str 
+)
+{
+    return ;
+},
+
+/**
+ * @method fullPathForFilenameByReverseSuffix
+ * @param {String} arg0
+ * @return {String}
+ */
+fullPathForFilenameByReverseSuffix : function (
+str 
+)
+{
+    return ;
 },
 
 /**
@@ -4180,10 +4274,12 @@ str
 },
 
 /**
- * @method setPopupNotify
- * @param {bool} arg0
+ * @method addSearchResolutionsOrder
+ * @param {String} arg0
+ * @param {bool} arg1
  */
-setPopupNotify : function (
+addSearchResolutionsOrder : function (
+str, 
 bool 
 )
 {
@@ -4212,13 +4308,13 @@ str
 },
 
 /**
- * @method getSearchResolutionsOrder
- * @return {Array}
+ * @method getWritablePath
+ * @return {String}
  */
-getSearchResolutionsOrder : function (
+getWritablePath : function (
 )
 {
-    return new Array();
+    return ;
 },
 
 /**
@@ -4246,13 +4342,13 @@ array
 },
 
 /**
- * @method getWritablePath
- * @return {String}
+ * @method getSearchResolutionsOrder
+ * @return {Array}
  */
-getWritablePath : function (
+getSearchResolutionsOrder : function (
 )
 {
-    return ;
+    return new Array();
 },
 
 /**
