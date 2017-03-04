@@ -315,10 +315,14 @@ public:
     virtual std::string fullPathForFilename(const std::string &filename) const;
     
     //add by chl
-    std::string basename(const std::string& path) const;
-    std::string RemoveFileSuffix(const std::string& filePath) const;
-    std::string getReverseSuffixFilename(const std::string& filePath) const;
-    std::string fullPathForFilenameByReverseSuffix(const std::string &filename) const;
+    virtual std::string getWritableUpdatePath() const;
+    virtual std::string basedir(const std::string& path) const;
+    virtual std::string basename(const std::string& path) const;
+    virtual std::string RemoveFileSuffix(const std::string& filePath) const;
+    virtual std::string getReverseSuffixFilename(const std::string& filePath) const;
+    virtual std::string fullPathForFilenameByReverseSuffix(const std::string &filename) const;
+    virtual std::string getReverseSuffixFilePassword(const std::string& filePath) const;
+    virtual Status getReverseSuffixContents(const std::string& filename, ResizableBuffer* buffer);
 
     /**
      * Loads the filenameLookup dictionary from the contents of a filename.

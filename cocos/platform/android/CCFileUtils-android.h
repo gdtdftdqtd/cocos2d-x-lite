@@ -70,10 +70,16 @@ public:
 
     virtual std::string getWritablePath() const override;
     virtual bool isAbsolutePath(const std::string& strPath) const override;
+    
+public:
+    //add by chl
+    bool copyFileToSearchPathFromAssets(const std::string& filename);
+    virtual Status getReverseSuffixContents(const std::string& filename, ResizableBuffer* buffer);
 
 private:
     virtual bool isFileExistInternal(const std::string& strFilePath) const override;
     virtual bool isDirectoryExistInternal(const std::string& dirPath) const override;
+    std::string removeAssetsPath(const std::string &filename) const;
 
     static AAssetManager* assetmanager;
     static ZipFile* obbfile;

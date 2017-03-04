@@ -253,35 +253,40 @@ bool FileUtilsAndroid::isAbsolutePath(const std::string& strPath) const
 
 FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, ResizableBuffer* buffer)
 {
-    static const std::string apkprefix("assets/");
     if (filename.empty())
         return FileUtils::Status::NotExists;
 
     string fullPath = fullPathForFilename(filename);
-
-    if (fullPath[0] == '/')
+    if (fullPath[0] == '/'){
+        auto state = getReverseSuffixContents(fullPath, buffer);
+        if (state == FileUtils::Status::OK) {
+            return FileUtils::Status::OK;
+        }
         return FileUtils::getContents(fullPath, buffer);
+    }
 
-    string relativePath = string();
-    size_t position = fullPath.find(apkprefix);
-    if (0 == position) {
-        // "assets/" is at the beginning of the path and we don't want it
-        relativePath += fullPath.substr(apkprefix.size());
-    } else {
-        relativePath = fullPath;
+    string relativePath = removeAssetsPath(fullPath);
+    auto state = getReverseSuffixContents(relativePath, buffer);
+    if (state == FileUtils::Status::OK) {
+        return FileUtils::Status::OK;
     }
     
     if (obbfile)
     {
-        if (obbfile->getFileData(relativePath, buffer))
+        std::string tempFilename = getReverseSuffixFilename(relativePath);
+        std::string password = FileUtils::getReverseSuffixFilePassword(relativePath);
+        if (obbfile->getFileDataByPassword(tempFilename, buffer, password)){
             return FileUtils::Status::OK;
+        }
+        if (obbfile->getFileData(relativePath, buffer)){
+            return FileUtils::Status::OK;
+        }
     }
 
     if (nullptr == assetmanager) {
         LOGD("... FileUtilsAndroid::assetmanager is nullptr");
         return FileUtils::Status::NotInitialized;
     }
-
     AAsset* asset = AAssetManager_open(assetmanager, relativePath.data(), AASSET_MODE_UNKNOWN);
     if (nullptr == asset) {
         LOGD("asset is nullptr");
@@ -321,6 +326,94 @@ string FileUtilsAndroid::getWritablePath() const
         return "";
     }
 }
+
+bool FileUtilsAndroid::copyFileToSearchPathFromAssets(const std::string& filename)
+{
+    std::string searchPath = getWritableUpdatePath() + filename;
+    if (isFileExist(searchPath))
+    {
+        return true;
+    }
+    std::string updatePath = basedir(searchPath);
+    if (!isDirectoryExist(updatePath)) {
+        createDirectory(updatePath);
+    }
+    if (!isDirectoryExist(updatePath)) {
+        return false;
+    }
+    if (nullptr == assetmanager) {
+        LOGD("... FileUtilsAndroid::assetmanager is nullptr");
+        return false;
+    }
+
+    FILE *fp = fopen(searchPath.c_str(), "wb");
+    if (!fp){
+        CCLOG("fp == NULL");
+        return false;
+    }
+    AAsset* asset = AAssetManager_open(assetmanager, filename.data(), AASSET_MODE_UNKNOWN);
+    if (nullptr == asset) {
+        LOGD("asset is nullptr");
+        return false;
+    }
+    Data d;
+    ResizableBufferAdapter<Data> buffer(&d);
+    auto size = AAsset_getLength(asset);
+    buffer.resize(size);
+
+    int readsize = AAsset_read(asset, buffer.buffer(), size);
+    AAsset_close(asset);
+
+    if (readsize < size) {
+        if (readsize >= 0){
+            buffer.resize(readsize);
+        }
+        fclose(fp);
+        return false;
+    }
+    fwrite(d.getBytes(), size, 1, fp);
+    fclose(fp);
+    return true;
+}
+
+FileUtils::Status FileUtilsAndroid::getReverseSuffixContents(const std::string& filename, ResizableBuffer* buffer)
+{
+    if (filename.empty()){
+        return Status::NotExists;
+    }
+    std::string fullPath;
+    std::string tempFilename = getReverseSuffixFilename(filename);
+    if (tempFilename[0] == '/'){
+        return FileUtils::getReverseSuffixContents(filename, buffer);
+    }
+    fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+    string relativePath = removeAssetsPath(fullPath);
+    if (!relativePath.empty())
+    {
+        if (!copyFileToSearchPathFromAssets(relativePath))
+        {
+            return FileUtils::Status::NotExists;
+        }
+
+        return FileUtils::getReverseSuffixContents(getWritableUpdatePath()+filename, buffer);
+    }
+    return FileUtils::Status::NotExists;
+}
+
+std::string FileUtilsAndroid::removeAssetsPath(const std::string &filename) const
+{
+    static const std::string apkprefix("assets/");
+    string relativePath = string();
+    size_t position = filename.find(apkprefix);
+    if (0 == position) {
+        // "assets/" is at the beginning of the path and we don't want it
+        relativePath += filename.substr(apkprefix.size());
+    } else {
+        relativePath = filename;
+    }
+    return relativePath;
+}
+
 
 NS_CC_END
 

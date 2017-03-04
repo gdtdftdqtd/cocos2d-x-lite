@@ -134,7 +134,7 @@ CC_CONSTRUCTOR_ACCESS:
     
 protected:
     
-    std::string basename(const std::string& path) const;
+    std::string basedir(const std::string& path) const;
     
     std::string get(const std::string& key) const;
     

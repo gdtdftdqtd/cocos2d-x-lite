@@ -639,24 +639,12 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
     if (filename.empty())
         return Status::NotExists;
 
+    auto state = getReverseSuffixContents(filename, buffer);
+    if (state == Status::OK) {
+        return Status::OK;
+    }
     auto fs = FileUtils::getInstance();
     std::string fullPath;
-    std::string tempFilename = getReverseSuffixFilename(filename);
-    fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
-    if (!fullPath.empty())
-    {
-        std::string baseFileName = basename(filename);
-        std::string suffix = getFileExtension(baseFileName);
-        std::string password = "CHL^" + baseFileName.substr(0,3) + suffix + "^CHL";
-        password = password + "_" + md5::getStringMd5(password);
-        ssize_t size = 0;
-        unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
-        if (buff && size > 0) {
-            buffer->resize(size);
-            memcpy(buffer->buffer(), buff, size);
-            return Status::OK;
-        }
-    }
     fullPath = fs->fullPathForFilename(filename);
     if (fullPath.empty())
         return Status::NotExists;
@@ -687,6 +675,38 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
     }
 
     return Status::OK;
+}
+
+std::string FileUtils::getReverseSuffixFilePassword(const std::string& filePath) const
+{
+    std::string baseFileName = basename(filePath);
+    std::string suffix = getFileExtension(baseFileName);
+    std::string password = "CHL^" + baseFileName.substr(0,3) + suffix + "^CHL";
+    password = password + "_" + md5::getStringMd5(password);
+    return password;
+}
+
+FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filename, ResizableBuffer* buffer)
+{
+    if (filename.empty()){
+        return Status::NotExists;
+    }
+    std::string fullPath;
+    std::string tempFilename = getReverseSuffixFilename(filename);
+    fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+    if (!fullPath.empty())
+    {
+        std::string baseFileName = basename(filename);
+        std::string password = getReverseSuffixFilePassword(filename);
+        ssize_t size = 0;
+        unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
+        if (buff && size > 0) {
+            buffer->resize(size);
+            memcpy(buffer->buffer(), buff, size);
+            return Status::OK;
+        }
+    }
+    return Status::NotExists;
 }
 
 unsigned char* FileUtils::getFileData(const std::string& filename, const char* mode, ssize_t *size)
@@ -885,6 +905,25 @@ std::string FileUtils::fullPathForFilename(const std::string &filename) const
 
     // The file wasn't found, return empty string.
     return "";
+}
+
+std::string FileUtils::getWritableUpdatePath() const
+{
+    return getWritablePath() + "update/";
+}
+
+std::string FileUtils::basedir(const std::string& path) const
+{
+    size_t found = path.find_last_of("/\\");
+    
+    if (std::string::npos != found)
+    {
+        return path.substr(0, found);
+    }
+    else
+    {
+        return path;
+    }
 }
 
 std::string FileUtils::basename(const std::string& path) const

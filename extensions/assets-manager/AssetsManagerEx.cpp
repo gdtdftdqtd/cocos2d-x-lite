@@ -254,7 +254,7 @@ void AssetsManagerEx::loadLocalManifest(const std::string& /*manifestUrl*/)
     }
 }
 
-std::string AssetsManagerEx::basename(const std::string& path) const
+std::string AssetsManagerEx::basedir(const std::string& path) const
 {
     size_t found = path.find_last_of("/\\");
     
@@ -369,7 +369,7 @@ bool AssetsManagerEx::decompress(const std::string &zip)
         {
             //There are not directory entry in some case.
             //So we need to create directory when decompressing file entry
-            if ( !_fileUtils->createDirectory(basename(fullPath)) )
+            if ( !_fileUtils->createDirectory(basedir(fullPath)) )
             {
                 // Failed to create directory
                 CCLOG("AssetsManagerEx : can not create directory %s\n", fullPath.c_str());
@@ -380,7 +380,7 @@ bool AssetsManagerEx::decompress(const std::string &zip)
         else
         {
             // Create all directories in advance to avoid issue
-            std::string dir = basename(fullPath);
+            std::string dir = basedir(fullPath);
             if (!_fileUtils->isDirectoryExist(dir)) {
                 if (!_fileUtils->createDirectory(dir)) {
                     // Failed to create directory
@@ -1151,7 +1151,7 @@ void AssetsManagerEx::queueDowload()
         
         _currConcurrentTask++;
         DownloadUnit& unit = _downloadUnits[key];
-        _fileUtils->createDirectory(basename(unit.storagePath));
+        _fileUtils->createDirectory(basedir(unit.storagePath));
         _downloader->createDownloadFileTask(unit.srcUrl, unit.storagePath, unit.customId);
         
         _tempManifest->setAssetDownloadState(key, Manifest::DownloadState::DOWNLOADING);

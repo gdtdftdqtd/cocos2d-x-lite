@@ -171,6 +171,11 @@ FileUtils::Status FileUtilsWin32::getContents(const std::string& filename, Resiz
     // read the file from hardware
     std::string fullPath = FileUtils::getInstance()->fullPathForFilename(filename);
 
+    auto state = getReverseSuffixContents(fullPath, buffer);
+    if (state == Status::OK) {
+        return Status::OK;
+    }
+
     HANDLE fileHandle = ::CreateFile(StringUtf8ToWideChar(fullPath).c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, nullptr);
     if (fileHandle == INVALID_HANDLE_VALUE)
         return FileUtils::Status::OpenFailed;

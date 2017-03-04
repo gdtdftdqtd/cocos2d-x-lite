@@ -278,6 +278,11 @@ typedef struct unz_file_info_s unz_file_info;
         std::string getNextFilename();
 
         static ZipFile *createWithBuffer(const void* buffer, unsigned long size);
+        
+    public:
+        //add by chl
+        unsigned char *getFileDataByPassword(const std::string &fileName, ssize_t *size, const std::string &password);
+        bool getFileDataByPassword(const std::string &fileName, ResizableBuffer* buffer, const std::string &password);
 
     private:
         /* Only used internal for createWithBuffer() */
