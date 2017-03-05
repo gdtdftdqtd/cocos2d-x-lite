@@ -373,6 +373,16 @@ bool FileUtilsAndroid::copyFileToSearchPathFromAssets(const std::string& filenam
     }
     fwrite(d.getBytes(), size, 1, fp);
     fclose(fp);
+    //reset Cached
+    auto cacheIter = _fullPathCache.find(filename);
+    if(cacheIter != _fullPathCache.end())
+    {
+        cacheIter->second = searchPath;
+    }
+    else{
+        // Using the filename passed in as key.
+        _fullPathCache.insert(std::make_pair(filename, searchPath));
+    }
     return true;
 }
 
