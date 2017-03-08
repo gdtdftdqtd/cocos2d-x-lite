@@ -43,11 +43,13 @@ struct DownloadUnit
     std::string srcUrl;
     std::string storagePath;
     std::string customId;
+    std::string secretMd5;
     float       size;
 };
 
 struct ManifestAsset {
     std::string md5;
+    std::string secretMd5;
     std::string path;
     bool compressed;
     float size;

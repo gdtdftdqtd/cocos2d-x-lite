@@ -35,7 +35,12 @@
 #endif
 #include "base/CCAsyncTaskPool.h"
 
+#include "storage/local-storage/LocalStorage.h"
+#include "md5/md5.hpp"
+
 NS_CC_EXT_BEGIN
+
+#define GAME_VERSION            "GAME_VERSION"
 
 #define VERSION_FILENAME        "version.manifest"
 #define TEMP_MANIFEST_FILENAME  "project.manifest.temp"
@@ -244,6 +249,11 @@ void AssetsManagerEx::loadLocalManifest(const std::string& /*manifestUrl*/)
             }
         }
         prepareLocalManifest();
+        std::string version;
+        localStorageGetItem(GAME_VERSION, &version);
+        if (version.empty()){
+            localStorageSetItem(GAME_VERSION, _localManifest->getVersion());
+        }
     }
 
     // Fail to load local manifest
@@ -716,6 +726,7 @@ void AssetsManagerEx::startUpdate()
                     unit.customId = it->first;
                     unit.srcUrl = packageUrl + path;
                     unit.storagePath = _tempStoragePath + path;
+                    unit.secretMd5 = diff.asset.secretMd5;
                     unit.size = diff.asset.size;
                     _downloadUnits.emplace(unit.customId, unit);
                     _tempManifest->setAssetDownloadState(it->first, Manifest::DownloadState::UNSTARTED);
@@ -773,6 +784,7 @@ void AssetsManagerEx::updateSucceed()
     _remoteManifest = nullptr;
     // 4. make local manifest take effect
     prepareLocalManifest();
+    localStorageSetItem(GAME_VERSION, _localManifest->getVersion());
     // 5. Set update state
     _updateState = State::UP_TO_DATE;
     // 6. Notify finished event
@@ -959,12 +971,22 @@ void AssetsManagerEx::fileSuccess(const std::string &customId, const std::string
     // Set download state to SUCCESSED
     _tempManifest->setAssetDownloadState(customId, Manifest::DownloadState::SUCCESSED);
     
+    bool isFileSuccesed = true;
+    std::string fileMd5 = md5::getFileMd5(storagePath);
+    
     auto unitIt = _failedUnits.find(customId);
     // Found unit and delete it
     if (unitIt != _failedUnits.end())
     {
-        // Remove from failed units list
-        _failedUnits.erase(unitIt);
+        if (fileMd5 != unitIt->second.secretMd5) {
+            CCLOG(" fileMd5 != unitIt->second.secretMd5,%s %s != %s",storagePath.c_str(), fileMd5.c_str() , unitIt->second.secretMd5.c_str());
+            isFileSuccesed = false;
+            _tempManifest->setAssetDownloadState(customId, Manifest::DownloadState::UNSTARTED);
+        }
+        else{
+            // Remove from failed units list
+            _failedUnits.erase(unitIt);
+        }
     }
     
     unitIt = _downloadUnits.find(customId);
@@ -973,12 +995,26 @@ void AssetsManagerEx::fileSuccess(const std::string &customId, const std::string
         // Reduce count only when unit found in _downloadUnits
         _totalWaitToDownload--;
         
-        _percentByFile = 100 * (float)(_totalToDownload - _totalWaitToDownload) / _totalToDownload;
-        // Notify progression event
-        dispatchUpdateEvent(EventAssetsManagerEx::EventCode::UPDATE_PROGRESSION, "");
+        if (fileMd5 != unitIt->second.secretMd5) {
+            CCLOG("storagePath fileMd5 != unitIt->second.secretMd5, %s %s != %s",storagePath.c_str() ,fileMd5.c_str() , unitIt->second.secretMd5.c_str());
+            isFileSuccesed = false;
+            DownloadUnit unit = unitIt->second;
+            _failedUnits.emplace(customId, unit);
+            _tempManifest->setAssetDownloadState(customId, Manifest::DownloadState::UNSTARTED);
+        }
+        else{
+            _percentByFile = 100 * (float)(_totalToDownload - _totalWaitToDownload) / _totalToDownload;
+            // Notify progression event
+            dispatchUpdateEvent(EventAssetsManagerEx::EventCode::UPDATE_PROGRESSION, "");
+        }
     }
-    // Notify asset updated event
-    dispatchUpdateEvent(EventAssetsManagerEx::EventCode::ASSET_UPDATED, customId);
+    if (isFileSuccesed) {
+        // Notify asset updated event
+        dispatchUpdateEvent(EventAssetsManagerEx::EventCode::ASSET_UPDATED, customId);
+    }
+    else{
+        dispatchUpdateEvent(EventAssetsManagerEx::EventCode::ERROR_UPDATING, customId, "secretMd5 not same !!!");
+    }
     
     _currConcurrentTask = MAX(0, _currConcurrentTask-1);
     queueDowload();

@@ -41,6 +41,7 @@
 
 #define KEY_PATH                "path"
 #define KEY_MD5                 "md5"
+#define KEY_SECRETMD5           "secretMd5"
 #define KEY_GROUP               "group"
 #define KEY_COMPRESSED          "compressed"
 #define KEY_SIZE                "size"
@@ -260,6 +261,7 @@ void Manifest::genResumeAssetsList(DownloadUnits *units) const
             unit.customId = it->first;
             unit.srcUrl = _packageUrl + asset.path;
             unit.storagePath = _manifestRoot + asset.path;
+            unit.secretMd5 = asset.secretMd5;
             unit.size = asset.size;
             units->emplace(unit.customId, unit);
         }
@@ -416,6 +418,12 @@ Manifest::Asset Manifest::parseAsset(const std::string &path, const rapidjson::V
         asset.md5 = json[KEY_MD5].GetString();
     }
     else asset.md5 = "";
+    
+    if ( json.HasMember(KEY_SECRETMD5) && json[KEY_SECRETMD5].IsString() )
+    {
+        asset.secretMd5 = json[KEY_SECRETMD5].GetString();
+    }
+    else asset.secretMd5 = "";
     
     if ( json.HasMember(KEY_PATH) && json[KEY_PATH].IsString() )
     {
