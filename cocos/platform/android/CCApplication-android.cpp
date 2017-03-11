@@ -190,6 +190,13 @@ LanguageType Application::getCurrentLanguage()
     return ret;
 }
 
+//add by chl
+const char * Application::getCurrentLanguageString()
+{
+    std::string languageName = JniHelper::callStaticStringMethod(helperClassName, "getCurrentLanguageString");
+    return languageName.c_str();
+}
+
 Application::Platform Application::getTargetPlatform()
 {
     return Platform::OS_ANDROID;

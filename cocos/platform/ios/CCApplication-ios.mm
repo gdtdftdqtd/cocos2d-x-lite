@@ -130,6 +130,14 @@ LanguageType Application::getCurrentLanguage()
 
 }
 
+const char * Application::getCurrentLanguageString()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *languages = [defaults objectForKey:@"AppleLanguages"];
+    NSString *currentLanguage = [languages objectAtIndex:0];
+    return [currentLanguage UTF8String];
+}
+
 Application::Platform Application::getTargetPlatform()
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) // idiom for iOS <= 3.2, otherwise: [UIDevice userInterfaceIdiom] is faster.

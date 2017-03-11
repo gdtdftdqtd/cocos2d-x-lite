@@ -54606,6 +54606,24 @@ bool js_cocos2dx_Application_getCurrentLanguage(JSContext *cx, uint32_t argc, js
     JS_ReportError(cx, "js_cocos2dx_Application_getCurrentLanguage : wrong number of arguments: %d, was expecting %d", argc, 0);
     return false;
 }
+bool js_cocos2dx_Application_getCurrentLanguageString(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::Application* cobj = (cocos2d::Application *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_Application_getCurrentLanguageString : Invalid Native Object");
+    if (argc == 0) {
+        const char* ret = cobj->getCurrentLanguageString();
+        JS::RootedValue jsret(cx);
+        jsret = c_string_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_Application_getCurrentLanguageString : wrong number of arguments: %d, was expecting %d", argc, 0);
+    return false;
+}
 bool js_cocos2dx_Application_openURL(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -54697,6 +54715,7 @@ void js_register_cocos2dx_Application(JSContext *cx, JS::HandleObject global) {
     static JSFunctionSpec funcs[] = {
         JS_FN("getTargetPlatform", js_cocos2dx_Application_getTargetPlatform, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getCurrentLanguage", js_cocos2dx_Application_getCurrentLanguage, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("getCurrentLanguageString", js_cocos2dx_Application_getCurrentLanguageString, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("openURL", js_cocos2dx_Application_openURL, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getVersion", js_cocos2dx_Application_getVersion, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FS_END

@@ -19757,6 +19757,16 @@ getCurrentLanguage : function (
 },
 
 /**
+ * @method getCurrentLanguageString
+ * @return {char}
+ */
+getCurrentLanguageString : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method openURL
  * @param {String} arg0
  * @return {bool}

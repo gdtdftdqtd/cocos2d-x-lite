@@ -80,6 +80,15 @@ public:
      */
     virtual const char * getCurrentLanguageCode() override;
     
+    //add by chl
+    /**
+     @brief Get current language iso 639-1 string Mark.
+     @return Current language iso 639-1 string Mark.
+     * @js NA
+     * @lua NA
+     */
+    virtual const char * getCurrentLanguageString() override;
+    
     /**
      @brief Get target platform
      */

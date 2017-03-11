@@ -229,13 +229,6 @@ var _initSys = function () {
      * @type {string}
      */
     sys.LANGUAGE_DUTCH = "nl";
-    /**
-     * Dutch language code
-     * @constant
-     * @default
-     * @type {Number}
-     */
-    sys.LANGUAGE_DUTCH = "du";
 
     /**
      * Russian language code

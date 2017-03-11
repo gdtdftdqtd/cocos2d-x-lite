@@ -3554,6 +3554,7 @@ void js_register_cocos2dx_Application(JSContext *cx, JS::HandleObject global);
 void register_all_cocos2dx(JSContext* cx, JS::HandleObject obj);
 bool js_cocos2dx_Application_getTargetPlatform(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Application_getCurrentLanguage(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_Application_getCurrentLanguageString(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Application_openURL(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Application_getVersion(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Application_destroyInstance(JSContext *cx, uint32_t argc, jsval *vp);

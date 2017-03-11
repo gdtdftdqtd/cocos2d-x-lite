@@ -128,6 +128,15 @@ public:
      * @lua NA
      */
     virtual const char * getCurrentLanguageCode() = 0;
+    
+    //add by chl
+    /**
+     @brief Get current language iso 639-1 string Mark.
+     @return Current language iso 639-1 string Mark.
+     * @js NA
+     * @lua NA
+     */
+    virtual const char * getCurrentLanguageString() = 0;
 
     /**
      @brief Get target platform.
