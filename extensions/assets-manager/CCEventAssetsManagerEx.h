@@ -53,7 +53,9 @@ public:
         ERROR_UPDATING,
         UPDATE_FINISHED,
         UPDATE_FAILED,
-        ERROR_DECOMPRESS
+        ERROR_DECOMPRESS,
+        //add by chl
+        ERROR_NO_SPACE
     };
     
     inline EventCode getEventCode() const { return _code; };

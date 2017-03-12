@@ -26,6 +26,8 @@
 #include "base/ccUTF8.h"
 #include "base/CCDirector.h"
 
+#include "cocos2d.h"
+
 #include <stdio.h>
 
 #ifdef MINIZIP_FROM_SYSTEM
@@ -53,6 +55,8 @@ NS_CC_EXT_BEGIN
 #define DEFAULT_CONNECTION_TIMEOUT 45
 
 #define SAVE_POINT_INTERVAL 0.1
+
+#define BLOCK_SIZE 1048576
 
 const std::string AssetsManagerEx::VERSION_ID = "@version";
 const std::string AssetsManagerEx::MANIFEST_ID = "@manifest";
@@ -511,6 +515,7 @@ void AssetsManagerEx::dispatchUpdateEvent(EventAssetsManagerEx::EventCode code, 
         case EventAssetsManagerEx::EventCode::UPDATE_FAILED:
         case EventAssetsManagerEx::EventCode::UPDATE_FINISHED:
         case EventAssetsManagerEx::EventCode::ALREADY_UP_TO_DATE:
+        case EventAssetsManagerEx::EventCode::ERROR_NO_SPACE://add by chl
             _updateEntry = UpdateEntry::NONE;
             break;
         case EventAssetsManagerEx::EventCode::UPDATE_PROGRESSION:
@@ -711,6 +716,7 @@ void AssetsManagerEx::startUpdate()
         }
         else
         {
+            unsigned long long needSize = 0;
             // Generate download units for all assets that need to be updated or added
             std::string packageUrl = _remoteManifest->getPackageUrl();
             // Save current download manifest information for resuming
@@ -728,9 +734,22 @@ void AssetsManagerEx::startUpdate()
                     unit.storagePath = _tempStoragePath + path;
                     unit.secretMd5 = diff.asset.secretMd5;
                     unit.size = diff.asset.size;
+                    needSize += unit.size;
                     _downloadUnits.emplace(unit.customId, unit);
                     _tempManifest->setAssetDownloadState(it->first, Manifest::DownloadState::UNSTARTED);
                 }
+            }
+            
+            unsigned long long freeBlockSize = cocos2d::Application::getInstance()->getFreeDiskSpace();
+            if (freeBlockSize + 10*BLOCK_SIZE <= needSize/1024) {
+                for (auto it = _downloadUnits.begin(); it != _downloadUnits.end(); ++it){
+                    DownloadUnit unit = it->second;
+                    _failedUnits.emplace(it->first, unit);
+                    _tempManifest->setAssetDownloadState(it->first, Manifest::DownloadState::UNSTARTED);
+                }
+                _downloadUnits.clear();
+                dispatchUpdateEvent(EventAssetsManagerEx::EventCode::ERROR_NO_SPACE, "", "no space");
+                return;
             }
             
             _totalWaitToDownload = _totalToDownload = (int)_downloadUnits.size();
