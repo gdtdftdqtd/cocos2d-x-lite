@@ -112,6 +112,9 @@ public:
     @param new height
     */
     virtual void applicationScreenSizeChanged(int newWidth, int newHeight);
+    
+    //add by chl
+    virtual long long getFreeDiskSpace() override;
 
 protected:
     static Application * sm_pSharedApplication;

@@ -32,6 +32,9 @@
 #import "math/CCGeometry.h"
 #import "platform/ios/CCDirectorCaller-ios.h"
 
+#include <sys/param.h>
+#include <sys/mount.h>
+
 NS_CC_BEGIN
 
 Application* Application::sm_pSharedApplication = nullptr;
@@ -167,6 +170,19 @@ bool Application::openURL(const std::string &url)
 
 void Application::applicationScreenSizeChanged(int newWidth, int newHeight) {
 
+}
+
+//add by chl
+long long Application::getFreeDiskSpace()
+{
+    struct statfs buf;
+    unsigned long long freespace = 0;
+    if(statfs("/var", &buf) >= 0){
+        freespace = (unsigned long long)(buf.f_bsize * buf.f_bfree);
+//        freespace = freespace;//1024*1024
+    }
+    
+    return freespace;//M
 }
 
 NS_CC_END

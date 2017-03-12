@@ -216,6 +216,13 @@ void Application::applicationScreenSizeChanged(int newWidth, int newHeight) {
 
 }
 
+//add by chl
+long long Application::getFreeDiskSpace()
+{
+    std::string ret = JniHelper::callStaticStringMethod(helperClassName, "getFreeDiskSpace");
+    return atoll(ret.c_str())
+}
+
 NS_CC_END
 
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID

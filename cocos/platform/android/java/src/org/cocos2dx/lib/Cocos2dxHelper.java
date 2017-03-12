@@ -652,6 +652,14 @@ public class Cocos2dxHelper {
 
         return null;
     }
+
+    public static String getFreeDiskSpace() {
+        StatFs fs = new StatFs(Environment.getDataDirectory().getPath());
+        long blockSize = fs.getBlockSize();
+        long availableBlocks = fs.getAvailableBlocks();
+        long size = availableBlocks * blockSize;
+        return String.valueOf(size);
+    }
     
     // ===========================================================
     // Inner and Anonymous Classes

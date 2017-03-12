@@ -54570,6 +54570,24 @@ void js_register_cocos2dx_SAXParser(JSContext *cx, JS::HandleObject global) {
 JSClass  *jsb_cocos2d_Application_class;
 JSObject *jsb_cocos2d_Application_prototype;
 
+bool js_cocos2dx_Application_getFreeDiskSpace(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::Application* cobj = (cocos2d::Application *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_Application_getFreeDiskSpace : Invalid Native Object");
+    if (argc == 0) {
+        long long ret = cobj->getFreeDiskSpace();
+        JS::RootedValue jsret(cx);
+        jsret = long_long_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_Application_getFreeDiskSpace : wrong number of arguments: %d, was expecting %d", argc, 0);
+    return false;
+}
 bool js_cocos2dx_Application_getTargetPlatform(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -54713,6 +54731,7 @@ void js_register_cocos2dx_Application(JSContext *cx, JS::HandleObject global) {
     };
 
     static JSFunctionSpec funcs[] = {
+        JS_FN("getFreeDiskSpace", js_cocos2dx_Application_getFreeDiskSpace, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getTargetPlatform", js_cocos2dx_Application_getTargetPlatform, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getCurrentLanguage", js_cocos2dx_Application_getCurrentLanguage, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getCurrentLanguageString", js_cocos2dx_Application_getCurrentLanguageString, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),

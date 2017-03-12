@@ -19737,6 +19737,16 @@ char
 cc.Application = {
 
 /**
+ * @method getFreeDiskSpace
+ * @return {long long}
+ */
+getFreeDiskSpace : function (
+)
+{
+    return long long;
+},
+
+/**
  * @method getTargetPlatform
  * @return {cc.ApplicationProtocol::Platform}
  */
