@@ -126,6 +126,9 @@ public:
      */
     void setVerifyCallback(const std::function<bool(const std::string& path, Manifest::Asset asset)>& callback) {_verifyCallback = callback;};
     
+    //add by chl
+    bool checkFreeMemoryIsEnough(long long needMemory);
+    
 CC_CONSTRUCTOR_ACCESS:
     
     AssetsManagerEx(const std::string& manifestUrl, const std::string& storagePath);

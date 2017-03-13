@@ -740,14 +740,15 @@ void AssetsManagerEx::startUpdate()
                 }
             }
             
-            unsigned long long freeBlockSize = cocos2d::Application::getInstance()->getFreeDiskSpace();
-            if (freeBlockSize + 10*BLOCK_SIZE <= needSize/1024) {
+            if (!checkFreeMemoryIsEnough(needSize/1024)) {
                 for (auto it = _downloadUnits.begin(); it != _downloadUnits.end(); ++it){
                     DownloadUnit unit = it->second;
                     _failedUnits.emplace(it->first, unit);
                     _tempManifest->setAssetDownloadState(it->first, Manifest::DownloadState::UNSTARTED);
                 }
                 _downloadUnits.clear();
+                _updateState = State::FAIL_TO_UPDATE;
+                _tempManifest->saveToFile(_tempManifestPath);
                 dispatchUpdateEvent(EventAssetsManagerEx::EventCode::ERROR_NO_SPACE, "", "no space");
                 return;
             }
@@ -1182,6 +1183,21 @@ void AssetsManagerEx::batchDownload()
         
         _queue.push_back(iter.first);
     }
+    
+    if (!checkFreeMemoryIsEnough(_totalSize/1024)) {
+        _sizeCollected = _totalSize = 0;
+        _queue.clear();
+        for (auto it = _downloadUnits.begin(); it != _downloadUnits.end(); ++it){
+            DownloadUnit unit = it->second;
+            _failedUnits.emplace(it->first, unit);
+            _tempManifest->setAssetDownloadState(it->first, Manifest::DownloadState::UNSTARTED);
+        }
+        _downloadUnits.clear();
+        _updateState = State::FAIL_TO_UPDATE;
+        _tempManifest->saveToFile(_tempManifestPath);
+        dispatchUpdateEvent(EventAssetsManagerEx::EventCode::ERROR_NO_SPACE, "", "no space");
+        return;
+    }
     // All collected, enable total size
     if (_sizeCollected == _totalToDownload)
     {
@@ -1234,6 +1250,12 @@ void AssetsManagerEx::onDownloadUnitsFinished()
     {
         updateSucceed();
     }
+}
+
+bool AssetsManagerEx::checkFreeMemoryIsEnough(long long needMemory)
+{
+    unsigned long long freeBlockSize = cocos2d::Application::getInstance()->getFreeDiskSpace();
+    return freeBlockSize + 10*BLOCK_SIZE > needMemory;
 }
 
 NS_CC_EXT_END
