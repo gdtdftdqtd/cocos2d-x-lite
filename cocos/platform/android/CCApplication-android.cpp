@@ -220,7 +220,7 @@ void Application::applicationScreenSizeChanged(int newWidth, int newHeight) {
 long long Application::getFreeDiskSpace()
 {
     std::string ret = JniHelper::callStaticStringMethod(helperClassName, "getFreeDiskSpace");
-    return atoll(ret.c_str())
+    return atoll(ret.c_str());
 }
 
 NS_CC_END
