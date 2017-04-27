@@ -956,7 +956,10 @@ std::string FileUtils::getReverseSuffixFilename(const std::string& filePath) con
     std::string tempFilename = filePath;
     std::string tempSuffix = getFileExtension(tempFilename);
     std::string tempName = RemoveFileSuffix(tempFilename);
-    std::reverse(tempSuffix.begin()+1, tempSuffix.end());
+	if (!tempSuffix.empty() && tempSuffix.size() >= 1)
+	{
+		std::reverse(tempSuffix.begin() + 1, tempSuffix.end());
+	}
     tempFilename = tempName + tempSuffix;
     return tempFilename;
 }
