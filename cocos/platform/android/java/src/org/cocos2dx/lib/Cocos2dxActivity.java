@@ -260,6 +260,17 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //add by chl
+        if(!this.isTaskRoot()) {
+            Intent mainIntent=getIntent();
+            String action=mainIntent.getAction();
+            if(mainIntent.hasCategory(Intent.CATEGORY_LAUNCHER) && action.equals(Intent.ACTION_MAIN)) {
+                finish();
+                return;
+            }
+        }
+        //end add
+
         this.hideVirtualButton();
 
         onLoadNativeLibraries();
