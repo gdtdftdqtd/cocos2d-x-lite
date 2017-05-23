@@ -1,6 +1,6 @@
 /*
  * Created by James Chen
- * Copyright (c) 2013-2016 Chukong Technologies Inc.
+ * Copyright (c) 2013-2017 Chukong Technologies Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,6 +85,12 @@ public:
         JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
 
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+
+        // Set the protocol which server selects.
+        JS::RootedValue jsprotocol(cx, std_string_to_jsval(cx, ws->getProtocol()));
+        JS::RootedObject wsObj(cx, p->obj);
+        JS_SetProperty(cx, wsObj, "protocol", jsprotocol);
+
         JS::RootedObject jsobj(cx, JS_NewObject(cx, NULL, JS::NullPtr(), JS::NullPtr()));
         JS::RootedValue vp(cx);
         vp = c_string_to_jsval(cx, "open");
@@ -164,8 +170,10 @@ public:
             JS::RootedValue args(cx, OBJECT_TO_JSVAL(jsobj));
             ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(_JSDelegate.ref()), "onclose", 1, args.address());
             
+#if not CC_ENABLE_GC_FOR_NATIVE_OBJECTS
             auto copy = &p->obj;
             JS::RemoveObjectRoot(cx, copy);
+#endif
             jsb_remove_proxy(p);
         }
         
@@ -209,6 +217,19 @@ JSObject *js_cocos2dx_websocket_prototype;
 
 void js_cocos2dx_WebSocket_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOG("jsbindings: finalizing JS object %p (WebSocket)", obj);
+    
+    JS::RootedObject jsobj(ScriptingCore::getInstance()->getGlobalContext(), obj);
+    js_proxy_t *p = jsb_get_js_proxy(jsobj);
+    if (p)
+    {
+        WebSocket *ws = (WebSocket *)(p->ptr);
+        jsb_remove_proxy(p);
+        // Manually close if web socket is not closed
+        if (ws->getReadyState() != WebSocket::State::CLOSED)
+        {
+            ws->closeAsync();
+        }
+    }
 }
 
 bool js_cocos2dx_extension_WebSocket_send(JSContext *cx, uint32_t argc, jsval *vp)
@@ -290,21 +311,23 @@ bool js_cocos2dx_extension_WebSocket_constructor(JSContext *cx, uint32_t argc, j
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
 
-    if (argc == 1 || argc == 2)
+    if (argc == 1 || argc == 2 || argc == 3)
     {
         std::string url;
 
         do {
             bool ok = jsval_to_std_string(cx, args.get(0), &url);
-            JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
+            JSB_PRECONDITION2(ok, cx, false, "Error processing arguments");
         } while (0);
 
         JS::RootedObject proto(cx, js_cocos2dx_websocket_prototype);
         JS::RootedObject obj(cx, JS_NewObject(cx, js_cocos2dx_websocket_class, proto, JS::NullPtr()));
+        //JS::RootedObject obj(cx, JS_NewObjectForConstructor(cx, js_cocos2dx_websocket_class, args));
 
         WebSocket* cobj = nullptr;
-        if (argc == 2)
+        if (argc >= 2)
         {
+            std::string caFilePath;
             std::vector<std::string> protocols;
 
             if (args.get(1).isString())
@@ -312,7 +335,7 @@ bool js_cocos2dx_extension_WebSocket_constructor(JSContext *cx, uint32_t argc, j
                 std::string protocol;
                 do {
                     bool ok = jsval_to_std_string(cx, args.get(1), &protocol);
-                    JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
+                    JSB_PRECONDITION2(ok, cx, false, "Error processing arguments");
                 } while (0);
                 protocols.push_back(protocol);
             }
@@ -320,29 +343,37 @@ bool js_cocos2dx_extension_WebSocket_constructor(JSContext *cx, uint32_t argc, j
             {
                 bool ok = true;
                 JS::RootedObject arg2(cx, args.get(1).toObjectOrNull());
-                JSB_PRECONDITION(JS_IsArrayObject( cx, arg2 ),  "Object must be an array");
+                JSB_PRECONDITION(JS_IsArrayObject(cx, arg2), "Object must be an array");
 
                 uint32_t len = 0;
                 JS_GetArrayLength(cx, arg2, &len);
 
-                for( uint32_t i=0; i< len;i++ )
+                for (uint32_t i = 0; i< len; i++)
                 {
                     JS::RootedValue valarg(cx);
                     JS_GetElement(cx, arg2, i, &valarg);
                     std::string protocol;
                     do {
                         ok = jsval_to_std_string(cx, valarg, &protocol);
-                        JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
+                        JSB_PRECONDITION2(ok, cx, false, "Error processing arguments");
                     } while (0);
 
                     protocols.push_back(protocol);
                 }
             }
-            
+
+            if (argc > 2)
+            {
+                do {
+                    bool ok = jsval_to_std_string(cx, args.get(2), &caFilePath);
+                    JSB_PRECONDITION2(ok, cx, false, "Error processing arguments");
+                } while (0);
+            }
+
             cobj = new (std::nothrow) WebSocket();
             JSB_WebSocketDelegate* delegate = new (std::nothrow) JSB_WebSocketDelegate();
             delegate->setJSDelegate(obj);
-            cobj->init(*delegate, url, &protocols);
+            cobj->init(*delegate, url, &protocols, caFilePath);
         }
         else
         {
@@ -352,16 +383,22 @@ bool js_cocos2dx_extension_WebSocket_constructor(JSContext *cx, uint32_t argc, j
             cobj->init(*delegate, url);
         }
 
+        JS_DefineProperty(cx, obj, "url", args.get(0), JSPROP_ENUMERATE | JSPROP_PERMANENT | JSPROP_READONLY);
+
+        // The websocket draft uses lowercase 'url', so 'URL' need to be deprecated.
         JS_DefineProperty(cx, obj, "URL", args.get(0), JSPROP_ENUMERATE | JSPROP_PERMANENT | JSPROP_READONLY);
 
-        //protocol not support yet (always return "")
+        // Initialize protocol property with an empty string, it will be assigned in onOpen delegate.
         JS::RootedValue jsprotocol(cx, c_string_to_jsval(cx, ""));
-        JS_DefineProperty(cx, obj, "protocol", jsprotocol, JSPROP_ENUMERATE | JSPROP_PERMANENT | JSPROP_READONLY);
+        JS_DefineProperty(cx, obj, "protocol", jsprotocol, JSPROP_ENUMERATE | JSPROP_PERMANENT);
 
         // link the native object with the javascript object
         js_proxy_t *p = jsb_new_proxy(cobj, obj);
+        CC_UNUSED_PARAM(p);
+#if not CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         JS::AddNamedObjectRoot(cx, &p->obj, "WebSocket");
-
+#endif
+        
         args.rval().set(OBJECT_TO_JSVAL(obj));
         return true;
     }

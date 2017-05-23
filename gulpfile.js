@@ -11,7 +11,7 @@ var fs = require('fs-extra');
 
 gulp.task('make-cocos2d-x', gulpSequence('gen-cocos2d-x', 'upload-cocos2d-x'));
 gulp.task('make-prebuilt', gulpSequence('gen-libs', 'collect-prebuilt-mk', 'archive-prebuilt-mk', 'archive-prebuilt', 'upload-prebuilt', 'upload-prebuilt-mk'));
-gulp.task('make-simulator', gulpSequence('update-simulator-config', 'update-simulator-dll', 'archive-simulator', 'upload-simulator'));
+gulp.task('make-simulator', gulpSequence('gen-simulator', 'update-simulator-config', 'update-simulator-dll', 'archive-simulator', 'upload-simulator'));
 
 function execSync(cmd, workPath) {
   var execOptions = {
@@ -106,7 +106,7 @@ gulp.task('gen-libs', function(cb) {
   else {
     cocosConsoleBin = Path.join(cocosConsoleRoot, 'cocos.bat');
   }
-  execSync(cocosConsoleBin + ' gen-libs -m release --app-abi armeabi:arm64-v8a:armeabi-v7a:x86', '.');
+  execSync(cocosConsoleBin + ' gen-libs -m release --android-studio --app-abi armeabi:arm64-v8a:armeabi-v7a:x86', '.');
   cb();
 });
 
@@ -142,9 +142,9 @@ gulp.task('gen-simulator', function (cb) {
     child.on('close', (code) => {
       if (code !== 0) {
         console.error('Generate simulator failed');
-        cb();
-        return;
       }
+      cb();
+      return;
     });
     child.on('error', function () {
       console.error('Generate simulator failed');

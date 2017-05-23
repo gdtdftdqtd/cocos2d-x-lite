@@ -44,6 +44,9 @@
 // Vibrate
 #import <AudioToolbox/AudioToolbox.h>
 
+using FontUtils::tImageInfo;
+const float MAX_MEASURE_HEIGHT = 10000;
+
 static NSAttributedString* __attributedStringWithFontSize(NSMutableAttributedString* attributedString, CGFloat fontSize)
 {
     {
@@ -101,7 +104,7 @@ static CGSize _calculateShrinkedSizeForString(NSAttributedString **str, id font,
             *str = __attributedStringWithFontSize(mutableString, fontSize);
 
             CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)*str);
-            CGSize targetSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+            CGSize targetSize = CGSizeMake(MAX_MEASURE_HEIGHT, MAX_MEASURE_HEIGHT);
             CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [(*str) length]), NULL, targetSize, NULL);
             CFRelease(framesetter);
             if (fitSize.width == 0 || fitSize.height == 0) {
@@ -134,10 +137,10 @@ static CGSize _calculateShrinkedSizeForString(NSAttributedString **str, id font,
             NSMutableAttributedString *mutableString = [[*str mutableCopy] autorelease];
             *str = __attributedStringWithFontSize(mutableString, fontSize);
 
-            CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)*str);
-            CGSize targetSize = CGSizeMake(constrainSize.width, CGFLOAT_MAX);
-            CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [(*str) length]), NULL, targetSize, NULL);
-            CFRelease(framesetter);
+            CGSize fitSize = [*str boundingRectWithSize:CGSizeMake(constrainSize.width, MAX_MEASURE_HEIGHT)
+                                                options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                                                context:nil].size;
+
             if (fitSize.width == 0 || fitSize.height == 0) {
                 continue;
             }
@@ -159,7 +162,7 @@ static CGSize _calculateShrinkedSizeForString(NSAttributedString **str, id font,
 
     newFontSize = fontSize;
 
-    return CGSizeMake(actualSize.size.width, actualSize.size.height);
+    return CGSizeMake(ceilf(actualSize.size.width), ceilf(actualSize.size.height));
 }
 
 #define SENSOR_DELAY_GAME 0.02
@@ -310,44 +313,22 @@ void Device::setAccelerometerInterval(float interval)
 #endif
 }
 
-typedef struct
-{
-    unsigned int height;
-    unsigned int width;
-    bool         isPremultipliedAlpha;
-    bool         hasShadow;
-    CGSize       shadowOffset;
-    float        shadowBlur;
-    float        shadowOpacity;
-    bool         hasStroke;
-    float        strokeColorR;
-    float        strokeColorG;
-    float        strokeColorB;
-    float        strokeColorA;
-    float        strokeSize;
-    float        tintColorR;
-    float        tintColorG;
-    float        tintColorB;
-    float        tintColorA;
 
-    unsigned char*  data;
-
-} tImageInfo;
 
 static CGSize _calculateStringSize(NSAttributedString *str, id font, CGSize *constrainSize, bool enableWrap, int overflow)
 {
     CGSize textRect = CGSizeZero;
     textRect.width = constrainSize->width > 0 ? constrainSize->width
-    : CGFLOAT_MAX;
+    : MAX_MEASURE_HEIGHT;
     textRect.height = constrainSize->height > 0 ? constrainSize->height
-    : CGFLOAT_MAX;
+    : MAX_MEASURE_HEIGHT;
     
     if (overflow == 1) {
         if(!enableWrap) {
-            textRect.width = CGFLOAT_MAX;
-            textRect.height = CGFLOAT_MAX;
+            textRect.width = MAX_MEASURE_HEIGHT;
+            textRect.height = MAX_MEASURE_HEIGHT;
         } else {
-            textRect.height = CGFLOAT_MAX;
+            textRect.height = MAX_MEASURE_HEIGHT;
         }
     }
 
@@ -390,7 +371,13 @@ static id _createSystemFont( const char * fontName, int size, bool enableBold)
     return font;
 }
 
-static bool _initWithString(const char * text, cocos2d::Device::TextAlign align, const char * fontName, int size, tImageInfo* info, bool enableWrap, int overflow, bool enableBold)
+static bool _initWithString(const char * text,
+                            cocos2d::Device::TextAlign align,
+                            const char * fontName,
+                            int size, tImageInfo* info,
+                            bool enableWrap,
+                            int overflow,
+                            bool enableBold)
 {
 
     bool bRet = false;
@@ -453,8 +440,10 @@ static bool _initWithString(const char * text, cocos2d::Device::TextAlign align,
         NSInteger POTWide = dimensions.width;
         NSInteger POTHigh = dimensions.height;
         
+       
         CGRect textRect = CGRectMake(xPadding, yPadding,
-                                     realDimensions.width, realDimensions.height);
+                                     realDimensions.width,
+                                     realDimensions.height);
 
 
         NSUInteger textureSize = POTWide * POTHigh * 4;
@@ -578,7 +567,14 @@ Data Device::getTextureDataForText(const char * text, const FontDefinition& text
         info.tintColorB             = textDefinition._fontFillColor.b / 255.0f;
         info.tintColorA             = textDefinition._fontAlpha / 255.0f;
 
-        if (! _initWithString(text, align, textDefinition._fontName.c_str(), textDefinition._fontSize, &info, textDefinition._enableWrap, textDefinition._overflow, textDefinition._enableBold))
+        if (! _initWithString(text,
+                              align,
+                              textDefinition._fontName.c_str(),
+                              textDefinition._fontSize,
+                              &info,
+                              textDefinition._enableWrap,
+                              textDefinition._overflow,
+                              textDefinition._enableBold))
         {
             break;
         }

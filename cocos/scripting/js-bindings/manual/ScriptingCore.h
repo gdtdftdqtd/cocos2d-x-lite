@@ -39,8 +39,9 @@
 
 #include <assert.h>
 #include <memory>
+#include <chrono>
 
-#define ENGINE_VERSION "Cocos2d-JS v3.13"
+#define ENGINE_VERSION "Cocos2d-JS v3.14"
 
 void js_log(const char *format, ...);
 
@@ -90,6 +91,8 @@ private:
     JSObject *_finalizing;
     
     ScriptingCore();
+
+	std::chrono::steady_clock::time_point _engineStartTime;
 public:
     ~ScriptingCore();
 
@@ -174,7 +177,7 @@ public:
      @param functionName String object holding the name of the function, in the global script environment, that is to be executed.
      @return The integer value returned from the script function.
      */
-    virtual int executeGlobalFunction(const char* functionName) override { return 0; }
+    virtual int executeGlobalFunction(const char* functionName) override;
 
     virtual int sendEvent(cocos2d::ScriptEvent* message) override;
 
@@ -352,6 +355,11 @@ public:
     void cleanAllScript();
 
     /**@~english
+     * Gets the time that the ScriptingCore was initalized
+     */
+    std::chrono::steady_clock::time_point getEngineStartTime() const;
+    
+    /**@~english
      * Initialize everything, including the js context, js global object etc.
      */
     void start();
@@ -524,13 +532,24 @@ public:
      * This function is only called when compiled with CC_ENABLE_GC_FOR_NATIVE_OBJECTS=1
      */
     virtual void unrootObject(cocos2d::Ref* ref) override;
+    
+    /** Remove proxy for a native object
+     */
+    virtual void removeObjectProxy(cocos2d::Ref* obj) override;
 
     /**
      * Calls the Garbage Collector
      */
     virtual void garbageCollect() override;
-    
+
+    /**
+     * Sets the js object that is being finalizing in the script engine, internal use only, please do not call this function
+     */
     void setFinalizing (JSObject *finalizing) {_finalizing = finalizing;};
+
+    /**
+     * Gets the js object that is being finalizing in the script engine
+     */
     JSObject *getFinalizing () {return _finalizing;};
 
 private:
@@ -565,9 +584,8 @@ bool jsb_get_reserved_slot(JSObject *obj, uint32_t idx, jsval& ret);
 template <class T>
 js_type_class_t *jsb_register_class(JSContext *cx, JSClass *jsClass, JS::HandleObject proto, JS::HandleObject parentProto)
 {
-    TypeTest<T> t;
     js_type_class_t *p = nullptr;
-    std::string typeName = t.s_name();
+    std::string typeName = TypeTest<T>::s_name();
     if (_js_global_type_map.find(typeName) == _js_global_type_map.end())
     {
         JS::RootedObject protoRoot(cx, proto);
@@ -618,6 +636,11 @@ void jsb_ref_autoreleased_init(JSContext* cx, JS::Heap<JSObject*> *obj, cocos2d:
  * Useful for the EaseActions and others
  */
 void jsb_ref_rebind(JSContext* cx, JS::HandleObject jsobj, js_proxy_t *js2native_proxy, cocos2d::Ref* oldRef, cocos2d::Ref* newRef, const char* debug);
+
+/**
+ * Generic initialization function for non Ref classes
+ */
+void jsb_non_ref_init(JSContext* cx, JS::Heap<JSObject*> *obj, void* native, const char* debug);
 
 /**
  * Creates a new JSObject of a certain type (typeClass) and creates a proxy associated with and the Ref

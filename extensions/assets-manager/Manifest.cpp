@@ -27,6 +27,7 @@
 #include "json/stringbuffer.h"
 
 #include <fstream>
+#include <stdio.h>
 
 #define KEY_VERSION             "version"
 #define KEY_PACKAGE_URL         "packageUrl"
@@ -34,6 +35,7 @@
 #define KEY_VERSION_URL         "remoteVersionUrl"
 #define KEY_GROUP_VERSIONS      "groupVersions"
 #define KEY_ENGINE_VERSION      "engineVersion"
+#define KEY_UPDATING            "updating"
 #define KEY_ASSETS              "assets"
 #define KEY_COMPRESSED_FILES    "compressedFiles"
 #define KEY_SEARCH_PATHS        "searchPaths"
@@ -42,14 +44,37 @@
 #define KEY_MD5                 "md5"
 #define KEY_GROUP               "group"
 #define KEY_COMPRESSED          "compressed"
+#define KEY_SIZE                "size"
 #define KEY_COMPRESSED_FILE     "compressedFile"
 #define KEY_DOWNLOAD_STATE      "downloadState"
 
 NS_CC_EXT_BEGIN
 
+static int cmpVersion(const std::string& v1, const std::string& v2)
+{
+    int i;
+    int oct_v1[4] = {0}, oct_v2[4] = {0};
+    int filled1 = std::sscanf(v1.c_str(), "%d.%d.%d.%d", &oct_v1[0], &oct_v1[1], &oct_v1[2], &oct_v1[3]);
+    int filled2 = std::sscanf(v2.c_str(), "%d.%d.%d.%d", &oct_v2[0], &oct_v2[1], &oct_v2[2], &oct_v2[3]);
+    
+    if (filled1 == 0 || filled2 == 0)
+    {
+        return strcmp(v1.c_str(), v2.c_str());
+    }
+    for (i = 0; i < 4; i++)
+    {
+        if (oct_v1[i] > oct_v2[i])
+            return 1;
+        else if (oct_v1[i] < oct_v2[i])
+            return -1;
+    }
+    return 0;
+}
+
 Manifest::Manifest(const std::string& manifestUrl/* = ""*/)
 : _versionLoaded(false)
 , _loaded(false)
+, _updating(false)
 , _manifestRoot("")
 , _remoteManifestUrl("")
 , _remoteVersionUrl("")
@@ -59,7 +84,23 @@ Manifest::Manifest(const std::string& manifestUrl/* = ""*/)
     // Init variables
     _fileUtils = FileUtils::getInstance();
     if (manifestUrl.size() > 0)
-        parse(manifestUrl);
+        parseFile(manifestUrl);
+}
+
+Manifest::Manifest(const std::string& content, const std::string& manifestRoot)
+: _versionLoaded(false)
+, _loaded(false)
+, _updating(false)
+, _manifestRoot("")
+, _remoteManifestUrl("")
+, _remoteVersionUrl("")
+, _version("")
+, _engineVer("")
+{
+    // Init variables
+    _fileUtils = FileUtils::getInstance();
+    if (content.size() > 0)
+        parseJSONString(content, manifestRoot);
 }
 
 void Manifest::loadJson(const std::string& url)
@@ -77,16 +118,28 @@ void Manifest::loadJson(const std::string& url)
         }
         else
         {
-            // Parse file with rapid json
-            _json.Parse<0>(content.c_str());
-            // Print error
-            if (_json.HasParseError()) {
-                size_t offset = _json.GetErrorOffset();
-                if (offset > 0)
-                    offset--;
-                std::string errorSnippet = content.substr(offset, 10);
-                CCLOG("File parse error %d at <%s>\n", _json.GetParseError(), errorSnippet.c_str());
-            }
+            loadJsonFromString(content);
+        }
+    }
+}
+
+void Manifest::loadJsonFromString(const std::string& content)
+{
+    if (content.size() == 0)
+    {
+        CCLOG("Fail to parse empty json content.");
+    }
+    else
+    {
+        // Parse file with rapid json
+        _json.Parse<0>(content.c_str());
+        // Print error
+        if (_json.HasParseError()) {
+            size_t offset = _json.GetErrorOffset();
+            if (offset > 0)
+                offset--;
+            std::string errorSnippet = content.substr(offset, 10);
+            CCLOG("File parse error %d at <%s>\n", _json.GetParseError(), errorSnippet.c_str());
         }
     }
 }
@@ -101,11 +154,11 @@ void Manifest::parseVersion(const std::string& versionUrl)
     }
 }
 
-void Manifest::parse(const std::string& manifestUrl)
+void Manifest::parseFile(const std::string& manifestUrl)
 {
     loadJson(manifestUrl);
 	
-    if (_json.IsObject())
+    if (!_json.HasParseError() && _json.IsObject())
     {
         // Register the local manifest root
         size_t found = manifestUrl.find_last_of("/\\");
@@ -117,6 +170,18 @@ void Manifest::parse(const std::string& manifestUrl)
     }
 }
 
+void Manifest::parseJSONString(const std::string& content, const std::string& manifestRoot)
+{
+    loadJsonFromString(content);
+    
+    if (!_json.HasParseError() && _json.IsObject())
+    {
+        // Register the local manifest root
+        _manifestRoot = manifestRoot;
+        loadManifest(_json);
+    }
+}
+
 bool Manifest::isVersionLoaded() const
 {
     return _versionLoaded;
@@ -124,6 +189,22 @@ bool Manifest::isVersionLoaded() const
 bool Manifest::isLoaded() const
 {
     return _loaded;
+}
+
+void Manifest::setUpdating(bool updating)
+{
+    if (_loaded && _json.IsObject())
+    {
+        if (_json.HasMember(KEY_UPDATING) && _json[KEY_UPDATING].IsBool())
+        {
+            _json[KEY_UPDATING].SetBool(updating);
+        }
+        else
+        {
+            _json.AddMember<bool>(KEY_UPDATING, updating, _json.GetAllocator());
+        }
+        _updating = updating;
+    }
 }
 
 bool Manifest::versionEquals(const Manifest *b) const
@@ -156,16 +237,36 @@ bool Manifest::versionEquals(const Manifest *b) const
     return true;
 }
 
+bool Manifest::versionGreater(const Manifest *b, const std::function<int(const std::string& versionA, const std::string& versionB)>& handle) const
+{
+    std::string localVersion = getVersion();
+    std::string bVersion = b->getVersion();
+    bool greater;
+    if (handle)
+    {
+        greater = handle(localVersion, bVersion) >= 0;
+    }
+    else
+    {
+        greater = cmpVersion(localVersion, bVersion) >= 0;
+    }
+    return greater;
+}
+
 std::unordered_map<std::string, Manifest::AssetDiff> Manifest::genDiff(const Manifest *b) const
 {
     std::unordered_map<std::string, AssetDiff> diff_map;
     const std::unordered_map<std::string, Asset> &bAssets = b->getAssets();
     
+    std::string key;
+    Asset valueA;
+    Asset valueB;
+    
     std::unordered_map<std::string, Asset>::const_iterator valueIt, it;
     for (it = _assets.begin(); it != _assets.end(); ++it)
     {
-        const auto &key = it->first;
-        const auto &valueA = it->second;
+        key = it->first;
+        valueA = it->second;
         
         // Deleted
         valueIt = bAssets.find(key);
@@ -178,7 +279,7 @@ std::unordered_map<std::string, Manifest::AssetDiff> Manifest::genDiff(const Man
         }
         
         // Modified
-        auto &valueB = valueIt->second;
+        valueB = valueIt->second;
         if (valueA.md5 != valueB.md5) {
             AssetDiff diff;
             diff.asset = valueB;
@@ -189,8 +290,8 @@ std::unordered_map<std::string, Manifest::AssetDiff> Manifest::genDiff(const Man
     
     for (it = bAssets.begin(); it != bAssets.end(); ++it)
     {
-        const auto &key = it->first;
-        const auto &valueB = it->second;
+        key = it->first;
+        valueB = it->second;
         
         // Added
         valueIt = _assets.find(key);
@@ -211,12 +312,13 @@ void Manifest::genResumeAssetsList(DownloadUnits *units) const
     {
         Asset asset = it->second;
         
-        if (asset.downloadState != DownloadState::SUCCESSED)
+        if (asset.downloadState != DownloadState::SUCCESSED && asset.downloadState != DownloadState::UNMARKED)
         {
             DownloadUnit unit;
             unit.customId = it->first;
             unit.srcUrl = _packageUrl + asset.path;
             unit.storagePath = _manifestRoot + asset.path;
+            unit.size = asset.size;
             units->emplace(unit.customId, unit);
         }
     }
@@ -321,18 +423,16 @@ void Manifest::setAssetDownloadState(const std::string &key, const Manifest::Dow
                 rapidjson::Value &assets = _json[KEY_ASSETS];
                 if (assets.IsObject())
                 {
-                    for (rapidjson::Value::MemberIterator itr = assets.MemberBegin(); itr != assets.MemberEnd(); ++itr)
+                    if (assets.HasMember(key.c_str()))
                     {
-                        if (key.compare(itr->name.GetString()) == 0) {
-                            rapidjson::Value &entry = itr->value;
-                            if (entry.HasMember(KEY_DOWNLOAD_STATE) && entry[KEY_DOWNLOAD_STATE].IsInt())
-                            {
-                                entry[KEY_DOWNLOAD_STATE].SetInt((int) state);
-                            }
-                            else
-                            {
-                                entry.AddMember<int>(KEY_DOWNLOAD_STATE, (int)state, _json.GetAllocator());
-                            }
+                        rapidjson::Value &entry = assets[key.c_str()];
+                        if (entry.HasMember(KEY_DOWNLOAD_STATE) && entry[KEY_DOWNLOAD_STATE].IsInt())
+                        {
+                            entry[KEY_DOWNLOAD_STATE].SetInt((int) state);
+                        }
+                        else
+                        {
+                            entry.AddMember<int>(KEY_DOWNLOAD_STATE, (int)state, _json.GetAllocator());
                         }
                     }
                 }
@@ -386,11 +486,17 @@ Manifest::Asset Manifest::parseAsset(const std::string &path, const rapidjson::V
     }
     else asset.compressed = false;
     
+    if ( json.HasMember(KEY_SIZE) && json[KEY_SIZE].IsInt() )
+    {
+        asset.size = json[KEY_SIZE].GetInt();
+    }
+    else asset.size = 0;
+    
     if ( json.HasMember(KEY_DOWNLOAD_STATE) && json[KEY_DOWNLOAD_STATE].IsInt() )
     {
-        asset.downloadState = (DownloadState)(json[KEY_DOWNLOAD_STATE].GetInt());
+        asset.downloadState = (json[KEY_DOWNLOAD_STATE].GetInt());
     }
-    else asset.downloadState = DownloadState::UNSTARTED;
+    else asset.downloadState = DownloadState::UNMARKED;
     
     return asset;
 }
@@ -439,6 +545,12 @@ void Manifest::loadVersion(const rapidjson::Document &json)
     if ( json.HasMember(KEY_ENGINE_VERSION) && json[KEY_ENGINE_VERSION].IsString() )
     {
         _engineVer = json[KEY_ENGINE_VERSION].GetString();
+    }
+    
+    // Retrieve updating flag
+    if ( json.HasMember(KEY_UPDATING) && json[KEY_UPDATING].IsBool() )
+    {
+        _updating = json[KEY_UPDATING].GetBool();
     }
     
     _versionLoaded = true;
