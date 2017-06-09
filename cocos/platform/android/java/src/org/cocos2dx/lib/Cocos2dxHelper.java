@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2013-2017 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -418,6 +418,11 @@ public class Cocos2dxHelper {
         Cocos2dxHelper.sCocos2dSound.stopAllEffects();
     }
 
+    static void setAudioFocus(boolean isAudioFocus) {
+        sCocos2dMusic.setAudioFocus(isAudioFocus);
+        sCocos2dSound.setAudioFocus(isAudioFocus);
+    }
+
     public static void end() {
         Cocos2dxHelper.sCocos2dMusic.end();
         Cocos2dxHelper.sCocos2dSound.end();
@@ -523,7 +528,7 @@ public class Cocos2dxHelper {
             }
         }
 
-        return false;
+        return defaultValue;
     }
     
     public static int getIntegerForKey(String key, int defaultValue) {
@@ -551,7 +556,7 @@ public class Cocos2dxHelper {
             }
         }
 
-        return 0;
+        return defaultValue;
     }
     
     public static float getFloatForKey(String key, float defaultValue) {
@@ -560,7 +565,7 @@ public class Cocos2dxHelper {
             return settings.getFloat(key, defaultValue);
         }
         catch (Exception ex) {
-            ex.printStackTrace();;
+            ex.printStackTrace();
 
             Map allValues = settings.getAll();
             Object value = allValues.get(key);
@@ -579,7 +584,7 @@ public class Cocos2dxHelper {
             }
         }
 
-        return 0.0f;
+        return defaultValue;
     }
     
     public static double getDoubleForKey(String key, double defaultValue) {
@@ -603,21 +608,21 @@ public class Cocos2dxHelper {
         SharedPreferences settings = sActivity.getSharedPreferences(Cocos2dxHelper.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(key, value);
-        editor.commit();
+        editor.apply();
     }
     
     public static void setIntegerForKey(String key, int value) {
         SharedPreferences settings = sActivity.getSharedPreferences(Cocos2dxHelper.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(key, value);
-        editor.commit();
+        editor.apply();
     }
     
     public static void setFloatForKey(String key, float value) {
         SharedPreferences settings = sActivity.getSharedPreferences(Cocos2dxHelper.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putFloat(key, value);
-        editor.commit();
+        editor.apply();
     }
     
     public static void setDoubleForKey(String key, double value) {
@@ -625,21 +630,21 @@ public class Cocos2dxHelper {
         SharedPreferences settings = sActivity.getSharedPreferences(Cocos2dxHelper.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putFloat(key, (float)value);
-        editor.commit();
+        editor.apply();
     }
     
     public static void setStringForKey(String key, String value) {
         SharedPreferences settings = sActivity.getSharedPreferences(Cocos2dxHelper.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(key, value);
-        editor.commit();
+        editor.apply();
     }
     
     public static void deleteValueForKey(String key) {
         SharedPreferences settings = sActivity.getSharedPreferences(Cocos2dxHelper.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.remove(key);
-        editor.commit();
+        editor.apply();
     }
 
     public static byte[] conversionEncoding(byte[] text, String fromCharset,String newCharset)
