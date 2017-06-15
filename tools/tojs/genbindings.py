@@ -165,6 +165,7 @@ def main():
         #             'box2d.ini' : ('box2d', 'jsb_box2d_auto'),
         #             }
         cmd_args = {'cocos2dx.ini' : ('cocos2d-x', 'jsb_cocos2dx_auto')}
+        # cmd_args = {'rvo.ini' : ('RVO', 'jsb_RVO_auto')}
         target = 'spidermonkey'
         generator_py = '%s/generator.py' % cxx_generator_root
         for key in cmd_args.keys():
