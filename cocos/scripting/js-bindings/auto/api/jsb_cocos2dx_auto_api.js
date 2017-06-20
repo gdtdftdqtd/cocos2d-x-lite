@@ -319,6 +319,18 @@ float
 },
 
 /**
+ * @method getFormatForString
+ * @param {String} arg0
+ * @return {cc.Texture2D::PixelFormat}
+ */
+getFormatForString : function (
+str 
+)
+{
+    return 0;
+},
+
+/**
  * @method setDefaultAlphaPixelFormat
  * @param {cc.Texture2D::PixelFormat} arg0
  */
@@ -329,10 +341,32 @@ pixelformat
 },
 
 /**
+ * @method setSpecialAlphaPixelFormat
+ * @param {map_object} arg0
+ */
+setSpecialAlphaPixelFormat : function (
+map 
+)
+{
+},
+
+/**
  * @method getDefaultAlphaPixelFormat
  * @return {cc.Texture2D::PixelFormat}
  */
 getDefaultAlphaPixelFormat : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getSpecialAlphaPixelFormat
+ * @param {String} arg0
+ * @return {cc.Texture2D::PixelFormat}
+ */
+getSpecialAlphaPixelFormat : function (
+str 
 )
 {
     return 0;

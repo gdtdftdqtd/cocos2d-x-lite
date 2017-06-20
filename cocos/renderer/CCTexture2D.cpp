@@ -47,6 +47,7 @@ THE SOFTWARE.
 #include "renderer/ccGLStateCache.h"
 #include "renderer/CCGLProgramCache.h"
 #include "base/CCNinePatchImageParser.h"
+#include "platform/CCFileUtils.h"
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     #include "renderer/CCTextureCache.h"
@@ -119,7 +120,9 @@ const Texture2D::PixelFormatInfoMap Texture2D::_pixelFormatInfoTables(TexturePix
 // If the image has alpha, you can create RGBA8 (32-bit) or RGBA4 (16-bit) or RGB5A1 (16-bit)
 // Default is: RGBA8888 (32-bit textures)
 static Texture2D::PixelFormat g_defaultAlphaPixelFormat = Texture2D::PixelFormat::DEFAULT;
-
+//add by chl
+static std::map<std::string, Texture2D::PixelFormat> g_specialFormatList;
+//end add
 //////////////////////////////////////////////////////////////////////////
 //convertor function
 
@@ -773,6 +776,9 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
     PixelFormat      renderFormat = image->getRenderFormat();
     size_t             tempDataLen = image->getDataLen();
 
+    //add by chl
+    pixelFormat = getSpecialAlphaPixelFormat(image->getFilePath());
+    //end by
 
     if (image->getNumberOfMipmaps() > 1)
     {
@@ -1475,4 +1481,70 @@ void Texture2D::setAlphaTexture(Texture2D* alphaTexture)
         this->_hasPremultipliedAlpha = true; // PremultipliedAlpha shoud be true.
     }
 }
+
+
+void Texture2D::setSpecialAlphaPixelFormat(std::map<std::string, std::string> &specialFormatPathAndFormatList)
+{
+    g_specialFormatList.clear();
+    std::map<std::string, std::string>::iterator it = specialFormatPathAndFormatList.begin();
+    for (; it != specialFormatPathAndFormatList.end(); ++it) {
+        if (it->first.empty()) {
+            continue;
+        }
+        std::string fullpath = FileUtils::getInstance()->fullPathForFilename(it->first);
+        if (fullpath.empty()) {
+            continue;
+        }
+        auto format = getFormatForString(it->second);
+        g_specialFormatList[fullpath] = format;
+    }
+}
+
+
+
+Texture2D::PixelFormat Texture2D::getSpecialAlphaPixelFormat(const std::string &path)
+{
+    std::string fullpath = FileUtils::getInstance()->fullPathForFilename(path);
+    std::map<std::string, Texture2D::PixelFormat>::iterator it = g_specialFormatList.find(fullpath);
+    if (it == g_specialFormatList.end()) {
+        return getDefaultAlphaPixelFormat();
+    }
+    return it->second;
+}
+
+Texture2D::PixelFormat Texture2D::getFormatForString(const std::string &formatString)
+{
+    if (formatString == "RGBA8888") {
+        return Texture2D::PixelFormat::RGBA8888;
+    }
+    else if (formatString == "RGB888"){
+        return Texture2D::PixelFormat::RGB888;
+    }
+    else if (formatString == "RGB565"){
+        return Texture2D::PixelFormat::RGB565;
+    }
+    else if (formatString == "RGBA4444"){
+        return Texture2D::PixelFormat::RGBA4444;
+    }
+    else if (formatString == "RGB5A1"){
+        return Texture2D::PixelFormat::RGB5A1;
+    }
+    else if (formatString == "AI88"){
+        return Texture2D::PixelFormat::AI88;
+    }
+    else if (formatString == "A8"){
+        return Texture2D::PixelFormat::A8;
+    }
+    else if (formatString == "I8"){
+        return Texture2D::PixelFormat::I8;
+    }
+    else if (formatString == "PVRTC4"){
+        return Texture2D::PixelFormat::PVRTC4;
+    }
+    else if (formatString == "PVRTC2"){
+        return Texture2D::PixelFormat::PVRTC2;
+    }
+    return Texture2D::PixelFormat::RGBA8888;
+}
+
 NS_CC_END

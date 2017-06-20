@@ -967,6 +967,25 @@ bool js_cocos2dx_Texture2D_setMaxS(JSContext *cx, uint32_t argc, jsval *vp)
     JS_ReportError(cx, "js_cocos2dx_Texture2D_setMaxS : wrong number of arguments: %d, was expecting %d", argc, 1);
     return false;
 }
+bool js_cocos2dx_Texture2D_getFormatForString(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    if (argc == 1) {
+        std::string arg0;
+        ok &= jsval_to_std_string(cx, args.get(0), &arg0);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_Texture2D_getFormatForString : Error processing arguments");
+
+        int ret = (int)cocos2d::Texture2D::getFormatForString(arg0);
+        jsval jsret = JSVAL_NULL;
+        jsret = int32_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+    JS_ReportError(cx, "js_cocos2dx_Texture2D_getFormatForString : wrong number of arguments");
+    return false;
+}
+
 bool js_cocos2dx_Texture2D_setDefaultAlphaPixelFormat(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -983,6 +1002,22 @@ bool js_cocos2dx_Texture2D_setDefaultAlphaPixelFormat(JSContext *cx, uint32_t ar
     return false;
 }
 
+bool js_cocos2dx_Texture2D_setSpecialAlphaPixelFormat(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    if (argc == 1) {
+        std::map<std::string, std::string> arg0;
+        ok &= jsval_to_std_map_string_string(cx, args.get(0), &arg0);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_Texture2D_setSpecialAlphaPixelFormat : Error processing arguments");
+        cocos2d::Texture2D::setSpecialAlphaPixelFormat(arg0);
+        args.rval().setUndefined();
+        return true;
+    }
+    JS_ReportError(cx, "js_cocos2dx_Texture2D_setSpecialAlphaPixelFormat : wrong number of arguments");
+    return false;
+}
+
 bool js_cocos2dx_Texture2D_getDefaultAlphaPixelFormat(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -995,6 +1030,25 @@ bool js_cocos2dx_Texture2D_getDefaultAlphaPixelFormat(JSContext *cx, uint32_t ar
         return true;
     }
     JS_ReportError(cx, "js_cocos2dx_Texture2D_getDefaultAlphaPixelFormat : wrong number of arguments");
+    return false;
+}
+
+bool js_cocos2dx_Texture2D_getSpecialAlphaPixelFormat(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+    if (argc == 1) {
+        std::string arg0;
+        ok &= jsval_to_std_string(cx, args.get(0), &arg0);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_Texture2D_getSpecialAlphaPixelFormat : Error processing arguments");
+
+        int ret = (int)cocos2d::Texture2D::getSpecialAlphaPixelFormat(arg0);
+        jsval jsret = JSVAL_NULL;
+        jsret = int32_to_jsval(cx, ret);
+        args.rval().set(jsret);
+        return true;
+    }
+    JS_ReportError(cx, "js_cocos2dx_Texture2D_getSpecialAlphaPixelFormat : wrong number of arguments");
     return false;
 }
 
@@ -1064,8 +1118,11 @@ void js_register_cocos2dx_Texture2D(JSContext *cx, JS::HandleObject global) {
     };
 
     static JSFunctionSpec st_funcs[] = {
+        JS_FN("getFormatForString", js_cocos2dx_Texture2D_getFormatForString, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setDefaultAlphaPixelFormat", js_cocos2dx_Texture2D_setDefaultAlphaPixelFormat, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("setSpecialAlphaPixelFormat", js_cocos2dx_Texture2D_setSpecialAlphaPixelFormat, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getDefaultAlphaPixelFormat", js_cocos2dx_Texture2D_getDefaultAlphaPixelFormat, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("getSpecialAlphaPixelFormat", js_cocos2dx_Texture2D_getSpecialAlphaPixelFormat, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FS_END
     };
 
