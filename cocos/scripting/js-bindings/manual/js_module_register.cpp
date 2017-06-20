@@ -6,6 +6,7 @@
 #include "scripting/js-bindings/auto/jsb_cocos2dx_builder_auto.hpp"
 #include "scripting/js-bindings/auto/jsb_cocos2dx_spine_auto.hpp"
 #include "scripting/js-bindings/auto/jsb_cocos2dx_dragonbones_auto.hpp"
+#include "scripting/js-bindings/auto/jsb_cocos2dx_network_auto.hpp"
 #include "jsb_creator_auto.hpp"
 #include "scripting/js-bindings/auto/jsb_cocos2dx_extension_auto.hpp"
 #include "scripting/js-bindings/manual/ui/jsb_cocos2dx_ui_manual.h"
@@ -20,6 +21,10 @@
 #include "scripting/js-bindings/manual/network/XMLHTTPRequest.h"
 #include "scripting/js-bindings/manual/network/jsb_websocket.h"
 #include "scripting/js-bindings/manual/network/jsb_socketio.h"
+
+#include "scripting/js-bindings/auto/jsb_box2d_auto.hpp"
+#include "scripting/js-bindings/manual/box2d/js_bindings_box2d_manual.h"
+#include "scripting/js-bindings/manual/creator/js_bindings_creator_manual.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 #include "scripting/js-bindings/auto/jsb_cocos2dx_experimental_video_auto.hpp"
@@ -46,6 +51,9 @@ int js_module_register()
     sc->addRegisterCallback(register_cocos2dx_js_core);
     sc->addRegisterCallback(jsb_register_system);
     
+    sc->addRegisterCallback(register_all_box2dclasses);
+    sc->addRegisterCallback(register_all_box2dclasses_manual);
+    
     // extension can be commented out to reduce the package
     sc->addRegisterCallback(register_all_cocos2dx_extension);
     sc->addRegisterCallback(register_all_cocos2dx_extension_manual);
@@ -63,10 +71,6 @@ int js_module_register()
     sc->addRegisterCallback(register_all_cocos2dx_ui);
     sc->addRegisterCallback(register_all_cocos2dx_ui_manual);
     
-    // studio can be commented out to reduce the package,
-    sc->addRegisterCallback(register_all_cocos2dx_studio);
-    sc->addRegisterCallback(register_all_cocos2dx_studio_manual);
-    
     // spine can be commented out to reduce the package
     sc->addRegisterCallback(register_all_cocos2dx_spine);
     sc->addRegisterCallback(register_all_cocos2dx_spine_manual);
@@ -77,6 +81,7 @@ int js_module_register()
 
     // register creator
     sc->addRegisterCallback(register_all_creator);
+    sc->addRegisterCallback(register_all_creatorclasses_manual);
     
     // XmlHttpRequest can be commented out to reduce the package
     sc->addRegisterCallback(MinXmlHttpRequest::_js_register);
@@ -84,6 +89,8 @@ int js_module_register()
     sc->addRegisterCallback(register_jsb_websocket);
     // socket io can be commented out to reduce the package
     sc->addRegisterCallback(register_jsb_socketio);
+    // Downloader
+    sc->addRegisterCallback(register_all_cocos2dx_network);
     
 #if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
     // Physics 3d can be commented out to reduce the package
