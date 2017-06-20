@@ -1491,12 +1491,8 @@ void Texture2D::setSpecialAlphaPixelFormat(std::map<std::string, std::string> &s
         if (it->first.empty()) {
             continue;
         }
-        std::string fullpath = FileUtils::getInstance()->fullPathForFilename(it->first);
-        if (fullpath.empty()) {
-            continue;
-        }
         auto format = getFormatForString(it->second);
-        g_specialFormatList[fullpath] = format;
+        g_specialFormatList[it->first] = format;
     }
 }
 
@@ -1504,8 +1500,8 @@ void Texture2D::setSpecialAlphaPixelFormat(std::map<std::string, std::string> &s
 
 Texture2D::PixelFormat Texture2D::getSpecialAlphaPixelFormat(const std::string &path)
 {
-    std::string fullpath = FileUtils::getInstance()->fullPathForFilename(path);
-    std::map<std::string, Texture2D::PixelFormat>::iterator it = g_specialFormatList.find(fullpath);
+    std::string baseName = FileUtils::getInstance()->basename(path);
+    std::map<std::string, Texture2D::PixelFormat>::iterator it = g_specialFormatList.find(baseName);
     if (it == g_specialFormatList.end()) {
         return getDefaultAlphaPixelFormat();
     }
