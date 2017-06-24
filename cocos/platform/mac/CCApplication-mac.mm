@@ -34,6 +34,9 @@ THE SOFTWARE.
 #include "math/CCGeometry.h"
 #include "base/CCDirector.h"
 
+#include <sys/param.h>
+#include <sys/mount.h>
+
 NS_CC_BEGIN
 
 static long getCurrentMillSecond()
@@ -218,6 +221,19 @@ void Application::setStartupScriptFilename(const std::string& startupScriptFile)
 const std::string& Application::getStartupScriptFilename(void)
 {
     return _startupScriptFilename;
+}
+
+//add by chl
+long long Application::getFreeDiskSpace()
+{
+    struct statfs buf;
+    unsigned long long freespace = 0;
+    if(statfs("/var", &buf) >= 0){
+        freespace = (unsigned long long)(buf.f_bsize * buf.f_bfree);
+        //        freespace = freespace;//1024*1024
+    }
+    
+    return freespace;//M
 }
 
 NS_CC_END

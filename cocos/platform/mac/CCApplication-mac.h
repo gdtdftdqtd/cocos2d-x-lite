@@ -115,6 +115,9 @@ public:
     
     const std::string& getStartupScriptFilename(void);
     
+    //add by chl
+    virtual long long getFreeDiskSpace() override;
+    
 protected:
     static Application * sm_pSharedApplication;
 
