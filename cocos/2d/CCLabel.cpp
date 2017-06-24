@@ -440,6 +440,9 @@ Label::~Label()
     _eventDispatcher->removeEventListener(_purgeTextureListener);
     _eventDispatcher->removeEventListener(_resetTextureListener);
 
+    if (_textSprite) {
+        _textSprite->removeAllChildren();
+    }
     CC_SAFE_RELEASE_NULL(_textSprite);
     CC_SAFE_RELEASE_NULL(_shadowNode);
     CC_SAFE_RELEASE_NULL(_fntSpriteFrame);
@@ -447,6 +450,9 @@ Label::~Label()
 
 void Label::reset()
 {
+    if (_textSprite) {
+        _textSprite->removeAllChildren();
+    }
     CC_SAFE_RELEASE_NULL(_textSprite);
     CC_SAFE_RELEASE_NULL(_shadowNode);
     Node::removeAllChildrenWithCleanup(true);
@@ -1362,6 +1368,43 @@ void Label::createShadowSpriteForSystemFont(const FontDefinition& fontDef)
     }
 }
 
+void Label::createOutlineForSystemFont(const FontDefinition& fontDef)
+{
+    for (int i=0; i<4; ++i) {
+        FontDefinition def = fontDef;
+        def._fontFillColor.r = fontDef._stroke._strokeColor.r;
+        def._fontFillColor.g = fontDef._stroke._strokeColor.g;
+        def._fontFillColor.b = fontDef._stroke._strokeColor.b;
+        def._fontAlpha = fontDef._stroke._strokeAlpha;
+        
+        auto texture = new (std::nothrow) Texture2D;
+        texture->initWithString(_utf8Text.c_str(), def);
+        
+        auto ol = Sprite::createWithTexture(texture);
+        ol->setAnchorPoint(Vec2::ANCHOR_BOTTOM_LEFT);
+        
+        _textSprite->addChild(ol);
+        ol->setLocalZOrder(-1);
+        
+        texture->release();
+        
+        float x=0,y=0;
+        if (i==0) {
+            x = -1;
+        }
+        else if (i == 1){
+            y = -1;
+        }
+        else if (i == 2){
+            x = 1;
+        }
+        else if (i == 3){
+            y = 1;
+        }
+        ol->setPosition(Vec2(x,y));
+    }
+}
+
 void Label::setFontDefinition(const FontDefinition& textDefinition)
 {
     _systemFont = textDefinition._fontName;
@@ -1410,6 +1453,9 @@ void Label::updateContent()
         _systemFontDirty = false;
     }
 
+    if (_textSprite) {
+        _textSprite->removeAllChildren();
+    }
     CC_SAFE_RELEASE_NULL(_textSprite);
     CC_SAFE_RELEASE_NULL(_shadowNode);
     bool updateFinished = true;
@@ -1432,6 +1478,9 @@ void Label::updateContent()
         if (_shadowEnabled)
         {
             createShadowSpriteForSystemFont(fontDef);
+        }
+        if (_outlineSize > 0.f) {
+            createOutlineForSystemFont(fontDef);
         }
     }
 
@@ -2099,8 +2148,8 @@ FontDefinition Label::_getFontDefinition() const
 
     if (_currLabelEffect == LabelEffect::OUTLINE && _outlineSize > 0.f)
     {
-        systemFontDef._stroke._strokeEnabled = true;
-        systemFontDef._stroke._strokeSize = _outlineSize;
+        systemFontDef._stroke._strokeEnabled = false;
+        systemFontDef._stroke._strokeSize = 0;
         systemFontDef._stroke._strokeColor.r = _effectColorF.r * 255;
         systemFontDef._stroke._strokeColor.g = _effectColorF.g * 255;
         systemFontDef._stroke._strokeColor.b = _effectColorF.b * 255;

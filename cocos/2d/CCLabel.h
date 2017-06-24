@@ -683,6 +683,8 @@ protected:
 
     void createSpriteForSystemFont(const FontDefinition& fontDef);
     void createShadowSpriteForSystemFont(const FontDefinition& fontDef);
+    //add by chl
+    void createOutlineForSystemFont(const FontDefinition& fontDef);
 
     virtual void updateShaderProgram();
     void updateBMFontScale();
