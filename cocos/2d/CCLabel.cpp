@@ -1370,23 +1370,24 @@ void Label::createShadowSpriteForSystemFont(const FontDefinition& fontDef)
 
 void Label::createOutlineForSystemFont(const FontDefinition& fontDef)
 {
+    if (!_textSprite) {
+        return;
+    }
+    
+    FontDefinition def = fontDef;
+    def._fontFillColor.r = fontDef._stroke._strokeColor.r;
+    def._fontFillColor.g = fontDef._stroke._strokeColor.g;
+    def._fontFillColor.b = fontDef._stroke._strokeColor.b;
+    def._fontAlpha = fontDef._stroke._strokeAlpha;
+    
+    auto texture = new (std::nothrow) Texture2D;
+    texture->initWithString(_utf8Text.c_str(), def);
+    
     for (int i=0; i<4; ++i) {
-        FontDefinition def = fontDef;
-        def._fontFillColor.r = fontDef._stroke._strokeColor.r;
-        def._fontFillColor.g = fontDef._stroke._strokeColor.g;
-        def._fontFillColor.b = fontDef._stroke._strokeColor.b;
-        def._fontAlpha = fontDef._stroke._strokeAlpha;
-        
-        auto texture = new (std::nothrow) Texture2D;
-        texture->initWithString(_utf8Text.c_str(), def);
-        
         auto ol = Sprite::createWithTexture(texture);
         ol->setAnchorPoint(Vec2::ANCHOR_BOTTOM_LEFT);
-        
         _textSprite->addChild(ol);
         ol->setLocalZOrder(-1);
-        
-        texture->release();
         
         float x=0,y=0;
         if (i==0) {
@@ -1403,6 +1404,8 @@ void Label::createOutlineForSystemFont(const FontDefinition& fontDef)
         }
         ol->setPosition(Vec2(x,y));
     }
+    
+    texture->release();
 }
 
 void Label::setFontDefinition(const FontDefinition& textDefinition)
