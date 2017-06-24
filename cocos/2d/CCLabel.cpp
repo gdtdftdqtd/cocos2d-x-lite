@@ -1390,16 +1390,16 @@ void Label::createOutlineForSystemFont(const FontDefinition& fontDef)
         
         float x=0,y=0;
         if (i==0) {
-            x = -1;
+            x = -_outlineSize;
         }
         else if (i == 1){
-            y = -1;
+            y = _outlineSize;
         }
         else if (i == 2){
-            x = 1;
+            x = _outlineSize;
         }
         else if (i == 3){
-            y = 1;
+            y = -_outlineSize;
         }
         ol->setPosition(Vec2(x,y));
     }
