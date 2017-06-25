@@ -1373,6 +1373,9 @@ void Label::createOutlineForSystemFont(const FontDefinition& fontDef)
     if (!_textSprite) {
         return;
     }
+    if (_utf8Text.empty()) {
+        return;
+    }
     
     FontDefinition def = fontDef;
     def._fontFillColor.r = fontDef._stroke._strokeColor.r;
