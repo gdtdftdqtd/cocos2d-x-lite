@@ -1370,6 +1370,9 @@ void Label::createShadowSpriteForSystemFont(const FontDefinition& fontDef)
 
 void Label::createOutlineForSystemFont(const FontDefinition& fontDef)
 {
+    if (_currentLabelType == LabelType::TTF) {
+        return;
+    }
     if (!_textSprite) {
         return;
     }
