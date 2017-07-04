@@ -777,7 +777,7 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
     size_t             tempDataLen = image->getDataLen();
 
     //add by chl
-    pixelFormat = getSpecialAlphaPixelFormat(image->getFilePath());
+    pixelFormat = getSpecialAlphaPixelFormat(this->_filePath);
     //end by
 
     if (image->getNumberOfMipmaps() > 1)
