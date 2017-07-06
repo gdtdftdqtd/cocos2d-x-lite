@@ -923,7 +923,6 @@ void TMXLayer::removeBigMapTileAt(const Vec2& pos)
     if (gid)
     {
         int z = pos.x + pos.y * _layerSize.width;
-        ssize_t atlasIndex = atlasIndexForExistantZ(z);
         
         // remove tile from GID map
         if (getIsBigMap()) {
@@ -931,8 +930,12 @@ void TMXLayer::removeBigMapTileAt(const Vec2& pos)
             if (it != _bigMapTiles.end()) {
                 _bigMapTiles.erase(it);
             }
+            else{
+                return;
+            }
         }
         
+        ssize_t atlasIndex = atlasIndexForExistantZ(z);
         // remove tile from atlas position array
         ccCArrayRemoveValueAtIndex(_atlasIndexArray, atlasIndex);
         
