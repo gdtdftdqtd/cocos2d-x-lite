@@ -9717,6 +9717,16 @@ labeleffect
 },
 
 /**
+ * @method setWordSpacing
+ * @param {float} arg0
+ */
+setWordSpacing : function (
+float 
+)
+{
+},
+
+/**
  * @method getTextColor
  * @return {color4b_object}
  */
@@ -9761,6 +9771,16 @@ float
  * @return {float}
  */
 getAdditionalKerning : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getWordSpacing
+ * @return {float}
+ */
+getWordSpacing : function (
 )
 {
     return 0;
