@@ -491,6 +491,7 @@ void Label::reset()
     _additionalKerning = 0.f;
     _lineHeight = 0.f;
     _lineSpacing = 0.f;
+    _wordSpacing = 0.0f;
     _maxLineWidth = 0.f;
     _labelDimensions.width = 0.f;
     _labelDimensions.height = 0.f;
@@ -1901,6 +1902,20 @@ void Label::setLineSpacing(float height)
 float Label::getLineSpacing() const
 {
     return _lineSpacing;
+}
+
+void Label::setWordSpacing(float width)
+{
+    if (_wordSpacing != width)
+    {
+        _wordSpacing = width;
+        _contentDirty = true;
+    }
+}
+
+float Label::getWordSpacing() const
+{
+    return _wordSpacing;
 }
 
 void Label::setAdditionalKerning(float space)

@@ -220,7 +220,7 @@ bool Label::multilineTextWrap(const std::function<int(const std::u16string&, int
             {
                 if (_horizontalKernings && letterIndex < textLen - 1)
                     nextLetterX += _horizontalKernings[letterIndex + 1];
-                nextLetterX += letterDef.xAdvance * _bmfontScale + _additionalKerning;
+                nextLetterX += letterDef.xAdvance * _bmfontScale + _additionalKerning + _wordSpacing;
 
                 tokenRight = nextLetterX / contentScaleFactor;
             }
