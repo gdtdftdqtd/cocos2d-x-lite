@@ -51,20 +51,27 @@
 // Create an OpenGL ES 2.0 context
 - (id) initWithDepthFormat:(unsigned int)depthFormat withPixelFormat:(unsigned int)pixelFormat withSharegroup:(EAGLSharegroup*)sharegroup withMultiSampling:(BOOL) multiSampling withNumberOfSamples:(unsigned int) requestedSamples
 {
-    self = [super init];
-    if (self)
+    if (self = [super init])
     {
-        if( ! sharegroup )
-            context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        if (! sharegroup)
+        {
+            context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+            if (! context_)
+                context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        }
         else
-            context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:sharegroup];
+        {
+            context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3 sharegroup:sharegroup];
+            if (!context_)
+                context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:sharegroup];
+        }
 
         if (!context_ || ![EAGLContext setCurrentContext:context_] )
         {
             [self release];
             return nil;
         }
-
+        
         depthFormat_ = depthFormat;
         pixelFormat_ = pixelFormat;
         multiSampling_ = multiSampling;

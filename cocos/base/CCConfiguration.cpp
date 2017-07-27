@@ -43,6 +43,7 @@ Configuration::Configuration()
 , _maxModelviewStackDepth(0)
 , _supportsPVRTC(false)
 , _supportsETC1(false)
+, _supportsETC2(false)
 //, _supportsS3TC(false)
 //, _supportsATITC(false)
 , _supportsNPOT(false)
@@ -130,6 +131,9 @@ void Configuration::gatherGPUInfo()
 
     _supportsETC1 = checkForGLExtension("GL_OES_compressed_ETC1_RGB8_texture");
     _valueDict["gl.supports_ETC1"] = Value(_supportsETC1);
+    
+    _supportsETC2 = checkForEtc2();
+    _valueDict["gl.supports_ETC2"] = Value(_supportsETC2);
 
 //    _supportsS3TC = checkForGLExtension("GL_EXT_texture_compression_s3tc");
 //    _valueDict["gl.supports_S3TC"] = Value(_supportsS3TC);
@@ -185,6 +189,25 @@ bool Configuration::checkForGLExtension(const std::string &searchName) const
    return  (_glExtensions && strstr(_glExtensions, searchName.c_str() ) ) ? true : false;
 }
 
+bool Configuration::checkForEtc2() const
+{
+    
+    GLint numFormats = 0;
+    glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &numFormats);
+    GLint* formats = new GLint[numFormats];
+    glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, formats);
+    
+    int supportNum = 0;
+    for (GLint i = 0; i < numFormats; ++i)
+    {
+        if (formats[i] == GL_COMPRESSED_RGB8_ETC2 || formats[i] == GL_COMPRESSED_RGBA8_ETC2_EAC)
+            supportNum++;
+    }
+    delete [] formats;
+    
+    return supportNum >= 2;
+}
+
 //
 // getters for specific variables.
 // Maintained for backward compatibility reasons only.
@@ -219,6 +242,15 @@ bool Configuration::supportsETC() const
     //GL_ETC1_RGB8_OES is not defined in old opengl version
 #ifdef GL_ETC1_RGB8_OES
     return _supportsETC1;
+#else
+    return false;
+#endif
+}
+
+bool Configuration::supportsETC2() const
+{
+#ifdef GL_COMPRESSED_RGBA8_ETC2_EAC
+    return _supportsETC2;
 #else
     return false;
 #endif

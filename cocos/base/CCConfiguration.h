@@ -41,6 +41,10 @@ NS_CC_BEGIN
 
 class EventCustom;
 
+// Only the following two formats are supported
+#define GL_COMPRESSED_RGB8_ETC2           0x9274
+#define GL_COMPRESSED_RGBA8_ETC2_EAC      0x9278
+
 /** @class Configuration
  * @brief Configuration contains some openGL variables
  * @since v0.99.0
@@ -106,6 +110,8 @@ public:
      * @return Is true if supports ETC Texture Compressed.
      */
     bool supportsETC() const;
+    
+    bool supportsETC2() const;
 
     /** Whether or not S3TC Texture Compressed is supported.
      *
@@ -191,6 +197,8 @@ public:
      * @return Is true if an OpenGL is supported.
      */
     bool checkForGLExtension(const std::string &searchName) const;
+    
+    bool checkForEtc2() const;
 
     /** Initialize method.
      *
@@ -241,6 +249,7 @@ protected:
     GLint           _maxModelviewStackDepth;
     bool            _supportsPVRTC;
     bool            _supportsETC1;
+    bool            _supportsETC2;
 //    bool            _supportsS3TC;
 //    bool            _supportsATITC;
     bool            _supportsNPOT;
