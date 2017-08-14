@@ -129,10 +129,22 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             };
 
             EGLConfig result = null;
-            for (int[] eglAtribute : EGLAttributes) {
-                result = this.doChooseConfig(egl, display, eglAtribute);
-                if (result != null)
+            // for (int[] eglAtribute : EGLAttributes) {
+            //     result = this.doChooseConfig(egl, display, eglAtribute);
+            //     if (result != null)
+            //         return result;
+            // }
+            for (int i=0; i<EGLAttributes.length; ++i) {
+                int[] eglAtribute = EGLAttributes[i];
+                if (i < EGLAttributes.length -1) {
+                    result = this.doChooseConfig(egl, display, eglAtribute);
+                }
+                else {
+                    result = this.doChooseConfigGL2Default(egl, display, eglAtribute);
+                }
+                if (result != null){
                     return result;
+                }
             }
 
             Log.e(DEVICE_POLICY_SERVICE, "Can not select an EGLConfig for rendering.");
@@ -146,6 +158,43 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             if (result && matchedConfigNum[0] > 0) {
                 return configs[0];
             }
+            return null;
+        }
+
+        private EGLConfig doChooseConfigGL2Default(EGL10 egl, EGLDisplay display, int[] attributes) {
+            boolean eglChooseResult = egl.eglChooseConfig(display, EGLV2attribs, null, 0, numConfigs);
+            if(eglChooseResult && numConfigs[0] > 0) {
+                int num = numConfigs[0];
+                ConfigValue[] cfgVals = new ConfigValue[num];
+
+                // convert all config to ConfigValue
+                configs = new EGLConfig[num];
+                egl.eglChooseConfig(display, EGLV2attribs, configs, num, numConfigs);
+                for (int i = 0; i < num; ++i) {
+                    cfgVals[i] = new ConfigValue(egl, display, configs[i]);
+                }
+
+                ConfigValue e = new ConfigValue(configAttribs);
+                // bin search
+                int lo = 0;
+                int hi = num;
+                int mi;
+                while (lo < hi - 1) {
+                    mi = (lo + hi) / 2;
+                    if (e.compareTo(cfgVals[mi]) < 0) {
+                        hi = mi;
+                    } else {
+                        lo = mi;
+                    }
+                }
+                if (lo != num - 1) {
+                    lo = lo + 1;
+                }
+                Log.w("cocos2d", "Can't find EGLConfig match: " + e + ", instead of closest one:" + cfgVals[lo]);
+                return cfgVals[lo].config;
+            }
+
+            Log.e(DEVICE_POLICY_SERVICE, "Can not select an EGLConfig for rendering.");
             return null;
         }
     }
