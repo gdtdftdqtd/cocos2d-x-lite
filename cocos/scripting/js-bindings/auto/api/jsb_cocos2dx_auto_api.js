@@ -3159,16 +3159,6 @@ getInstance : function (
 cc.Scheduler = {
 
 /**
- * @method isCurrentTargetSalvaged
- * @return {bool}
- */
-isCurrentTargetSalvaged : function (
-)
-{
-    return false;
-},
-
-/**
  * @method setTimeScale
  * @param {float} arg0
  */
@@ -3179,13 +3169,13 @@ float
 },
 
 /**
- * @method unscheduleAllWithMinPriority
- * @param {int} arg0
+ * @method isCurrentTargetSalvaged
+ * @return {bool}
  */
-unscheduleAllWithMinPriority : function (
-int 
+isCurrentTargetSalvaged : function (
 )
 {
+    return false;
 },
 
 /**
@@ -3209,16 +3199,6 @@ int
 },
 
 /**
- * @method performFunctionInCocosThread
- * @param {function} arg0
- */
-performFunctionInCocosThread : function (
-func 
-)
-{
-},
-
-/**
  * @method unscheduleAll
  */
 unscheduleAll : function (
@@ -3234,6 +3214,34 @@ getTimeScale : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method unscheduleAllWithMinPriority
+ * @param {int} arg0
+ */
+unscheduleAllWithMinPriority : function (
+int 
+)
+{
+},
+
+/**
+ * @method performFunctionInCocosThread
+ * @param {function} arg0
+ */
+performFunctionInCocosThread : function (
+func 
+)
+{
+},
+
+/**
+ * @method removeAllFunctionsToBePerformedInCocosThread
+ */
+removeAllFunctionsToBePerformedInCocosThread : function (
+)
+{
 },
 
 /**
@@ -5224,74 +5232,6 @@ getInnerAction : function (
  * @constructor
  */
 Speed : function (
-)
-{
-},
-
-};
-
-/**
- * @class Follow
- */
-cc.Follow = {
-
-/**
- * @method setBoundarySet
- * @param {bool} arg0
- */
-setBoundarySet : function (
-bool 
-)
-{
-},
-
-/**
- * @method initWithTarget
- * @param {cc.Node} arg0
- * @param {rect_object} arg1
- * @return {bool}
- */
-initWithTarget : function (
-node, 
-rect 
-)
-{
-    return false;
-},
-
-/**
- * @method initWithTargetAndOffset
- * @param {cc.Node} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {rect_object} arg3
- * @return {bool}
- */
-initWithTargetAndOffset : function (
-node, 
-float, 
-float, 
-rect 
-)
-{
-    return false;
-},
-
-/**
- * @method isBoundarySet
- * @return {bool}
- */
-isBoundarySet : function (
-)
-{
-    return false;
-},
-
-/**
- * @method Follow
- * @constructor
- */
-Follow : function (
 )
 {
 },
@@ -17562,6 +17502,22 @@ int
  * @constructor
  */
 TileMapAtlas : function (
+)
+{
+},
+
+};
+
+/**
+ * @class BaseJSAction
+ */
+cc.BaseJSAction = {
+
+/**
+ * @method BaseJSAction
+ * @constructor
+ */
+BaseJSAction : function (
 )
 {
 },

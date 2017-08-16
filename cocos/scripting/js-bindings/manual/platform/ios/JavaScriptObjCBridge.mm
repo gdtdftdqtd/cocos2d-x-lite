@@ -53,6 +53,8 @@ JS::Value JavaScriptObjCBridge::convertReturnValue(JSContext *cx, ReturnValue re
         case TypeString:
             c_string_to_jsval(cx, retValue.stringValue->c_str(), &ret, retValue.stringValue->size());
             break;
+        case TypeVoid:
+            break;
         default:
             break;
     }
@@ -77,7 +79,8 @@ bool JavaScriptObjCBridge::CallInfo::execute(JSContext *cx,JS::Value *argv,unsig
             m_error = JSO_ERR_TYPE_NOT_SUPPORT;
             return false;
         }else if(arg.isString()){
-            JSStringWrapper valueWapper(arg.toString(), cx);
+            JS::RootedString valuestr(cx, arg.toString());
+            JSStringWrapper valueWapper(valuestr, cx);
             [m_dic setObject:[NSString stringWithCString:valueWapper.get() encoding:NSUTF8StringEncoding] forKey:key];
         }else if(arg.isNumber()){
             double a = arg.toNumber();
@@ -269,8 +272,10 @@ static void JavaScriptObjCBridge_finalize(JSFreeOp *freeOp, JSObject *obj)
 JS_BINDED_FUNC_IMPL(JavaScriptObjCBridge, callStaticMethod){
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     if (argc >= 2) {
-        JSStringWrapper arg0(args.get(0));
-        JSStringWrapper arg1(args.get(1));
+        JS::RootedString valuestr0(cx, args.get(0).toString());
+        JSStringWrapper arg0(valuestr0, cx);
+        JS::RootedString valuestr1(cx, args.get(1).toString());
+        JSStringWrapper arg1(valuestr1, cx);
         CallInfo call(arg0.get(),arg1.get());
         bool ok = call.execute(cx,args.array(),argc);
         if(!ok){

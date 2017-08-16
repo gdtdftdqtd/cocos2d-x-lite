@@ -157,6 +157,8 @@ void JSFunctionWrapper::setOwner(JSContext* cx, JS::HandleObject owner)
 
 void JSFunctionWrapper::setData(JSContext* cx, JS::HandleObject data)
 {
+    JS::RootedObject oldData(cx);
+    _data->getObj(&oldData);
     _data->setObj(cx, data);
     
     JS::RootedObject owner(cx);
@@ -164,7 +166,12 @@ void JSFunctionWrapper::setData(JSContext* cx, JS::HandleObject data)
     JS::RootedValue ownerVal(cx, JS::ObjectOrNullValue(owner));
     if (!ownerVal.isNullOrUndefined())
     {
-        JS::RootedValue dataVal(cx, JS::ObjectOrNullValue(data));
+        JS::RootedValue dataVal(cx, JS::ObjectOrNullValue(oldData));
+        if (!dataVal.isNullOrUndefined())
+        {
+            js_remove_object_reference(ownerVal, dataVal);
+        }
+        dataVal.set(JS::ObjectOrNullValue(data));
         if (!dataVal.isNullOrUndefined() && data.get() != owner.get())
         {
             js_add_object_reference(ownerVal, dataVal);
@@ -177,9 +184,57 @@ void JSFunctionWrapper::getData(JSContext* cx, JS::MutableHandleObject data)
     _data->getObj(data);
 }
 
+void JSFunctionWrapper::setJSCallback(JSContext* cx, JS::HandleObject callback)
+{
+    JS::RootedObject oldCallback(cx);
+    _func->getObj(&oldCallback);
+    _func->setObj(cx, callback);
+    
+    JS::RootedObject owner(cx);
+    _owner->getObj(&owner);
+    JS::RootedValue ownerVal(cx, JS::ObjectOrNullValue(owner));
+    if (!ownerVal.isNullOrUndefined())
+    {
+        JS::RootedValue callbackVal(cx, JS::ObjectOrNullValue(oldCallback));
+        if (!callbackVal.isNullOrUndefined())
+        {
+            js_remove_object_reference(ownerVal, callbackVal);
+        }
+        callbackVal.set(JS::ObjectOrNullValue(callback));
+        if (!callbackVal.isNullOrUndefined() && callback.get() != owner.get())
+        {
+            js_add_object_reference(ownerVal, callbackVal);
+        }
+    }
+}
+
 void JSFunctionWrapper::getJSCallback(JSContext* cx, JS::MutableHandleObject callback)
 {
     _func->getObj(callback);
+}
+
+void JSFunctionWrapper::setJSTarget(JSContext* cx, JS::HandleObject target)
+{
+    JS::RootedObject oldThis(cx);
+    _jsthis->getObj(&oldThis);
+    _jsthis->setObj(cx, target);
+    
+    JS::RootedObject owner(cx);
+    _owner->getObj(&owner);
+    JS::RootedValue ownerVal(cx, JS::ObjectOrNullValue(owner));
+    if (!ownerVal.isNullOrUndefined())
+    {
+        JS::RootedValue targetVal(cx, JS::ObjectOrNullValue(oldThis));
+        if (!targetVal.isNullOrUndefined())
+        {
+            js_remove_object_reference(ownerVal, targetVal);
+        }
+        targetVal.set(JS::ObjectOrNullValue(target));
+        if (!targetVal.isNullOrUndefined() && target.get() != owner.get())
+        {
+            js_add_object_reference(ownerVal, targetVal);
+        }
+    }
 }
 
 void JSFunctionWrapper::getJSTarget(JSContext* cx, JS::MutableHandleObject target)
@@ -542,12 +597,6 @@ static bool js_callFunc(JSContext *cx, uint32_t argc, JS::Value *vp)
             thisObj = args.get(1).toObjectOrNull();
         }
         std::shared_ptr<JSFunctionWrapper> tmpCobj(new JSFunctionWrapper(cx, thisObj, callback, jsobj));
-        
-        if (argc >= 3)
-        {
-            JS::RootedObject data(cx, args.get(2).toObjectOrNull());
-            tmpCobj->setData(cx, data);
-        }
 
         bool ok = ret->initWithFunction([=](Node* sender){
             JS::RootedValue senderVal(cx);
@@ -568,16 +617,7 @@ static bool js_callFunc(JSContext *cx, uint32_t argc, JS::Value *vp)
             }
             
             JS::RootedValue retval(cx);
-            JS::AutoValueVector valArr(cx);
-            valArr.append(senderVal);
-            if (argc >= 3)
-            {
-                JS::RootedObject data(cx);
-                tmpCobj->getData(cx, &data);
-                JS::RootedValue dataVal(cx, JS::ObjectOrNullValue(data));
-                valArr.append(dataVal);
-            }
-            JS::HandleValueArray callArgs(valArr);
+            JS::HandleValueArray callArgs(senderVal);
             
             tmpCobj->invoke(callArgs, &retval);
         });
@@ -611,12 +651,6 @@ bool js_cocos2dx_CallFunc_initWithFunction(JSContext *cx, uint32_t argc, JS::Val
             thisObj = args.get(1).toObjectOrNull();
         }
         std::shared_ptr<JSFunctionWrapper> tmpCobj(new JSFunctionWrapper(cx, thisObj, callback, obj));
-        
-        if (argc >= 3)
-        {
-            JS::RootedObject data(cx, args.get(2).toObjectOrNull());
-            tmpCobj->setData(cx, data);
-        }
 
         action->initWithFunction([=](Node* sender){
             JS::RootedValue senderVal(cx);
@@ -633,16 +667,7 @@ bool js_cocos2dx_CallFunc_initWithFunction(JSContext *cx, uint32_t argc, JS::Val
             }
             
             JS::RootedValue retval(cx);
-            JS::AutoValueVector valArr(cx);
-            valArr.append(senderVal);
-            if (argc >= 3)
-            {
-                JS::RootedObject data(cx);
-                tmpCobj->getData(cx, &data);
-                JS::RootedValue dataVal(cx, JS::ObjectOrNullValue(data));
-                valArr.append(dataVal);
-            }
-            JS::HandleValueArray callArgs(valArr);
+            JS::HandleValueArray callArgs(senderVal);
             
             tmpCobj->invoke(callArgs, &retval);
         });
@@ -1029,13 +1054,16 @@ bool js_CCNode_unschedule(JSContext *cx, uint32_t argc, JS::Value *vp)
         if (targetArray) {
             CCLOGINFO("unschedule target number: %ld", static_cast<long>(targetArray->size()));
 
+            JS::RootedObject func(cx, args.get(0).toObjectOrNull());
             for (const auto& tmp : *targetArray)
             {
-                JSScheduleWrapper* target = tmp;
-                if (node == target->getTarget())
+                JSScheduleWrapper* wrapper = tmp;
+                JS::RootedObject wrapperFunc(cx);
+                wrapper->getJSCallback(cx, &wrapperFunc);
+                if (node == wrapper->getTarget() && wrapperFunc.get() == func.get())
                 {
-                    sched->unschedule(schedule_selector(JSScheduleWrapper::scheduleFunc), target);
-                    JSScheduleWrapper::removeTargetForJSObject(cx, obj, target);
+                    sched->unschedule(schedule_selector(JSScheduleWrapper::scheduleFunc), wrapper);
+                    JSScheduleWrapper::removeTargetForJSObject(cx, obj, wrapper);
                     break;
                 }
             }
@@ -1744,13 +1772,13 @@ bool js_CCScheduler_unscheduleCallbackForTarget(JSContext *cx, uint32_t argc, JS
                 // For details to reproduce it, please refer to SchedulerTest/SchedulerUpdate.
                 if(! arr) return true;
 
+                JS::RootedObject tmpFunc(cx, args.get(1).toObjectOrNull());
                 JSScheduleWrapper* wrapper = nullptr;
                 for(ssize_t i = 0; i < arr->size(); ++i) {
                     wrapper = (JSScheduleWrapper*)arr->at(i);
-                    JS::RootedObject wrapperTarget(cx);
-                    wrapper->getJSTarget(cx, &wrapperTarget);
-                    CCASSERT(tmpObj.get() == wrapperTarget.get(), "Wrong target object.");
-                    if(wrapperTarget.get() == tmpObj.get()) {
+                    JS::RootedObject wrapperFunc(cx);
+                    wrapper->getJSCallback(cx, &wrapperFunc);
+                    if(wrapperFunc.get() == tmpFunc.get()) {
                         cobj->unschedule(schedule_selector(JSScheduleWrapper::scheduleFunc), wrapper);
                         JSScheduleWrapper::removeTargetForJSObject(cx, tmpObj, wrapper);
                         break;
