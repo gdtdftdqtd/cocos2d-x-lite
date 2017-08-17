@@ -42,6 +42,7 @@ THE SOFTWARE.
 #endif
 #include <sys/stat.h>
 
+#include <algorithm>
 #include "md5/md5.hpp"
 
 NS_CC_BEGIN
@@ -691,19 +692,72 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
     if (filename.empty()){
         return Status::NotExists;
     }
-    std::string fullPath;
-    std::string tempFilename = getReverseSuffixFilename(filename);
-    fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
-    if (!fullPath.empty())
-    {
-        std::string baseFileName = basename(filename);
-        std::string password = getReverseSuffixFilePassword(filename);
-        ssize_t size = 0;
-        unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
-        if (buff && size > 0) {
+    std::string suffix = getFileExtension(filename);
+    if (suffix == ".jpg" || suffix == ".png") {
+        std::string fullPath;
+        std::string tempFilename = getReverseSuffixFilename(filename);
+        fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+        if (!fullPath.empty())
+        {
+            static const unsigned char encrypt_keys[] = {0x43,0x48,0x4C,0x40,0x43,0x51,0x58,0x59};
+//            std::string baseFileName = basename(filename);
+//            std::string password = getReverseSuffixFilePassword(filename);
+//            ssize_t size = 0;
+//            unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
+//            if (buff && size > 0) {
+//                buffer->resize(size);
+//                memcpy(buffer->buffer(), buff, size);
+//                return Status::OK;
+//            }
+            auto fs = FileUtils::getInstance();
+            FILE *fp = fopen(fs->getSuitableFOpen(fullPath).c_str(), "rb");
+            if (!fp)
+                return Status::OpenFailed;
+            
+#if defined(_MSC_VER)
+            auto descriptor = _fileno(fp);
+#else
+            auto descriptor = fileno(fp);
+#endif
+            struct stat statBuf;
+            if (fstat(descriptor, &statBuf) == -1) {
+                fclose(fp);
+                return Status::ReadFailed;
+            }
+            size_t size = statBuf.st_size;
+            
             buffer->resize(size);
-            memcpy(buffer->buffer(), buff, size);
+            size_t readsize = fread(buffer->buffer(), 1, size, fp);
+            fclose(fp);
+            
+            if (readsize < size) {
+                buffer->resize(readsize);
+                return Status::ReadFailed;
+            }
+            
+            for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
+                unsigned char * content = (unsigned char *)buffer->buffer();
+                content[i] ^= encrypt_keys[i];
+            }
+            
             return Status::OK;
+        }
+    }
+    else if (suffix == ".js" || suffix == ".jsc") {
+        std::string fullPath;
+        std::string tempFilename = getReverseSuffixFilename(filename);
+        fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+        if (!fullPath.empty())
+        {
+            std::string baseFileName = basename(filename);
+            std::string password = getReverseSuffixFilePassword(filename);
+            ssize_t size = 0;
+            unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
+            if (buff && size > 0) {
+                buffer->resize(size);
+                memcpy(buffer->buffer(), buff, size);
+                return Status::OK;
+            }
         }
     }
     return Status::NotExists;

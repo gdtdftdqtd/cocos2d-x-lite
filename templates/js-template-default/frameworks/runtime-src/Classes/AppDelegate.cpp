@@ -30,9 +30,17 @@ using namespace anysdk::framework;
 //add RVO
 #include "jsb_RVO_auto.hpp"
 
+#include "LogoScene.hpp"
+
 USING_NS_CC;
 
+static cocos2d::Size designResolutionSize = cocos2d::Size(1136, 640);
+static cocos2d::Size smallResolutionSize = cocos2d::Size(1136, 640);
+static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
+static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
+
 AppDelegate::AppDelegate()
+:isRestart(false)
 {
 }
 
@@ -60,10 +68,10 @@ bool AppDelegate::applicationDidFinishLaunching()
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-#if(CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
-        glview = GLViewImpl::create("XuYouGame");
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+        glview = GLViewImpl::createWithRect("XuYouGame", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
-        glview = GLViewImpl::createWithRect("XuYouGame", Rect(0,0,900,640));
+        glview = GLViewImpl::create("XuYouGame");
 #endif
         director->setOpenGLView(glview);
     }
@@ -71,23 +79,36 @@ bool AppDelegate::applicationDidFinishLaunching()
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
     
+    // Set the design resolution
+    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
+    
     js_module_register();
     
-    ScriptingCore* sc = ScriptingCore::getInstance();
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && PACKAGE_AS    
-    sc->addRegisterCallback(register_all_anysdk_framework);
-    sc->addRegisterCallback(register_all_anysdk_manual);
+    if (isRestart) {
+        ScriptingCore* sc = ScriptingCore::getInstance();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && PACKAGE_AS
+        sc->addRegisterCallback(register_all_anysdk_framework);
+        sc->addRegisterCallback(register_all_anysdk_manual);
 #endif
-    //add RVO
-    sc->addRegisterCallback(register_all_RVO);
-    
-    sc->start();
-    sc->runScript("script/jsb_boot.js");
+        //add RVO
+        sc->addRegisterCallback(register_all_RVO);
+        
+        sc->start();
+        sc->runScript("script/jsb_boot.js");
 #if defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)
-    sc->enableDebugger();
+        sc->enableDebugger();
 #endif
-    ScriptEngineManager::getInstance()->setScriptEngine(sc);
-    ScriptingCore::getInstance()->runScript("main.js");
+        ScriptEngineManager::getInstance()->setScriptEngine(sc);
+        ScriptingCore::getInstance()->runScript("main.js");
+        
+        return true;
+    }
+    
+    // create a scene. it's an autorelease object
+    auto scene = LogoScene::createScene();
+    isRestart = true;
+    // run
+    director->runWithScene(scene);
     
     return true;
 }

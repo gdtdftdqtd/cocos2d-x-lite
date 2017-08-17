@@ -349,6 +349,8 @@ private:
     //! Download queue
     std::vector<std::string> _queue;
     
+    std::map<std::string,std::string> _downloadZipMap;
+    
     bool _downloadResumed;
     
     //! Max concurrent task count for downloading

@@ -152,6 +152,8 @@ void AssetsManagerEx::init(const std::string& manifestUrl, const std::string& st
     _cacheManifestPath = _storagePath + MANIFEST_FILENAME;
     _tempManifestPath = _tempStoragePath + TEMP_MANIFEST_FILENAME;
 
+    _downloadZipMap.clear();
+    
     if (manifestUrl.size() > 0)
     {
         loadLocalManifest(manifestUrl);
@@ -670,7 +672,8 @@ void AssetsManagerEx::decompressDownloadedZip(const std::string &customId, const
         {
             asyncData->succeed = true;
         }
-        _fileUtils->removeFile(asyncData->zipFile);
+//        _fileUtils->removeFile(asyncData->zipFile);
+        _downloadZipMap[asyncData->zipFile] = asyncData->zipFile;
     });
 }
 
@@ -1196,6 +1199,11 @@ void AssetsManagerEx::fileSuccess(const std::string &customId, const std::string
         else{
             // Remove from failed units list
             _failedUnits.erase(unitIt);
+            std::map<std::string, std::string>::iterator dzmit = _downloadZipMap.find(storagePath);
+            if (dzmit != _downloadZipMap.end()) {
+                _fileUtils->removeFile(storagePath);
+                _downloadZipMap.erase(dzmit);
+            }
         }
     }
     
@@ -1214,6 +1222,13 @@ void AssetsManagerEx::fileSuccess(const std::string &customId, const std::string
         }
         else{
             _percentByFile = 100 * (float)(_totalToDownload - _totalWaitToDownload) / _totalToDownload;
+            
+            std::map<std::string, std::string>::iterator dzmit = _downloadZipMap.find(storagePath);
+            if (dzmit != _downloadZipMap.end()) {
+                _fileUtils->removeFile(storagePath);
+                _downloadZipMap.erase(dzmit);
+            }
+            
             // Notify progression event
             dispatchUpdateEvent(EventAssetsManagerEx::EventCode::UPDATE_PROGRESSION, "");
         }
