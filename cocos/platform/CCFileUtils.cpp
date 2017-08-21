@@ -760,6 +760,22 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
             }
         }
     }
+    else{
+        std::string fullPath;
+        std::string tempFilename = getReverseSuffixFilename(filename);
+        fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+        if (!fullPath.empty())
+        {
+            std::string baseFileName = basename(filename);
+            ssize_t size = 0;
+            unsigned char* buff = getFileDataFromZip(fullPath, baseFileName, &size);
+            if (buff && size > 0) {
+                buffer->resize(size);
+                memcpy(buffer->buffer(), buff, size);
+                return Status::OK;
+            }
+        }
+    }
     return Status::NotExists;
 }
 
