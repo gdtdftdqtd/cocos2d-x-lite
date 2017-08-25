@@ -62,10 +62,10 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     // ===========================================================
     // Fields
     // ===========================================================
-    
+
     private Cocos2dxGLSurfaceView mGLSurfaceView = null;
     private int[] mGLContextAttrs = null;
-    private Cocos2dxHandler mHandler = null;   
+    private Cocos2dxHandler mHandler = null;
     private static Cocos2dxActivity sContext = null;
     private Cocos2dxVideoHelper mVideoHelper = null;
     private Cocos2dxWebViewHelper mWebViewHelper = null;
@@ -161,20 +161,100 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             return null;
         }
 
+        //----------
+
+        private int findConfigAttrib(EGL10 egl, EGLDisplay display,
+                                     EGLConfig config, int attribute, int defaultValue) {
+            int[] value = new int[1];
+            if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
+                return value[0];
+            }
+            return defaultValue;
+        }
+
+        class ConfigValue implements Comparable<ConfigValue> {
+
+            public EGLConfig config = null;
+            public int[] configAttribs = null;
+            public int value = 0;
+            private void calcValue() {
+                // depth factor 29bit and [6,12)bit
+                if (configAttribs[4] > 0) {
+                    value = value + (1 << 29) + ((configAttribs[4]%64) << 6);
+                }
+                // stencil factor 28bit and [0, 6)bit
+                if (configAttribs[5] > 0) {
+                    value = value + (1 << 28) + ((configAttribs[5]%64));
+                }
+                // alpha factor 30bit and [24, 28)bit
+                if (configAttribs[3] > 0) {
+                    value = value + (1 << 30) + ((configAttribs[3]%16) << 24);
+                }
+                // green factor [20, 24)bit
+                if (configAttribs[1] > 0) {
+                    value = value + ((configAttribs[1]%16) << 20);
+                }
+                // blue factor [16, 20)bit
+                if (configAttribs[2] > 0) {
+                    value = value + ((configAttribs[2]%16) << 16);
+                }
+                // red factor [12, 16)bit
+                if (configAttribs[0] > 0) {
+                    value = value + ((configAttribs[0]%16) << 12);
+                }
+            }
+
+            public ConfigValue(int[] attribs) {
+                configAttribs = attribs;
+                calcValue();
+            }
+
+            public ConfigValue(EGL10 egl, EGLDisplay display, EGLConfig config) {
+                this.config = config;
+                configAttribs = new int[6];
+                configAttribs[0] = findConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE, 0);
+                configAttribs[1] = findConfigAttrib(egl, display, config, EGL10.EGL_GREEN_SIZE, 0);
+                configAttribs[2] = findConfigAttrib(egl, display, config, EGL10.EGL_BLUE_SIZE, 0);
+                configAttribs[3] = findConfigAttrib(egl, display, config, EGL10.EGL_ALPHA_SIZE, 0);
+                configAttribs[4] = findConfigAttrib(egl, display, config, EGL10.EGL_DEPTH_SIZE, 0);
+                configAttribs[5] = findConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, 0);
+                calcValue();
+            }
+
+            @Override
+            public int compareTo(ConfigValue another) {
+                if (value < another.value) {
+                    return -1;
+                } else if (value > another.value) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+
+            @Override
+            public String toString() {
+                return "{ color: " + configAttribs[3] + configAttribs[2] + configAttribs[1] + configAttribs[0] +
+                        "; depth: " + configAttribs[4] + "; stencil: " + configAttribs[5] + ";}";
+            }
+        }
+
         private EGLConfig doChooseConfigGL2Default(EGL10 egl, EGLDisplay display, int[] attributes) {
-            boolean eglChooseResult = egl.eglChooseConfig(display, EGLV2attribs, null, 0, numConfigs);
+            EGLConfig[] configs = new EGLConfig[1];
+            int[] numConfigs = new int[1];
+            boolean eglChooseResult = egl.eglChooseConfig(display, attributes, null, 0, numConfigs);
             if(eglChooseResult && numConfigs[0] > 0) {
                 int num = numConfigs[0];
                 ConfigValue[] cfgVals = new ConfigValue[num];
 
                 // convert all config to ConfigValue
                 configs = new EGLConfig[num];
-                egl.eglChooseConfig(display, EGLV2attribs, configs, num, numConfigs);
+                egl.eglChooseConfig(display, attributes, configs, num, numConfigs);
                 for (int i = 0; i < num; ++i) {
                     cfgVals[i] = new ConfigValue(egl, display, configs[i]);
                 }
 
-                ConfigValue e = new ConfigValue(configAttribs);
+                ConfigValue e = new ConfigValue(mConfigAttributes);
                 // bin search
                 int lo = 0;
                 int hi = num;
@@ -249,16 +329,16 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
         sContext = this;
         this.mHandler = new Cocos2dxHandler(this);
-        
+
         Cocos2dxHelper.init(this);
-        
+
         this.mGLContextAttrs = getGLContextAttrs();
         this.init();
 
         if (mVideoHelper == null) {
             mVideoHelper = new Cocos2dxVideoHelper(this, mFrameLayout);
         }
-        
+
         if(mWebViewHelper == null){
             mWebViewHelper = new Cocos2dxWebViewHelper(mFrameLayout);
         }
@@ -274,7 +354,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
     //native method,call GLViewImpl::getGLContextAttrs() to get the OpenGL ES context attributions
     private static native int[] getGLContextAttrs();
-    
+
     // ===========================================================
     // Getter & Setter
     // ===========================================================
@@ -285,18 +365,18 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
     @Override
     protected void onResume() {
-    	Log.d(TAG, "onResume()");
+        Log.d(TAG, "onResume()");
         super.onResume();
         Cocos2dxAudioFocusManager.registerAudioFocusListener(this);
         this.hideVirtualButton();
-       	resumeIfHasFocus();
+        resumeIfHasFocus();
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-    	Log.d(TAG, "onWindowFocusChanged() hasFocus=" + hasFocus);
+        Log.d(TAG, "onWindowFocusChanged() hasFocus=" + hasFocus);
         super.onWindowFocusChanged(hasFocus);
-        
+
         this.hasFocus = hasFocus;
         resumeIfHasFocus();
     }
@@ -331,7 +411,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         msg.obj = new Cocos2dxHandler.DialogMessage(pTitle, pMessage);
         this.mHandler.sendMessage(msg);
     }
-    
+
     @Override
     public void runOnGLThread(final Runnable pRunnable) {
         this.mGLSurfaceView.queueEvent(pRunnable);
@@ -353,11 +433,11 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     // Methods
     // ===========================================================
     public void init() {
-        
+
         // FrameLayout
         ViewGroup.LayoutParams framelayout_params =
-            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                       ViewGroup.LayoutParams.MATCH_PARENT);
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
 
         mFrameLayout = new ResizeLayout(this);
 
@@ -365,8 +445,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
         // Cocos2dxEditText layout
         ViewGroup.LayoutParams edittext_layout_params =
-            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                       ViewGroup.LayoutParams.WRAP_CONTENT);
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
         Cocos2dxEditBox edittext = new Cocos2dxEditBox(this);
         edittext.setLayoutParams(edittext_layout_params);
 
@@ -381,7 +461,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
         // Switch to supported OpenGL (ARGB888) mode on emulator
         if (isAndroidEmulator())
-           this.mGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+            this.mGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
         this.mGLSurfaceView.setCocos2dxRenderer(new Cocos2dxRenderer());
         this.mGLSurfaceView.setCocos2dxEditText(edittext);
@@ -435,18 +515,18 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         }
     }
 
-   private static boolean isAndroidEmulator() {
-      String model = Build.MODEL;
-      Log.d(TAG, "model=" + model);
-      String product = Build.PRODUCT;
-      Log.d(TAG, "product=" + product);
-      boolean isEmulator = false;
-      if (product != null) {
-         isEmulator = product.equals("sdk") || product.contains("_sdk") || product.contains("sdk_");
-      }
-      Log.d(TAG, "isEmulator=" + isEmulator);
-      return isEmulator;
-   }
+    private static boolean isAndroidEmulator() {
+        String model = Build.MODEL;
+        Log.d(TAG, "model=" + model);
+        String product = Build.PRODUCT;
+        Log.d(TAG, "product=" + product);
+        boolean isEmulator = false;
+        if (product != null) {
+            isEmulator = product.equals("sdk") || product.contains("_sdk") || product.contains("sdk_");
+        }
+        Log.d(TAG, "isEmulator=" + isEmulator);
+        return isEmulator;
+    }
 
     // ===========================================================
     // Inner and Anonymous Classes
@@ -457,7 +537,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
 
         public EGLContext createContext(
-            EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
+                EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
 
             // create GL ES 3 context first,
             // if failed, then try to create GL ES 2 context
@@ -465,12 +545,12 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             int[] attributes = {EGL_CONTEXT_CLIENT_VERSION, 3, EGL10.EGL_NONE };
             // attempt to create a OpenGL ES 3.0 context
             EGLContext context = egl.eglCreateContext(
-                display, eglConfig, EGL10.EGL_NO_CONTEXT, attributes);
+                    display, eglConfig, EGL10.EGL_NO_CONTEXT, attributes);
 
             if (context == null) {
                 attributes = new int[] {EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE };
                 context = egl.eglCreateContext(
-                    display, eglConfig, EGL10.EGL_NO_CONTEXT, attributes);
+                        display, eglConfig, EGL10.EGL_NO_CONTEXT, attributes);
             }
 
             return context;

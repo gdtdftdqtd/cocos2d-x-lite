@@ -3203,13 +3203,13 @@ float
 },
 
 /**
- * @method unscheduleAllWithMinPriority
- * @param {int} arg0
+ * @method isCurrentTargetSalvaged
+ * @return {bool}
  */
-unscheduleAllWithMinPriority : function (
-int 
+isCurrentTargetSalvaged : function (
 )
 {
+    return false;
 },
 
 /**
@@ -3233,16 +3233,6 @@ int
 },
 
 /**
- * @method performFunctionInCocosThread
- * @param {function} arg0
- */
-performFunctionInCocosThread : function (
-func 
-)
-{
-},
-
-/**
  * @method unscheduleAll
  */
 unscheduleAll : function (
@@ -3258,6 +3248,34 @@ getTimeScale : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method unscheduleAllWithMinPriority
+ * @param {int} arg0
+ */
+unscheduleAllWithMinPriority : function (
+int 
+)
+{
+},
+
+/**
+ * @method performFunctionInCocosThread
+ * @param {function} arg0
+ */
+performFunctionInCocosThread : function (
+func 
+)
+{
+},
+
+/**
+ * @method removeAllFunctionsToBePerformedInCocosThread
+ */
+removeAllFunctionsToBePerformedInCocosThread : function (
+)
+{
 },
 
 /**
@@ -5371,74 +5389,6 @@ Speed : function (
 };
 
 /**
- * @class Follow
- */
-cc.Follow = {
-
-/**
- * @method setBoundarySet
- * @param {bool} arg0
- */
-setBoundarySet : function (
-bool 
-)
-{
-},
-
-/**
- * @method initWithTarget
- * @param {cc.Node} arg0
- * @param {rect_object} arg1
- * @return {bool}
- */
-initWithTarget : function (
-node, 
-rect 
-)
-{
-    return false;
-},
-
-/**
- * @method initWithTargetAndOffset
- * @param {cc.Node} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {rect_object} arg3
- * @return {bool}
- */
-initWithTargetAndOffset : function (
-node, 
-float, 
-float, 
-rect 
-)
-{
-    return false;
-},
-
-/**
- * @method isBoundarySet
- * @return {bool}
- */
-isBoundarySet : function (
-)
-{
-    return false;
-},
-
-/**
- * @method Follow
- * @constructor
- */
-Follow : function (
-)
-{
-},
-
-};
-
-/**
  * @class Image
  */
 cc.Image = {
@@ -6852,40 +6802,6 @@ int
  * @constructor
  */
 JumpTo : function (
-)
-{
-},
-
-};
-
-/**
- * @class JumpRoateTo
- */
-cc.JumpRoateTo = {
-
-/**
- * @method create
- * @param {float} arg0
- * @param {vec2_object} arg1
- * @param {float} arg2
- * @param {int} arg3
- * @return {cc.JumpRoateTo}
- */
-create : function (
-float, 
-vec2, 
-float, 
-int 
-)
-{
-    return cc.JumpRoateTo;
-},
-
-/**
- * @method JumpRoateTo
- * @constructor
- */
-JumpRoateTo : function (
 )
 {
 },
@@ -10160,16 +10076,6 @@ getShadowColor : function (
 )
 {
     return cc.Color4F;
-},
-
-/**
- * @method getTTFConfig
- * @return {cc._ttfConfig}
- */
-getTTFConfig : function (
-)
-{
-    return cc._ttfConfig;
 },
 
 /**
@@ -14577,16 +14483,6 @@ int
 },
 
 /**
- * @method getUniformFlags
- * @return {cc.GLProgram::UniformFlags}
- */
-getUniformFlags : function (
-)
-{
-    return cc.GLProgram::UniformFlags;
-},
-
-/**
  * @method getUniformLocationForName
  * @param {char} arg0
  * @return {int}
@@ -14780,18 +14676,6 @@ str
 )
 {
     return 0;
-},
-
-/**
- * @method getVertexAttrib
- * @param {String} arg0
- * @return {cc.VertexAttrib}
- */
-getVertexAttrib : function (
-str 
-)
-{
-    return cc.VertexAttrib;
 },
 
 /**
@@ -15617,12 +15501,12 @@ getCurrentLanguage : function (
 
 /**
  * @method getCurrentLanguageString
- * @return {char}
+ * @return {String}
  */
 getCurrentLanguageString : function (
 )
 {
-    return 0;
+    return ;
 },
 
 /**
@@ -17885,234 +17769,17 @@ TileMapAtlas : function (
 };
 
 /**
- * @class SimpleAudioEngine
+ * @class BaseJSAction
  */
-cc.AudioEngine = {
+cc.BaseJSAction = {
 
 /**
- * @method preloadBackgroundMusic
- * @param {char} arg0
+ * @method BaseJSAction
+ * @constructor
  */
-preloadBackgroundMusic : function (
-char 
+BaseJSAction : function (
 )
 {
-},
-
-/**
- * @method stopBackgroundMusic
- */
-stopBackgroundMusic : function (
-)
-{
-},
-
-/**
- * @method stopAllEffects
- */
-stopAllEffects : function (
-)
-{
-},
-
-/**
- * @method getBackgroundMusicVolume
- * @return {float}
- */
-getBackgroundMusicVolume : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method resumeBackgroundMusic
- */
-resumeBackgroundMusic : function (
-)
-{
-},
-
-/**
- * @method setBackgroundMusicVolume
- * @param {float} arg0
- */
-setBackgroundMusicVolume : function (
-float 
-)
-{
-},
-
-/**
- * @method preloadEffect
- * @param {char} arg0
- */
-preloadEffect : function (
-char 
-)
-{
-},
-
-/**
- * @method isBackgroundMusicPlaying
- * @return {bool}
- */
-isBackgroundMusicPlaying : function (
-)
-{
-    return false;
-},
-
-/**
- * @method getEffectsVolume
- * @return {float}
- */
-getEffectsVolume : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method willPlayBackgroundMusic
- * @return {bool}
- */
-willPlayBackgroundMusic : function (
-)
-{
-    return false;
-},
-
-/**
- * @method pauseEffect
- * @param {unsigned int} arg0
- */
-pauseEffect : function (
-int 
-)
-{
-},
-
-/**
- * @method playEffect
- * @param {char} arg0
- * @param {bool} arg1
- * @param {float} arg2
- * @param {float} arg3
- * @param {float} arg4
- * @return {unsigned int}
- */
-playEffect : function (
-char, 
-bool, 
-float, 
-float, 
-float 
-)
-{
-    return 0;
-},
-
-/**
- * @method rewindBackgroundMusic
- */
-rewindBackgroundMusic : function (
-)
-{
-},
-
-/**
- * @method playBackgroundMusic
- * @param {char} arg0
- * @param {bool} arg1
- */
-playBackgroundMusic : function (
-char, 
-bool 
-)
-{
-},
-
-/**
- * @method resumeAllEffects
- */
-resumeAllEffects : function (
-)
-{
-},
-
-/**
- * @method setEffectsVolume
- * @param {float} arg0
- */
-setEffectsVolume : function (
-float 
-)
-{
-},
-
-/**
- * @method stopEffect
- * @param {unsigned int} arg0
- */
-stopEffect : function (
-int 
-)
-{
-},
-
-/**
- * @method pauseBackgroundMusic
- */
-pauseBackgroundMusic : function (
-)
-{
-},
-
-/**
- * @method pauseAllEffects
- */
-pauseAllEffects : function (
-)
-{
-},
-
-/**
- * @method unloadEffect
- * @param {char} arg0
- */
-unloadEffect : function (
-char 
-)
-{
-},
-
-/**
- * @method resumeEffect
- * @param {unsigned int} arg0
- */
-resumeEffect : function (
-int 
-)
-{
-},
-
-/**
- * @method end
- */
-end : function (
-)
-{
-},
-
-/**
- * @method getInstance
- * @return {cc.SimpleAudioEngine}
- */
-getInstance : function (
-)
-{
-    return cc.SimpleAudioEngine;
 },
 
 };

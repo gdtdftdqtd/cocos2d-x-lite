@@ -87,7 +87,7 @@ public:
      * @js NA
      * @lua NA
      */
-    virtual const char * getCurrentLanguageString() override;
+    virtual std::string getCurrentLanguageString() override;
     
     /**
      @brief Get target platform

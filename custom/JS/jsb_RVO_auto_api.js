@@ -4,58 +4,18 @@
 var RVO = RVO || {};
 
 /**
- * @class Vector2
+ * @class CocosRVO
  */
-RVO.Vector2 = {
-
-/**
- * @method y
- * @return {float}
- */
-y : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method x
- * @return {float}
- */
-x : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method Vector2
- * @constructor
-* @param {float} float
-* @param {float} float
-*/
-Vector2 : function(
-float,
-float 
-)
-{
-},
-
-};
-
-/**
- * @class RVOSimulator
- */
-RVO.RVOSimulator = {
+RVO.CocosRVO = {
 
 /**
  * @method setAgentVelocity
  * @param {unsigned long} arg0
- * @param {RVO::Vector2} arg1
+ * @param {vec2_object} arg1
  */
 setAgentVelocity : function (
 long, 
-array 
+vec2 
 )
 {
 },
@@ -75,11 +35,11 @@ float
 /**
  * @method setAgentPrefVelocity
  * @param {unsigned long} arg0
- * @param {RVO::Vector2} arg1
+ * @param {vec2_object} arg1
  */
 setAgentPrefVelocity : function (
 long, 
-array 
+vec2 
 )
 {
 },
@@ -114,7 +74,7 @@ long
  * @param {float} arg3
  * @param {float} arg4
  * @param {float} arg5
- * @param {RVO::Vector2} arg6
+ * @param {vec2_object} arg6
  */
 setAgentDefaults : function (
 float, 
@@ -123,7 +83,15 @@ float,
 float, 
 float, 
 float, 
-array 
+vec2 
+)
+{
+},
+
+/**
+ * @method updateVisualization
+ */
+updateVisualization : function (
 )
 {
 },
@@ -231,13 +199,25 @@ long
 /**
  * @method getAgentVelocity
  * @param {unsigned long} arg0
- * @return {RVO::Vector2}
+ * @return {vec2_object}
  */
 getAgentVelocity : function (
 long 
 )
 {
-    return new Array();
+    return cc.Vec2;
+},
+
+/**
+ * @method setAgentsNextPos
+ * @param {Array} arg0
+ * @return {unsigned long}
+ */
+setAgentsNextPos : function (
+array 
+)
+{
+    return 0;
 },
 
 /**
@@ -262,6 +242,16 @@ long
 )
 {
     return 0;
+},
+
+/**
+ * @method reachedGoal
+ * @return {Array}
+ */
+reachedGoal : function (
+)
+{
+    return new Array();
 },
 
 /**
@@ -291,13 +281,21 @@ float
 /**
  * @method getAgentPrefVelocity
  * @param {unsigned long} arg0
- * @return {RVO::Vector2}
+ * @return {vec2_object}
  */
 getAgentPrefVelocity : function (
 long 
 )
 {
-    return new Array();
+    return cc.Vec2;
+},
+
+/**
+ * @method setPreferredVelocities
+ */
+setPreferredVelocities : function (
+)
+{
 },
 
 /**
@@ -348,25 +346,27 @@ float
 
 /**
  * @method addAgent
-* @param {RVO::Vector2|RVO::Vector2} array
+* @param {cc.Node|cc.Node} node
+* @param {vec2_object|vec2_object} vec2
 * @param {float} float
 * @param {unsigned long} long
 * @param {float} float
 * @param {float} float
 * @param {float} float
 * @param {float} float
-* @param {RVO::Vector2} array
+* @param {vec2_object} vec2
 * @return {unsigned long|unsigned long}
 */
 addAgent : function(
-array,
+node,
+vec2,
 float,
 long,
 float,
 float,
 float,
 float,
-array 
+vec2 
 )
 {
     return 0;
@@ -399,13 +399,13 @@ getGlobalTime : function (
 /**
  * @method getObstacleVertex
  * @param {unsigned long} arg0
- * @return {RVO::Vector2}
+ * @return {vec2_object}
  */
 getObstacleVertex : function (
 long 
 )
 {
-    return new Array();
+    return cc.Vec2;
 },
 
 /**
@@ -425,11 +425,11 @@ long
 /**
  * @method setAgentPosition
  * @param {unsigned long} arg0
- * @param {RVO::Vector2} arg1
+ * @param {vec2_object} arg1
  */
 setAgentPosition : function (
 long, 
-array 
+vec2 
 )
 {
 },
@@ -460,14 +460,14 @@ long
 
 /**
  * @method queryVisibility
- * @param {RVO::Vector2} arg0
- * @param {RVO::Vector2} arg1
+ * @param {vec2_object} arg0
+ * @param {vec2_object} arg1
  * @param {float} arg2
  * @return {bool}
  */
 queryVisibility : function (
-array, 
-array, 
+vec2, 
+vec2, 
 float 
 )
 {
@@ -477,13 +477,13 @@ float
 /**
  * @method getAgentPosition
  * @param {unsigned long} arg0
- * @return {RVO::Vector2}
+ * @return {vec2_object}
  */
 getAgentPosition : function (
 long 
 )
 {
-    return new Array();
+    return cc.Vec2;
 },
 
 /**
@@ -507,6 +507,14 @@ long
 },
 
 /**
+ * @method release
+ */
+release : function (
+)
+{
+},
+
+/**
  * @method setAgentNeighborDist
  * @param {unsigned long} arg0
  * @param {float} arg1
@@ -522,19 +530,18 @@ float
  * @method getAgentORCALine
  * @param {unsigned long} arg0
  * @param {unsigned long} arg1
- * @return {RVO::Line}
+ * @return {Array}
  */
 getAgentORCALine : function (
 long, 
 long 
 )
 {
-    return RVO::Line;
+    return new Array();
 },
 
 /**
- * @method RVOSimulator
- * @constructor
+ * @method create
 * @param {float} float
 * @param {float} float
 * @param {unsigned long} long
@@ -542,9 +549,10 @@ long
 * @param {float} float
 * @param {float} float
 * @param {float} float
-* @param {RVO::Vector2} array
+* @param {vec2_object} vec2
+* @return {CocosRVO|CocosRVO}
 */
-RVOSimulator : function(
+create : function(
 float,
 float,
 long,
@@ -552,9 +560,10 @@ float,
 float,
 float,
 float,
-array 
+vec2 
 )
 {
+    return CocosRVO;
 },
 
 };

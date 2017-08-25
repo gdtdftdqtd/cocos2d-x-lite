@@ -133,7 +133,7 @@ LanguageType Application::getCurrentLanguage()
 
 }
 
-const char * Application::getCurrentLanguageString()
+std::string Application::getCurrentLanguageString()
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSArray *languages = [defaults objectForKey:@"AppleLanguages"];

@@ -191,10 +191,9 @@ LanguageType Application::getCurrentLanguage()
 }
 
 //add by chl
-const char * Application::getCurrentLanguageString()
+std::string Application::getCurrentLanguageString()
 {
-    std::string languageName = JniHelper::callStaticStringMethod(helperClassName, "getCurrentLanguageString");
-    return languageName.c_str();
+    return JniHelper::callStaticStringMethod(helperClassName, "getCurrentLanguageString");
 }
 
 Application::Platform Application::getTargetPlatform()

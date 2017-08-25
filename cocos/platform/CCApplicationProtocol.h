@@ -136,7 +136,7 @@ public:
      * @js NA
      * @lua NA
      */
-    virtual const char * getCurrentLanguageString() = 0;
+    virtual std::string getCurrentLanguageString() = 0;
 
     /**
      @brief Get target platform.

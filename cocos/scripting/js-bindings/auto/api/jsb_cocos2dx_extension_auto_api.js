@@ -473,6 +473,18 @@ getRemoteManifest : function (
 },
 
 /**
+ * @method checkFreeMemoryIsEnough
+ * @param {long long} arg0
+ * @return {bool}
+ */
+checkFreeMemoryIsEnough : function (
+long long 
+)
+{
+    return false;
+},
+
+/**
  * @method prepareUpdate
  */
 prepareUpdate : function (
