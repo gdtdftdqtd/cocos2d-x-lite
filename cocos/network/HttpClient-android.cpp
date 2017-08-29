@@ -726,7 +726,12 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
     if (responseCode == -1)
     {
         response->setSucceed(false);
-        response->setErrorBuffer(responseMessage);
+        if (nullptr != responseMessage) {
+            response->setErrorBuffer(responseMessage);
+      	}
+      	else {
+            response->setErrorBuffer("response code error");
+      	}
     }
     else
     {
