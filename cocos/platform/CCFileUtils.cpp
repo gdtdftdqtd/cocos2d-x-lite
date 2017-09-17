@@ -564,8 +564,16 @@ void FileUtils::setDelegate(FileUtils *delegate)
 }
 
 FileUtils::FileUtils()
-    : _writablePath("")
+: _writablePath("")
 {
+    encrypt_keys[0] = 0x43;
+    encrypt_keys[1] = 0x48;
+    encrypt_keys[2] = 0x4C;
+    encrypt_keys[3] = 0x40;
+    encrypt_keys[4] = 0x43;
+    encrypt_keys[5] = 0x51;
+    encrypt_keys[6] = 0x58;
+    encrypt_keys[7] = 0x59;
 }
 
 FileUtils::~FileUtils()
@@ -699,16 +707,6 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
         fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
         if (!fullPath.empty())
         {
-            static const unsigned char encrypt_keys[] = {0x43,0x48,0x4C,0x40,0x43,0x51,0x58,0x59};
-//            std::string baseFileName = basename(filename);
-//            std::string password = getReverseSuffixFilePassword(filename);
-//            ssize_t size = 0;
-//            unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
-//            if (buff && size > 0) {
-//                buffer->resize(size);
-//                memcpy(buffer->buffer(), buff, size);
-//                return Status::OK;
-//            }
             auto fs = FileUtils::getInstance();
             FILE *fp = fopen(fs->getSuitableFOpen(fullPath).c_str(), "rb");
             if (!fp)
@@ -752,7 +750,9 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
             std::string baseFileName = basename(filename);
             std::string password = getReverseSuffixFilePassword(filename);
             ssize_t size = 0;
+            
             unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
+            CCLOG("ccc filename=%s,size=%ld",filename.c_str(),size);
             if (buff && size > 0) {
                 buffer->resize(size);
                 memcpy(buffer->buffer(), buff, size);

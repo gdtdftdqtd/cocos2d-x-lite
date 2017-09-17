@@ -35,6 +35,8 @@ THE SOFTWARE.
 #include "base/CCValue.h"
 #include "base/CCData.h"
 
+#define encrypt_keys_len 8
+
 NS_CC_BEGIN
 
 /**
@@ -266,6 +268,7 @@ public:
     
     //add by chl
     unsigned char* getFileDataFromZipByPassword(const std::string& zipFilePath, const std::string& filename, ssize_t *size, const std::string& password);
+    
 
     /** Returns the fullpath for a given filename.
 
@@ -761,6 +764,9 @@ protected:
      */
     virtual void valueMapCompact(ValueMap& valueMap);
     virtual void valueVectorCompact(ValueVector& valueVector);
+    
+    //add by chl
+    unsigned char encrypt_keys[encrypt_keys_len];
 };
 
 // end of support group

@@ -400,11 +400,41 @@ FileUtils::Status FileUtilsAndroid::getReverseSuffixContents(const std::string& 
     string relativePath = removeAssetsPath(fullPath);
     if (!relativePath.empty())
     {
+        std::string suffix = getFileExtension(filename);
+        if (suffix == ".jpg" || suffix == ".png"){
+            if (nullptr == assetmanager) {
+                LOGD("... FileUtilsAndroid::assetmanager is nullptr");
+                return FileUtils::Status::NotInitialized;
+            }
+            AAsset* asset = AAssetManager_open(assetmanager, relativePath.data(), AASSET_MODE_UNKNOWN);
+            if (nullptr == asset) {
+                LOGD("asset is nullptr");
+                return FileUtils::Status::OpenFailed;
+            }
+
+            auto size = AAsset_getLength(asset);
+            buffer->resize(size);
+
+            int readsize = AAsset_read(asset, buffer->buffer(), size);
+            AAsset_close(asset);
+
+            if (readsize < size) {
+                if (readsize >= 0)
+                    buffer->resize(readsize);
+                return FileUtils::Status::ReadFailed;
+            }
+
+            for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
+                unsigned char * content = (unsigned char *)buffer->buffer();
+                content[i] ^= encrypt_keys[i];
+            }
+            return Status::OK;
+        }
+
         if (!copyFileToSearchPathFromAssets(relativePath))
         {
             return FileUtils::Status::NotExists;
         }
-
         return FileUtils::getReverseSuffixContents(getWritableUpdatePath()+filename, buffer);
     }
     return FileUtils::Status::NotExists;
