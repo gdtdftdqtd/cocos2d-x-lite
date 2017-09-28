@@ -1041,8 +1041,13 @@ void ScriptingCore::reportError(JSContext *cx, JSErrorReport *report, JS::Handle
             if (JS_GetProperty(cx, errObj, "stack", &stack) && stack.isString())
             {
                 JS::RootedString jsstackStr(cx, stack.toString());
-                stackStr = JS_EncodeStringToUTF8(cx, jsstackStr);
-                CCLOGERROR("Stack: %s\n", stackStr.c_str());
+                char *rawStr = JS_EncodeStringToUTF8(cx, jsstackStr);
+                if (rawStr != nullptr)
+                {
+                    stackStr = rawStr;
+                    JS_free(cx, rawStr);
+                    CCLOGERROR("Stack: %s\n", stackStr.c_str());
+                }
             }
         }
         
@@ -1665,24 +1670,25 @@ bool ScriptingCore::executeFunctionWithOwner(JS::HandleValue owner, const char *
     JS::RootedValue ownerval(cx, owner);
     JS::RootedObject obj(cx);
     if (ownerval.isObject())
-        obj = ownerval.toObjectOrNull();
-
-    do
     {
-        if (JS_HasProperty(cx, obj, name, &hasFunc) && hasFunc) {
-            if (!JS_GetProperty(cx, obj, name, &funcVal)) {
-                break;
+        obj = ownerval.toObjectOrNull();
+        do
+        {
+            if (JS_HasProperty(cx, obj, name, &hasFunc) && hasFunc) {
+                if (!JS_GetProperty(cx, obj, name, &funcVal)) {
+                    break;
+                }
+                if (funcVal.isNullOrUndefined()) {
+                    break;
+                }
+                
+                bRet = JS_CallFunctionValue(cx, obj, funcVal, args, retVal);
+                if (JS_IsExceptionPending(cx)) {
+                    handlePendingException(cx);
+                }
             }
-            if (funcVal.isNullOrUndefined()) {
-                break;
-            }
-
-            bRet = JS_CallFunctionValue(cx, obj, funcVal, args, retVal);
-            if (JS_IsExceptionPending(cx)) {
-                handlePendingException(cx);
-            }
-        }
-    }while(0);
+        } while(0);
+    }
     return bRet;
 }
 
