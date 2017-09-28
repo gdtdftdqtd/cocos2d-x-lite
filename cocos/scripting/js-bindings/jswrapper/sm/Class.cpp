@@ -3,7 +3,7 @@
 #include "Utils.hpp"
 #include "ScriptEngine.hpp"
 
-#ifdef SCRIPT_ENGINE_SM
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM
 
 namespace se {
 
@@ -57,11 +57,11 @@ namespace se {
 
         _parent = parent;
         if (_parent != nullptr)
-            _parent->addRef();
+            _parent->incRef();
 
         _parentProto = parentProto;
         if (_parentProto != nullptr)
-            _parentProto->addRef();
+            _parentProto->incRef();
 
         _ctor = ctor;
         if (_ctor == nullptr)
@@ -69,15 +69,15 @@ namespace se {
             _ctor = empty_constructor;
         }
 
-        LOGD("Class init ( %s ) ...\n", clsName);
+//        LOGD("Class init ( %s ) ...\n", clsName);
         return true;
     }
 
     void Class::destroy()
     {
-        SAFE_RELEASE(_parent);
-        SAFE_RELEASE(_proto);
-        SAFE_RELEASE(_parentProto);
+        SAFE_DEC_REF(_parent);
+        SAFE_DEC_REF(_proto);
+        SAFE_DEC_REF(_parentProto);
     }
 
     bool Class::install()
@@ -112,7 +112,7 @@ namespace se {
         if (jsobj != nullptr)
         {
             _proto = Object::_createJSObject(nullptr, jsobj);
-            LOGD("_proto: %p, name: %s\n", _proto, _name);
+//            LOGD("_proto: %p, name: %s\n", _proto, _name);
             _proto->root();
             return true;
         }
@@ -210,4 +210,4 @@ namespace se {
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_SM
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM

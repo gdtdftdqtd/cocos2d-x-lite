@@ -1,6 +1,6 @@
 #include "Class.hpp"
 
-#ifdef SCRIPT_ENGINE_V8
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 
 #include "Object.hpp"
 #include "Utils.hpp"
@@ -48,11 +48,11 @@ namespace se {
 
         _parent = parent;
         if (_parent != nullptr)
-            _parent->addRef();
+            _parent->incRef();
 
         _parentProto = parentProto;
         if (_parentProto != nullptr)
-            _parentProto->addRef();
+            _parentProto->incRef();
 
         _ctor = ctor;
 
@@ -69,9 +69,9 @@ namespace se {
 
     void Class::destroy()
     {
-        SAFE_RELEASE(_parent);
-        SAFE_RELEASE(_proto);
-        SAFE_RELEASE(_parentProto);
+        SAFE_DEC_REF(_parent);
+        SAFE_DEC_REF(_proto);
+        SAFE_DEC_REF(_parentProto);
         _ctorTemplate.Reset();
     }
 
@@ -219,4 +219,4 @@ namespace se {
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_V8
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8

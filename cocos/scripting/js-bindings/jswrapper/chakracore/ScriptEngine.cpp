@@ -1,6 +1,6 @@
 #include "ScriptEngine.hpp"
 
-#ifdef SCRIPT_ENGINE_CHAKRACORE
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 #include "Object.hpp"
 #include "Class.hpp"
@@ -16,7 +16,7 @@ namespace se {
 
         JsValueRef __forceGC(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
         {
-            ScriptEngine::getInstance()->gc();
+            ScriptEngine::getInstance()->garbageCollect();
             return JS_INVALID_REFERENCE;
         }
 
@@ -70,10 +70,14 @@ namespace se {
             : _rt(JS_INVALID_RUNTIME_HANDLE)
             , _cx(JS_INVALID_REFERENCE)
             , _globalObj(nullptr)
+            , _nodeEventListener(nullptr)
+            , _exceptionCallback(nullptr)
+            , _currentSourceContext(0)
+            , _vmId(0)
             , _isValid(false)
             , _isInCleanup(false)
-            , _isInGC(false)
-            , _currentSourceContext(0)
+            , _isErrorHandleWorking(false)
+            , _isGarbageCollecting(false)
     {
     }
 
@@ -82,6 +86,7 @@ namespace se {
         cleanup();
         LOGD("Initializing ChakraCore ... \n");
 
+        ++_vmId;
         for (const auto& hook : _beforeInitHookArray)
         {
             hook();
@@ -105,6 +110,8 @@ namespace se {
 
         _globalObj = Object::_createJSObject(nullptr, globalObj);
         _globalObj->root();
+
+        _globalObj->setProperty("scriptEngineType", se::Value("ChakraCore"));
 
         _globalObj->defineFunction("log", __log);
         _globalObj->defineFunction("forceGC", __forceGC);
@@ -141,10 +148,10 @@ namespace se {
         }
         _beforeCleanupHookArray.clear();
 
-        SAFE_RELEASE(_globalObj);
+        SAFE_DEC_REF(_globalObj);
         Object::cleanup();
         Class::cleanup();
-        gc();
+        garbageCollect();
 
         _CHECK(JsSetCurrentContext(JS_INVALID_REFERENCE));
         _CHECK(JsDisposeRuntime(_rt));
@@ -167,55 +174,36 @@ namespace se {
         NonRefNativePtrCreatedByCtorMap::destroy();
     }
 
-    std::string ScriptEngine::formatException(JsValueRef exception)
+    ScriptEngine::ExceptionInfo ScriptEngine::formatException(JsValueRef exception)
     {
-        std::string ret;
-        JsValueRef propertyNames = JS_INVALID_REFERENCE;
-        JsGetOwnPropertyNames(exception, &propertyNames);
-        JsValueType type;
-        _CHECK(JsGetValueType(propertyNames, &type));
-        assert(type == JsArray);
+        ExceptionInfo ret;
+        if (exception == JS_INVALID_REFERENCE)
+            return ret;
 
-        for (int i = 0; ; ++i)
+        std::vector<std::string> allKeys;
+        Object* exceptionObj = Object::_createJSObject(nullptr, exception);
+        exceptionObj->getAllKeys(&allKeys);
+
+        for (const auto& key : allKeys)
         {
-            JsValueRef index = JS_INVALID_REFERENCE;
-            JsValueRef result = JS_INVALID_REFERENCE;
-            _CHECK(JsIntToNumber(i, &index));
-            if (JsNoError != JsGetIndexedProperty(propertyNames, index, &result))
-                break;
-            JsGetValueType(result, &type);
-
-            if (type == JsUndefined)
-                break;
-
-            assert(type == JsString);
-
-            Value key;
-            internal::jsToSeValue(result, &key);
-            std::string keyStr = key.toString();
-
-            if (keyStr == "stack")
+            Value tmp;
+            if (exceptionObj->getProperty(key.c_str(), &tmp))
             {
-                JsPropertyIdRef propertyId = JS_INVALID_REFERENCE;
-
-                if (JsCreatePropertyId(keyStr.c_str(), keyStr.length(), &propertyId) != JsNoError)
+//                LOGD("[%s]=%s\n", key.c_str(), tmp.toStringForce().c_str());
+                if (key == "message")
                 {
-                    return "failed to get and clear exception";
+                    ret.message = tmp.toString();
                 }
-
-                JsValueRef jsValue;
-                if (JsGetProperty(exception, propertyId, &jsValue) != JsNoError)
+                else if (key == "stack")
                 {
-                    return "failed to get error message";
+                    ret.stack = tmp.toString();
                 }
-
-                internal::forceConvertJsValueToStdString(jsValue, &ret);
-
-//                LOGD("[%s]=%s\n", keyStr.c_str(), tmp.c_str());
-
-                break;
             }
         }
+
+        exceptionObj->decRef();
+
+        ret.location = "(see stack)";
 
         return ret;
     }
@@ -272,17 +260,17 @@ namespace se {
         return ok;
     }
 
-    bool ScriptEngine::isInGC()
+    bool ScriptEngine::isGarbageCollecting()
     {
-        return _isInGC;
+        return _isGarbageCollecting;
     }
 
-    void ScriptEngine::_setInGC(bool isInGC)
+    void ScriptEngine::_setGarbageCollecting(bool isGarbageCollecting)
     {
-        _isInGC = isInGC;
+        _isGarbageCollecting = isGarbageCollecting;
     }
 
-    void ScriptEngine::gc()
+    void ScriptEngine::garbageCollect()
     {
         LOGD("GC begin ..., (Native -> JS map) count: %d\n", (int)NativePtrToObjectMap::size());
         _CHECK(JsCollectGarbage(_rt));
@@ -299,23 +287,51 @@ namespace se {
             JsValueRef exception;
             _CHECK(JsGetAndClearException(&exception));
 
-            std::string exceptionMsg = formatException(exception);
-            LOGD("%s\n", exceptionMsg.c_str());
+            ExceptionInfo exceptionInfo = formatException(exception);
+            LOGD("ERROR: %s, %s, \nSTACK:\n%s\n", exceptionInfo.message.c_str(), exceptionInfo.location.c_str(), exceptionInfo.stack.c_str());
 
+            if (_exceptionCallback != nullptr)
+            {
+                _exceptionCallback(exceptionInfo.location.c_str(), exceptionInfo.message.c_str(), exceptionInfo.stack.c_str());
+            }
+
+            if (!_isErrorHandleWorking)
+            {
+                _isErrorHandleWorking = true;
+
+                Value errorHandler;
+                if (_globalObj->getProperty("__errorHandler", &errorHandler) && errorHandler.isObject() && errorHandler.toObject()->isFunction())
+                {
+                    ValueArray args;
+                    args.push_back(Value(exceptionInfo.location));
+                    args.push_back(Value(0));
+                    args.push_back(Value(exceptionInfo.message));
+                    args.push_back(Value(exceptionInfo.stack));
+                    errorHandler.toObject()->call(args, _globalObj);
+                }
+
+                _isErrorHandleWorking = false;
+            }
+            else
+            {
+                LOGE("ERROR: __errorHandler has exception\n");
+            }
         }
     }
 
-    bool ScriptEngine::executeScriptBuffer(const char *string, Value *data, const char *fileName)
+    void ScriptEngine::setExceptionCallback(const ExceptionCallback& cb)
     {
-        return executeScriptBuffer(string, strlen(string), data, fileName);
+        _exceptionCallback = cb;
     }
 
-    bool ScriptEngine::executeScriptBuffer(const char *script, size_t length, Value *data, const char *fileName)
+    bool ScriptEngine::evalString(const char* script, ssize_t length/* = -1 */, Value* ret/* = nullptr */, const char* fileName/* = nullptr */)
     {
+        assert(script != nullptr);
+        if (length < 0)
+            length = strlen(script);
+
         if (fileName == nullptr)
-        {
             fileName = "(no filename)";
-        }
 
         JsValueRef fname;
         _CHECK(JsCreateString(fileName, strlen(fileName), &fname));
@@ -333,21 +349,42 @@ namespace se {
             return false;
         }
 
-        if (data != nullptr)
+        if (ret != nullptr)
         {
             JsValueType type;
             JsGetValueType(result, &type);
             if (type != JsUndefined)
             {
-                internal::jsToSeValue(result, data);
+                internal::jsToSeValue(result, ret);
             }
             else
             {
-                data->setUndefined();
+                ret->setUndefined();
             }
         }
 
         return true;
+    }
+
+    void ScriptEngine::setFileOperationDelegate(const FileOperationDelegate& delegate)
+    {
+        _fileOperationDelegate = delegate;
+    }
+
+    bool ScriptEngine::runScript(const std::string& path, Value* ret/* = nullptr */)
+    {
+        assert(!path.empty());
+        assert(_fileOperationDelegate.isValid());
+
+        std::string scriptBuffer = _fileOperationDelegate.onGetStringFromFile(path);
+
+        if (!scriptBuffer.empty())
+        {
+            return evalString(scriptBuffer.c_str(), scriptBuffer.length(), ret, path.c_str());
+        }
+
+        LOGE("ScriptEngine::runScript script buffer is empty!\n");
+        return false;
     }
 
     void ScriptEngine::_retainScriptObject(void* owner, void* target)
@@ -365,7 +402,7 @@ namespace se {
         }
 
         clearException();
-        iterOwner->second->attachChild(iterTarget->second);
+        iterOwner->second->attachObject(iterTarget->second);
     }
 
     void ScriptEngine::_releaseScriptObject(void* owner, void* target)
@@ -383,7 +420,7 @@ namespace se {
         }
 
         clearException();
-        iterOwner->second->detachChild(iterTarget->second);
+        iterOwner->second->detachObject(iterTarget->second);
     }
 
     bool ScriptEngine::_onReceiveNodeEvent(void* node, NodeEventType type)
@@ -398,6 +435,16 @@ namespace se {
         return true;
     }
 
+    void ScriptEngine::enableDebugger(unsigned int port/* = 5086*/)
+    {
+        //FIXME:
+    }
+
+    void ScriptEngine::mainLoopUpdate()
+    {
+        //FIXME:
+    }
+
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_CHAKRACORE
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE

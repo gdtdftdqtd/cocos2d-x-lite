@@ -1,6 +1,6 @@
 #include "Object.hpp"
 
-#ifdef SCRIPT_ENGINE_CHAKRACORE
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 #include "Utils.hpp"
 #include "Class.hpp"
@@ -12,11 +12,12 @@ namespace se {
     Object::Object()
     : _cls(nullptr)
     , _obj(JS_INVALID_REFERENCE)
-    , _rootCount(0)
     , _privateData(nullptr)
-    , _isCleanup(false)
     , _finalizeCb(nullptr)
+    , _rootCount(0)
+    , _isCleanup(false)
     {
+        _currentVMId = ScriptEngine::getInstance()->getVMId();
     }
 
     Object::~Object()
@@ -106,7 +107,7 @@ namespace se {
         if (iter != NativePtrToObjectMap::end())
         {
             obj = iter->second;
-            obj->addRef();
+            obj->incRef();
         }
         return obj;
     }
@@ -142,35 +143,43 @@ namespace se {
         if (_isCleanup)
             return;
 
-        if (_privateData != nullptr)
+        auto se = ScriptEngine::getInstance();
+        if (_currentVMId == se->getVMId())
         {
-            if (_obj != nullptr)
+            if (_privateData != nullptr)
             {
-                if (nativeObject == nullptr)
+                if (_obj != nullptr)
                 {
-                    nativeObject = internal::getPrivate(_obj);
-                }
-
-                if (nativeObject != nullptr)
-                {
-                    auto iter = NativePtrToObjectMap::find(nativeObject);
-                    if (iter != NativePtrToObjectMap::end())
+                    if (nativeObject == nullptr)
                     {
-                        NativePtrToObjectMap::erase(iter);
+                        nativeObject = internal::getPrivate(_obj);
+                    }
+
+                    if (nativeObject != nullptr)
+                    {
+                        auto iter = NativePtrToObjectMap::find(nativeObject);
+                        if (iter != NativePtrToObjectMap::end())
+                        {
+                            NativePtrToObjectMap::erase(iter);
+                        }
                     }
                 }
             }
-        }
 
-        if (_rootCount > 0)
-        {
-            // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
-            if (!ScriptEngine::getInstance()->_isInCleanup)
+            if (_rootCount > 0)
             {
-                unsigned int count = 0;
-                _CHECK(JsRelease(_obj, &count));
+                // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
+                if (!se->isInCleanup() && !se->isGarbageCollecting())
+                {
+                    unsigned int count = 0;
+                    _CHECK(JsRelease(_obj, &count));
+                }
+                _rootCount = 0;
             }
-            _rootCount = 0;
+        }
+        else
+        {
+            LOGD("Object::_cleanup, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
         }
 
         _isCleanup = true;
@@ -180,9 +189,12 @@ namespace se {
     {
         ScriptEngine::getInstance()->addAfterCleanupHook([](){
             const auto& instance = NativePtrToObjectMap::instance();
+            se::Object* obj = nullptr;
             for (const auto& e : instance)
             {
-                e.second->release();
+                obj = e.second;
+                obj->_isCleanup = true; // _cleanup will invoke NativePtrToObjectMap::erase method which will break this for loop. It isn't needed at ScriptEngine::cleanup step.
+                obj->decRef();
             }
             NativePtrToObjectMap::clear();
             NonRefNativePtrCreatedByCtorMap::clear();
@@ -571,10 +583,18 @@ namespace se {
             if (_rootCount == 0)
             {
                 // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
-                if (!ScriptEngine::getInstance()->_isInCleanup)
+                auto se = ScriptEngine::getInstance();
+                if (_currentVMId == se->getVMId())
                 {
-                    unsigned int count = 0;
-                    _CHECK(JsRelease(_obj, &count));
+                    if (!se->isInCleanup() && !se->isGarbageCollecting())
+                    {
+                        unsigned int count = 0;
+                        _CHECK(JsRelease(_obj, &count));
+                    }
+                }
+                else
+                {
+                    LOGD("Object::unroot, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
                 }
             }
         }
@@ -585,16 +605,16 @@ namespace se {
         return _rootCount > 0;
     }
 
-    bool Object::isSame(Object* o) const
+    bool Object::strictEquals(Object* o) const
     {
         bool same = false;
         _CHECK(JsStrictEquals(_obj, o->_obj, &same));
         return same;
     }
 
-    bool Object::attachChild(Object* child)
+    bool Object::attachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
 
         Object* global = ScriptEngine::getInstance()->getGlobalObject();
         Value jsbVal;
@@ -609,14 +629,14 @@ namespace se {
 
         ValueArray args;
         args.push_back(Value(this));
-        args.push_back(Value(child));
+        args.push_back(Value(obj));
         func.toObject()->call(args, global);
         return true;
     }
 
-    bool Object::detachChild(Object* child)
+    bool Object::detachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
         Object* global = ScriptEngine::getInstance()->getGlobalObject();
         Value jsbVal;
         if (!global->getProperty("jsb", &jsbVal))
@@ -630,11 +650,11 @@ namespace se {
 
         ValueArray args;
         args.push_back(Value(this));
-        args.push_back(Value(child));
+        args.push_back(Value(obj));
         func.toObject()->call(args, global);
         return true;
     }
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_CHAKRACORE
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE

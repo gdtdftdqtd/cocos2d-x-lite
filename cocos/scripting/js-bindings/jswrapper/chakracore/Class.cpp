@@ -1,6 +1,6 @@
 #include "Class.hpp"
 
-#ifdef SCRIPT_ENGINE_CHAKRACORE
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 #include "Object.hpp"
 #include "Utils.hpp"
@@ -31,7 +31,7 @@ namespace se {
                 State state(nativeThisObject);
                 Object* _thisObject = state.thisObject();
                 if (_thisObject) _thisObject->_cleanup(nativeThisObject);
-                SAFE_RELEASE(_thisObject);
+                SAFE_DEC_REF(_thisObject);
             }
         }
     }
@@ -66,11 +66,11 @@ namespace se {
         _name = clsName;
         _parent = parent;
         if (_parent != nullptr)
-            _parent->addRef();
+            _parent->incRef();
         _parentProto = parentProto;
 
         if (_parentProto != nullptr)
-            _parentProto->addRef();
+            _parentProto->incRef();
         _ctor = ctor;
 
         return true;
@@ -78,14 +78,6 @@ namespace se {
 
     bool Class::install()
     {
-//        auto iter = __clsMap.find(_name);
-//        if (iter != __clsMap.end())
-//        {
-//            assert(!iter->second->_parent->isSame(_parent));
-//        }
-//
-//        __clsMap.emplace(_name, this);
-
         JsValueRef funcName;
         _CHECK(JsCreateString(_name.c_str(), _name.length(), &funcName));
         JsValueRef jsConstructor;
@@ -205,9 +197,9 @@ namespace se {
 
     void Class::destroy()
     {
-        SAFE_RELEASE(_parent);
-        SAFE_RELEASE(_proto);
-        SAFE_RELEASE(_parentProto);
+        SAFE_DEC_REF(_parent);
+        SAFE_DEC_REF(_proto);
+        SAFE_DEC_REF(_parentProto);
     }
 
     void Class::cleanup()
@@ -228,4 +220,4 @@ namespace se {
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_CHAKRACORE
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE

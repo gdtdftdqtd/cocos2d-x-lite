@@ -546,7 +546,7 @@ static bool js_cocos2dx_spine_SkeletonRenderer_drawDebug(se::State& s)
         unsigned int arg2 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
         ok &= seval_to_Mat4(args[1], &arg1);
-        ok &= seval_to_uint32(args[2], &arg2);
+        ok &= seval_to_uint32(args[2], (uint32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SkeletonRenderer_drawDebug : Error processing arguments");
         cobj->drawDebug(arg0, arg1, arg2);
         return true;
@@ -748,7 +748,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_spine_SkeletonRenderer_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (spine::SkeletonRenderer)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (spine::SkeletonRenderer)", s.nativeThisObject());
     spine::SkeletonRenderer* cobj = (spine::SkeletonRenderer*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -810,7 +810,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setAnimation(se::State& s)
         int arg0 = 0;
         std::string arg1;
         bool arg2;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_boolean(args[2], &arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SkeletonAnimation_setAnimation : Error processing arguments");
@@ -882,7 +882,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setDisposeListener(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](spTrackEntry* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -950,7 +950,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setEndListener(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](spTrackEntry* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -1016,7 +1016,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setCompleteListener(se::State& s
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](spTrackEntry* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -1065,7 +1065,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_getCurrent(se::State& s)
     }
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SkeletonAnimation_getCurrent : Error processing arguments");
         spTrackEntry* result = cobj->getCurrent(arg0);
         ok &= sptrackentry_to_seval(*result, &s.rval());
@@ -1091,7 +1091,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setEventListener(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](spTrackEntry* larg0, spEvent* larg1) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -1139,7 +1139,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_clearTrack(se::State& s)
     }
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SkeletonAnimation_clearTrack : Error processing arguments");
         cobj->clearTrack(arg0);
         return true;
@@ -1163,7 +1163,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setInterruptListener(se::State& 
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](spTrackEntry* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -1208,7 +1208,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_addAnimation(se::State& s)
         int arg0 = 0;
         std::string arg1;
         bool arg2;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_boolean(args[2], &arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SkeletonAnimation_addAnimation : Error processing arguments");
@@ -1222,7 +1222,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_addAnimation(se::State& s)
         std::string arg1;
         bool arg2;
         float arg3 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_boolean(args[2], &arg2);
         ok &= seval_to_float(args[3], &arg3);
@@ -1266,7 +1266,7 @@ static bool js_cocos2dx_spine_SkeletonAnimation_setStartListener(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](spTrackEntry* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -1681,7 +1681,7 @@ extern se::Object* __jsb_spine_SkeletonRenderer_proto;
 
 static bool js_spine_SkeletonAnimation_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (spine::SkeletonAnimation)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (spine::SkeletonAnimation)", s.nativeThisObject());
     spine::SkeletonAnimation* cobj = (spine::SkeletonAnimation*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1721,7 +1721,7 @@ bool js_register_cocos2dx_spine_SkeletonAnimation(se::Object* obj)
     __jsb_spine_SkeletonAnimation_proto = cls->getProto();
     __jsb_spine_SkeletonAnimation_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { sp.SkeletonAnimation.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { sp.SkeletonAnimation.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }

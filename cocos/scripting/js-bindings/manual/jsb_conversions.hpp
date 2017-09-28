@@ -6,7 +6,6 @@
 #include "cocos2d.h"
 #include "cocos/ui/CocosGUI.h"
 #include "extensions/cocos-ext.h"
-#include "cocos/editor-support/cocostudio/CocosStudioExtension.h"
 #include "cocos/editor-support/spine/spine.h"
 #include "Box2D/Box2D.h"
 
@@ -89,7 +88,6 @@ bool seval_to_AffineTransform(const se::Value& v, cocos2d::AffineTransform* ret)
 //bool seval_to_Viewport(const se::Value& v, cocos2d::experimental::Viewport* ret);
 bool seval_to_Data(const se::Value& v, cocos2d::Data* ret);
 bool seval_to_DownloaderHints(const se::Value& v, cocos2d::network::DownloaderHints* ret);
-bool seval_to_ResourceData(const se::Value& v, cocos2d::ResourceData* ret);
 bool seval_to_TTFConfig(const se::Value& v, cocos2d::TTFConfig* ret);
 
 //box2d seval to native convertion
@@ -196,7 +194,6 @@ bool AffineTransform_to_seval(const cocos2d::AffineTransform& v, se::Value* ret)
 //bool Viewport_to_seval(const cocos2d::experimental::Viewport& v, se::Value* ret);
 bool Data_to_seval(const cocos2d::Data& v, se::Value* ret);
 bool DownloadTask_to_seval(const cocos2d::network::DownloadTask& v, se::Value* ret);
-bool ResourceData_to_seval(const cocos2d::ResourceData& v, se::Value* ret);
 
 template<typename T>
 bool recreate_seval_by_native_ptr(typename std::enable_if<!std::is_base_of<cocos2d::Ref,T>::value,T>::type* v, se::Class* cls, se::Value* ret)
@@ -214,7 +211,7 @@ bool recreate_seval_by_native_ptr(typename std::enable_if<!std::is_base_of<cocos
     {
         se::Object* seObj = iter->second;
         seObj->clearPrivateData();
-        seObj->release();
+        seObj->decRef();
     }
 
     se::Object* obj = se::Object::createObjectWithClass(cls);
@@ -475,7 +472,7 @@ bool Vector_to_seval(const cocos2d::Vector<T*>& v, se::Value* ret)
         ++i;
     }
 
-    ret->setObject(obj);
+    ret->setObject(obj, true);
 
     return ok;
 }
@@ -494,7 +491,7 @@ bool Map_string_key_to_seval(const cocos2d::Map<std::string, T*>& v, se::Value* 
         obj->setProperty(e.first.c_str(), tmp);
     }
 
-    ret->setObject(obj);
+    ret->setObject(obj, true);
     return false;
 }
 

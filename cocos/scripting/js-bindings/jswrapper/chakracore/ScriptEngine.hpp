@@ -2,7 +2,7 @@
 
 #include "../config.hpp"
 
-#ifdef SCRIPT_ENGINE_CHAKRACORE
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 #include "Base.h"
 #include <chrono>
@@ -58,17 +58,72 @@ namespace se {
         void addBeforeCleanupHook(const std::function<void()>& hook);
         void addAfterCleanupHook(const std::function<void()>& hook);
 
-        bool executeScriptBuffer(const char *string, Value *data = nullptr, const char *fileName = nullptr);
-        bool executeScriptBuffer(const char *string, size_t length, Value *data = nullptr, const char *fileName = nullptr);
+        bool evalString(const char* script, ssize_t length = -1, Value* ret = nullptr, const char* fileName = nullptr);
 
-        bool isInGC();
-        void _setInGC(bool isInGC);
-        void gc();
+        /**
+         *  Delegate class for file operation
+         */
+        class FileOperationDelegate
+        {
+        public:
+            FileOperationDelegate()
+            : onGetDataFromFile(nullptr)
+            , onGetStringFromFile(nullptr)
+            , onCheckFileExist(nullptr)
+            , onGetFullPath(nullptr)
+            {}
+
+            /**
+             *  @brief Tests whether delegate is valid.
+             */
+            bool isValid() {
+                return onGetDataFromFile != nullptr
+                && onGetStringFromFile != nullptr
+                && onCheckFileExist != nullptr
+                && onGetFullPath != nullptr; }
+
+            // path, buffer, buffer size
+            std::function<void(const std::string&, const uint8_t**, size_t*)> onGetDataFromFile;
+            // path, return file string content.
+            std::function<std::string(const std::string&)> onGetStringFromFile;
+            // path
+            std::function<bool(const std::string&)> onCheckFileExist;
+            // path, return full path
+            std::function<std::string(const std::string&)> onGetFullPath;
+        };
+
+        /**
+         *  @brief Sets the delegate for file operation.
+         *  @param delegate[in] The delegate instance for file operation.
+         */
+        void setFileOperationDelegate(const FileOperationDelegate& delegate);
+
+        /**
+         *  @brief Executes a file which contains JavaScript code.
+         *  @param[in] path Script file path.
+         *  @param[in] rval The se::Value that results from evaluating script. Passing nullptr if you don't care about the result.
+         *  @return true if succeed, otherwise false.
+         */
+        bool runScript(const std::string& path, Value* ret = nullptr);
+
+        bool isGarbageCollecting();
+        void _setGarbageCollecting(bool isGarbageCollecting);
+        void garbageCollect();
 
         bool isValid() { return _isValid; }
+        bool isInCleanup() { return _isInCleanup; }
 
         void clearException();
+
+        using ExceptionCallback = std::function<void(const char*, const char*, const char*)>; // location, message, stack
+
+        void setExceptionCallback(const ExceptionCallback& cb);
+
         const std::chrono::steady_clock::time_point& getStartTime() const { return _startTime; }
+        void enableDebugger(unsigned int port = 5086);
+        void mainLoopUpdate();
+
+        uint32_t getVMId() const { return _vmId; }
 
         void _retainScriptObject(void* owner, void* target);
         void _releaseScriptObject(void* owner, void* target);
@@ -86,34 +141,45 @@ namespace se {
         bool _setNodeEventListener(NodeEventListener listener);
 
     private:
+        struct ExceptionInfo
+        {
+            std::string location;
+            std::string message;
+            std::string stack;
 
-        std::string formatException(JsValueRef exception);
+            bool isValid() const
+            {
+                return !message.empty();
+            }
+        };
+        ExceptionInfo formatException(JsValueRef exception);
 
-        JsRuntimeHandle _rt;
-        JsContextRef _cx;
-
-        Object* _globalObj;
-
-        bool _isValid;
-        bool _isInCleanup;
-        bool _isInGC;
-        unsigned _currentSourceContext;
-        NodeEventListener _nodeEventListener;
-
-        std::vector<RegisterCallback> _registerCallbackArray;
         std::chrono::steady_clock::time_point _startTime;
-
+        std::vector<RegisterCallback> _registerCallbackArray;
         std::vector<std::function<void()>> _beforeInitHookArray;
         std::vector<std::function<void()>> _afterInitHookArray;
-
         std::vector<std::function<void()>> _beforeCleanupHookArray;
         std::vector<std::function<void()>> _afterCleanupHookArray;
 
-        friend class Object;
+        JsRuntimeHandle _rt;
+        JsContextRef _cx;
+        Object* _globalObj;
+
+        NodeEventListener _nodeEventListener;
+        FileOperationDelegate _fileOperationDelegate;
+        ExceptionCallback _exceptionCallback;
+
+        uint32_t _currentSourceContext;
+        uint32_t _vmId;
+
+        bool _isValid;
+        bool _isInCleanup;
+        bool _isGarbageCollecting;
+        bool _isErrorHandleWorking;
     };
 
  } // namespace se {
 
-#endif // SCRIPT_ENGINE_CHAKRACORE
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 

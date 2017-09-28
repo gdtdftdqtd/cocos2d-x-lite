@@ -16,7 +16,6 @@ se::Class* __jsb_SocketIO_class = nullptr;
 class JSB_SocketIODelegate : public Ref, public SocketIO::SIODelegate
 {
 public:
-
     //c++11 map to callbacks
     typedef std::unordered_map<std::string/* eventName */, se::ValueArray/* 0:callbackFunc, 1:target */> JSB_SIOCallbackRegistry;
 
@@ -41,7 +40,14 @@ public:
     {
         CCLOG("JSB SocketIO::SIODelegate->onClose method called from native");
         this->fireEventToScript(client, "disconnect", "");
-        release();
+        if (getReferenceCount() == 1)
+        {
+            autorelease();
+        }
+        else
+        {
+            release();
+        }
     }
 
     virtual void onError(SIOClient* client, const std::string& data) override
@@ -103,7 +109,7 @@ public:
         _eventRegistry[eventName].clear();
         _eventRegistry[eventName].push_back(callback);
         _eventRegistry[eventName].push_back(target);
-        target.toObject()->attachChild(callback.toObject());
+        target.toObject()->attachObject(callback.toObject());
     }
 
 private:
@@ -116,7 +122,15 @@ static bool SocketIO_finalize(se::State& s)
     SIOClient* cobj = (SIOClient*)s.nativeThisObject();
     CCLOGINFO("jsbindings: finalizing JS object %p (SocketIO)", cobj);
     cobj->disconnect();
-    static_cast<JSB_SocketIODelegate*>(cobj->getDelegate())->release();
+    JSB_SocketIODelegate* delegate = static_cast<JSB_SocketIODelegate*>(cobj->getDelegate());
+    if (delegate->getReferenceCount() == 1)
+    {
+        delegate->autorelease();
+    }
+    else
+    {
+        delegate->release();
+    }
     cobj->release();
     return true;
 }

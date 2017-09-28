@@ -1,6 +1,6 @@
 #include "ScriptEngine.hpp"
 
-#ifdef SCRIPT_ENGINE_V8
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 
 #include "Object.hpp"
 #include "Class.hpp"
@@ -12,13 +12,6 @@
 #include "env.h"
 #include "node.h"
 #endif
-
-//#include "cocos2d.h"
-
-//#undef LOGD
-
-//#define LOGD cocos2d::log
-
 
 #define RETRUN_VAL_IF_FAIL(cond, val) \
     if (!(cond)) return val
@@ -41,40 +34,138 @@ namespace se {
 
         void __forceGC(const v8::FunctionCallbackInfo<v8::Value>& info)
         {
-            ScriptEngine::getInstance()->gc();
+            ScriptEngine::getInstance()->garbageCollect();
         }
 
-        void myFatalErrorCallback(const char* location, const char* message)
+        std::string stackTraceToString(v8::Local<v8::StackTrace> stack)
         {
-            LOGD("[FATAL ERROR] location: %s, message: %s\n", location, message);
-        }
-
-        void myOOMErrorCallback(const char* location, bool is_heap_oom)
-        {
-            LOGD("[OOM ERROR] location: %s, is_heap_oom: %d", location, is_heap_oom);
-        }
-
-        void printStackTrace(v8::Local<v8::StackTrace> stack) {
-            LOGD("Stack Trace (length %d):\n", stack->GetFrameCount());
-            for (int i = 0, e = stack->GetFrameCount(); i != e; ++i) {
+            std::string stackStr;
+            char tmp[100] = {0};
+            for (int i = 0, e = stack->GetFrameCount(); i < e; ++i)
+            {
                 v8::Local<v8::StackFrame> frame = stack->GetFrame(i);
                 v8::Local<v8::String> script = frame->GetScriptName();
+                std::string scriptName;
+                if (!script.IsEmpty())
+                {
+                    scriptName = *v8::String::Utf8Value(script);
+                }
+
                 v8::Local<v8::String> func = frame->GetFunctionName();
-                LOGD("[%d] (%s) %s:%d:%d\n", i,
-                       script.IsEmpty() ? "<null>" : *v8::String::Utf8Value(script),
-                       func.IsEmpty() ? "<null>" : *v8::String::Utf8Value(func),
-                       frame->GetLineNumber(), frame->GetColumn());
+                std::string funcName;
+                if (!func.IsEmpty())
+                {
+                    funcName = *v8::String::Utf8Value(func);
+                }
+
+                stackStr += "[";
+                snprintf(tmp, sizeof(tmp), "%d", i);
+                stackStr += tmp;
+                stackStr += "]";
+                stackStr += (funcName.empty() ? "anonymous" : funcName.c_str());
+                stackStr += "@";
+                stackStr += (scriptName.empty() ? "(no filename)" : scriptName.c_str());
+                stackStr += ":";
+                snprintf(tmp, sizeof(tmp), "%d", frame->GetLineNumber());
+                stackStr += tmp;
+
+                if (i < (e-1))
+                {
+                    stackStr += "\n";
+                }
             }
+
+            return stackStr;
+        }
+    } // namespace {
+
+    void ScriptEngine::onFatalErrorCallback(const char* location, const char* message)
+    {
+        std::string errorStr = "[FATAL ERROR] location: ";
+        errorStr += location;
+        errorStr += ", message: ";
+        errorStr += message;
+
+        LOGE("%s\n", errorStr.c_str());
+        if (getInstance()->_exceptionCallback != nullptr)
+        {
+            getInstance()->_exceptionCallback(location, message, "(no stack information)");
+        }
+    }
+
+    void ScriptEngine::onOOMErrorCallback(const char* location, bool is_heap_oom)
+    {
+        std::string errorStr = "[OOM ERROR] location: ";
+        errorStr += location;
+        std::string message;
+        message = "is heap out of memory: ";
+        if (is_heap_oom)
+            message += "true";
+        else
+            message += "false";
+
+        errorStr += ", " + message;
+        LOGE("%s\n", errorStr.c_str());
+        if (getInstance()->_exceptionCallback != nullptr)
+        {
+            getInstance()->_exceptionCallback(location, message.c_str(), "(no stack information)");
+        }
+    }
+
+    void ScriptEngine::onMessageCallback(v8::Local<v8::Message> message, v8::Local<v8::Value> data)
+    {
+        ScriptEngine* thiz = getInstance();
+        v8::Local<v8::String> msg = message->Get();
+        Value msgVal;
+        internal::jsToSeValue(v8::Isolate::GetCurrent(), msg, &msgVal);
+        assert(msgVal.isString());
+        v8::ScriptOrigin origin = message->GetScriptOrigin();
+        Value resouceNameVal;
+        internal::jsToSeValue(v8::Isolate::GetCurrent(), origin.ResourceName(), &resouceNameVal);
+        Value line;
+        internal::jsToSeValue(v8::Isolate::GetCurrent(), origin.ResourceLineOffset(), &line);
+        Value column;
+        internal::jsToSeValue(v8::Isolate::GetCurrent(), origin.ResourceColumnOffset(), &column);
+
+        std::string location = resouceNameVal.toString() + ":" + line.toStringForce() + ":" + column.toStringForce();
+
+        std::string errorStr = msgVal.toString() + ", " + location;
+        std::string stackStr = stackTraceToString(message->GetStackTrace());
+        if (!stackStr.empty())
+        {
+            if (line.toInt32() == 0)
+            {
+                location = "(see stack)";
+            }
+            errorStr += "\nSTACK:\n" + stackStr;
+        }
+        LOGE("ERROR: %s\n", errorStr.c_str());
+
+        if (thiz->_exceptionCallback != nullptr)
+        {
+            thiz->_exceptionCallback(location.c_str(), msgVal.toString().c_str(), stackStr.c_str());
         }
 
-        void myMessageCallback(v8::Local<v8::Message> message, v8::Local<v8::Value> data)
+        if (!thiz->_isErrorHandleWorking)
         {
-            v8::Local<v8::String> msg = message->Get();
-            se::Value msgVal;
-            internal::jsToSeValue(v8::Isolate::GetCurrent(), msg, &msgVal);
-            assert(msgVal.isString());
-            LOGD("ERROR: %s\n", msgVal.toString().c_str());
-            printStackTrace(message->GetStackTrace());
+            thiz->_isErrorHandleWorking = true;
+
+            Value errorHandler;
+            if (thiz->_globalObj->getProperty("__errorHandler", &errorHandler) && errorHandler.isObject() && errorHandler.toObject()->isFunction())
+            {
+                ValueArray args;
+                args.push_back(resouceNameVal);
+                args.push_back(line);
+                args.push_back(msgVal);
+                args.push_back(Value(stackStr));
+                errorHandler.toObject()->call(args, thiz->_globalObj);
+            }
+
+            thiz->_isErrorHandleWorking = false;
+        }
+        else
+        {
+            LOGE("ERROR: __errorHandler has exception\n");
         }
     }
 
@@ -84,9 +175,9 @@ namespace se {
 
         Object::nativeObjectFinalizeHook(p->data);
 
-        assert(p->seObj->getReferenceCount() == 1);
+        assert(p->seObj->getRefCount() == 1);
 
-        p->seObj->release();
+        p->seObj->decRef();
 
         free(p);
     }
@@ -113,12 +204,16 @@ namespace se {
     , _handleScope(nullptr)
     , _allocator(nullptr)
     , _globalObj(nullptr)
-    , _isValid(false)
-    , _isInGC(false)
     , _nodeEventListener(nullptr)
+    , _exceptionCallback(nullptr)
 #if SE_ENABLE_INSPECTOR
     , _env(nullptr)
 #endif
+    , _vmId(0)
+    , _isValid(false)
+    , _isGarbageCollecting(false)
+    , _isInCleanup(false)
+    , _isErrorHandleWorking(false)
     {
         //        RETRUN_VAL_IF_FAIL(v8::V8::InitializeICUDefaultLocation(nullptr, "/Users/james/Project/v8/out.gn/x64.debug/icudtl.dat"), false);
         //        v8::V8::InitializeExternalStartupData("/Users/james/Project/v8/out.gn/x64.debug/natives_blob.bin", "/Users/james/Project/v8/out.gn/x64.debug/snapshot_blob.bin"); //TODO
@@ -141,6 +236,7 @@ namespace se {
     {
         cleanup();
         LOGD("Initializing V8\n");
+        ++_vmId;
 
         for (const auto& hook : _beforeInitHookArray)
         {
@@ -158,9 +254,9 @@ namespace se {
 
         _isolate->SetCaptureStackTraceForUncaughtExceptions(true, 20, v8::StackTrace::kOverview);
 
-        _isolate->SetFatalErrorHandler(myFatalErrorCallback);
-        _isolate->SetOOMErrorHandler(myOOMErrorCallback);
-        _isolate->AddMessageListener(myMessageCallback);
+        _isolate->SetFatalErrorHandler(onFatalErrorCallback);
+        _isolate->SetOOMErrorHandler(onOOMErrorCallback);
+        _isolate->AddMessageListener(onMessageCallback);
 
         _context.Reset(_isolate, v8::Context::New(_isolate));
         _context.Get(_isolate)->Enter();
@@ -174,6 +270,8 @@ namespace se {
         _globalObj = Object::_createJSObject(nullptr, _context.Get(_isolate)->Global());
         _globalObj->root();
 
+        _globalObj->setProperty("scriptEngineType", se::Value("V8"));
+
         _globalObj->defineFunction("log", __log);
         _globalObj->defineFunction("forceGC", __forceGC);
 
@@ -181,21 +279,6 @@ namespace se {
         __jsb_CCPrivateData_class->defineFinalizeFunction(privateDataFinalize);
         __jsb_CCPrivateData_class->setCreateProto(false);
         __jsb_CCPrivateData_class->install();
-
-#if SE_ENABLE_INSPECTOR
-        // V8 inspector stuff, most code are taken from NodeJS.
-
-        _isolateData = node::CreateIsolateData(_isolate, uv_default_loop());
-        _env = node::CreateEnvironment(_isolateData, _context.Get(_isolate), 0, nullptr, 0, nullptr);
-
-        node::DebugOptions options;
-        options.set_wait_for_connect(true);
-        options.set_inspector_enabled(true);
-//        options.set_host_name("192.168.2.4"); // Change IP while remote debugging on Android device.
-        _env->inspector_agent()->Start(_platform, "", options);
-
-        //
-#endif
 
         _isValid = true;
 
@@ -213,6 +296,9 @@ namespace se {
         if (!_isValid)
             return;
 
+        LOGD("ScriptEngine::cleanup begin ...\n");
+        _isInCleanup = true;
+
         {
             AutoHandleScope hs;
             for (const auto& hook : _beforeCleanupHookArray)
@@ -221,10 +307,10 @@ namespace se {
             }
             _beforeCleanupHookArray.clear();
 
-            SAFE_RELEASE(_globalObj);
+            SAFE_DEC_REF(_globalObj);
             Object::cleanup();
             Class::cleanup();
-            gc();
+            garbageCollect();
 
 #if SE_ENABLE_INSPECTOR
             _env->inspector_agent()->Stop();
@@ -255,9 +341,11 @@ namespace se {
         }
         _afterCleanupHookArray.clear();
 
-
+        _isInCleanup = false;
         NativePtrToObjectMap::destroy();
         NonRefNativePtrCreatedByCtorMap::destroy();
+
+        LOGD("ScriptEngine::cleanup end ...\n");
     }
 
     Object* ScriptEngine::getGlobalObject() const
@@ -314,7 +402,7 @@ namespace se {
         return ok;
     }
 
-    void ScriptEngine::gc()
+    void ScriptEngine::garbageCollect()
     {
         LOGD("GC begin ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
         const double kLongIdlePauseInSeconds = 1.0;
@@ -327,14 +415,14 @@ namespace se {
         LOGD("GC end ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
     }
 
-    bool ScriptEngine::isInGC()
+    bool ScriptEngine::isGarbageCollecting()
     {
-        return _isInGC;
+        return _isGarbageCollecting;
     }
 
-    void ScriptEngine::_setInGC(bool isInGC)
+    void ScriptEngine::_setGarbageCollecting(bool isGarbageCollecting)
     {
-        _isInGC = isInGC;
+        _isGarbageCollecting = isGarbageCollecting;
     }
 
     bool ScriptEngine::isValid() const
@@ -342,20 +430,22 @@ namespace se {
         return _isValid;
     }
 
-    bool ScriptEngine::executeScriptBuffer(const char* string, Value *data, const char *fileName)
+    bool ScriptEngine::evalString(const char* script, ssize_t length/* = -1 */, Value* ret/* = nullptr */, const char* fileName/* = nullptr */)
     {
-        return executeScriptBuffer(string, strlen(string), data, fileName);
-    }
+        assert(script != nullptr);
+        if (length < 0)
+            length = strlen(script);
 
-    bool ScriptEngine::executeScriptBuffer(const char* script, size_t length, Value *data, const char *fileName)
-    {
+        if (fileName == nullptr)
+            fileName = "(no filename)";
+
         std::string scriptStr(script, length);
 
         v8::MaybeLocal<v8::String> source = v8::String::NewFromUtf8(_isolate, scriptStr.c_str(), v8::NewStringType::kNormal);
         if (source.IsEmpty())
             return false;
 
-        v8::MaybeLocal<v8::String> originStr = v8::String::NewFromUtf8(_isolate, fileName ? fileName : "Unknown", v8::NewStringType::kNormal);
+        v8::MaybeLocal<v8::String> originStr = v8::String::NewFromUtf8(_isolate, fileName, v8::NewStringType::kNormal);
         if (originStr.IsEmpty())
             return false;
 
@@ -373,9 +463,9 @@ namespace se {
             {
                 v8::Local<v8::Value> result = maybeResult.ToLocalChecked();
 
-                if (!result->IsUndefined() && data != nullptr)
+                if (!result->IsUndefined() && ret != nullptr)
                 {
-                    internal::jsToSeValue(_isolate, result, data);
+                    internal::jsToSeValue(_isolate, result, ret);
                 }
 
                 success = true;
@@ -384,6 +474,27 @@ namespace se {
 
 //        assert(success);
         return success;
+    }
+
+    void ScriptEngine::setFileOperationDelegate(const FileOperationDelegate& delegate)
+    {
+        _fileOperationDelegate = delegate;
+    }
+
+    bool ScriptEngine::runScript(const std::string& path, Value* ret/* = nullptr */)
+    {
+        assert(!path.empty());
+        assert(_fileOperationDelegate.isValid());
+
+        std::string scriptBuffer = _fileOperationDelegate.onGetStringFromFile(path);
+
+        if (!scriptBuffer.empty())
+        {
+            return evalString(scriptBuffer.c_str(), scriptBuffer.length(), ret, path.c_str());
+        }
+
+        LOGE("ScriptEngine::runScript script %s, buffer is empty!\n", path.c_str());
+        return false;
     }
 
     void ScriptEngine::_retainScriptObject(void* owner, void* target)
@@ -402,7 +513,7 @@ namespace se {
 
         clearException();
         AutoHandleScope hs;
-        iterOwner->second->attachChild(iterTarget->second);
+        iterOwner->second->attachObject(iterTarget->second);
     }
 
     void ScriptEngine::_releaseScriptObject(void* owner, void* target)
@@ -421,7 +532,7 @@ namespace se {
 
         clearException();
         AutoHandleScope hs;
-        iterOwner->second->detachChild(iterTarget->second);
+        iterOwner->second->detachObject(iterTarget->second);
     }
 
     bool ScriptEngine::_onReceiveNodeEvent(void* node, NodeEventType type)
@@ -441,11 +552,41 @@ namespace se {
         //FIXME:
     }
 
+    void ScriptEngine::setExceptionCallback(const ExceptionCallback& cb)
+    {
+        _exceptionCallback = cb;
+    }
+
     v8::Local<v8::Context> ScriptEngine::_getContext() const
     {
         return _context.Get(_isolate);
     }
 
+    void ScriptEngine::enableDebugger(unsigned int port/* = 5086*/)
+    {
+#if SE_ENABLE_INSPECTOR
+        AutoHandleScope hs;
+        // V8 inspector stuff, most code are taken from NodeJS.
+
+        _isolateData = node::CreateIsolateData(_isolate, uv_default_loop());
+        _env = node::CreateEnvironment(_isolateData, _context.Get(_isolate), 0, nullptr, 0, nullptr);
+
+        node::DebugOptions options;
+        options.set_wait_for_connect(true);
+        options.set_inspector_enabled(true);
+        options.set_port((int)port);
+        //        options.set_host_name("192.168.2.4"); // Change IP while remote debugging on Android device.
+        _env->inspector_agent()->Start(_platform, "", options);
+
+        //
+#endif
+    }
+
+    void ScriptEngine::mainLoopUpdate()
+    {
+        // empty implementation
+    }
+
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_V8
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8

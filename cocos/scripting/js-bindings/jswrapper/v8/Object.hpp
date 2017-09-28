@@ -2,10 +2,10 @@
 
 #include "../config.hpp"
 
-#ifdef SCRIPT_ENGINE_V8
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 
 #include "Base.h"
-#include "../Ref.hpp"
+#include "../RefCounter.hpp"
 #include "../Value.hpp"
 #include "ObjectWrap.h"
 
@@ -17,7 +17,7 @@ namespace se {
         struct PrivateData;
     }
 
-    class Object final : public Ref
+    class Object final : public RefCounter
     {
     public:
         static Object* createPlainObject();
@@ -60,9 +60,9 @@ namespace se {
         void unroot();
         bool isRooted() const;
 
-        bool isSame(Object* o) const;
-        bool attachChild(Object* child);
-        bool detachChild(Object* child);
+        bool strictEquals(Object* o) const;
+        bool attachObject(Object* obj);
+        bool detachObject(Object* obj);
 
         // Private API used in wrapper
         static Object* _createJSObject(Class* cls, v8::Local<v8::Object> obj);
@@ -99,4 +99,4 @@ namespace se {
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_V8
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8

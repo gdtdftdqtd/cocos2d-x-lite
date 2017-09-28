@@ -2,7 +2,7 @@
 
 #include "../config.hpp"
 
-#ifdef SCRIPT_ENGINE_JSC
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
 #ifdef __GNUC__
 #define SE_UNUSED __attribute__ ((unused))
@@ -10,8 +10,8 @@
 #define SE_UNUSED
 #endif
 
-#define SAFE_ADD_REF(obj) if (obj != nullptr) obj->addRef()
-#define SAFE_RELEASE(obj) if (obj != nullptr) obj->release()
+#define SAFE_INC_REF(obj) if (obj != nullptr) obj->incRef()
+#define SAFE_DEC_REF(obj) if (obj != nullptr) obj->decRef()
 
 #define _SE(name) name##Registry
 
@@ -41,7 +41,7 @@
     void funcName##Registry(JSObjectRef _obj) \
     { \
         auto se = se::ScriptEngine::getInstance(); \
-        se->_setInGC(true); \
+        se->_setGarbageCollecting(true); \
         void* nativeThisObject = JSObjectGetPrivate(_obj); \
         if (nativeThisObject != nullptr) \
         { \
@@ -51,9 +51,9 @@
             if (_thisObject) _thisObject->_cleanup(nativeThisObject); \
             ret = funcName(state); \
             JSObjectSetPrivate(_obj, nullptr); \
-            SAFE_RELEASE(_thisObject); \
+            SAFE_DEC_REF(_thisObject); \
         } \
-        se->_setInGC(false); \
+        se->_setGarbageCollecting(false); \
     }
 
 #define SE_DECLARE_FINALIZE_FUNC(funcName) \
@@ -169,4 +169,4 @@
 
 #endif // #if COCOS2D_DEBUG > 0
 
-#endif // #ifdef SCRIPT_ENGINE_JSC
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC

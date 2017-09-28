@@ -2,17 +2,17 @@
 
 #include "../config.hpp"
 
-#ifdef SCRIPT_ENGINE_CHAKRACORE
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 #include "Base.h"
 #include "../Value.hpp"
-#include "../Ref.hpp"
+#include "../RefCounter.hpp"
 
 namespace se {
 
     class Class;
 
-    class Object final : public Ref
+    class Object final : public RefCounter
     {
     public:
         static Object* createPlainObject();
@@ -53,9 +53,9 @@ namespace se {
         void unroot();
         bool isRooted() const;
 
-        bool isSame(Object* o) const;
-        bool attachChild(Object* child);
-        bool detachChild(Object* child);
+        bool strictEquals(Object* obj) const;
+        bool attachObject(Object* obj);
+        bool detachObject(Object* obj);
 
         // Private API used in wrapper
         static Object* _createJSObject(Class* cls, JsValueRef obj);
@@ -75,15 +75,17 @@ namespace se {
 
         Class* _cls;
         JsValueRef _obj;
-        uint32_t _rootCount;
         void* _privateData;
-        bool _isCleanup;
         JsFinalizeCallback _finalizeCb;
+
+        uint32_t _rootCount;
+        uint32_t _currentVMId;
+        bool _isCleanup;
 
         friend class ScriptEngine;
     };
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_CHAKRACORE
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 

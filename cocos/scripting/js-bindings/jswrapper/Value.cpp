@@ -211,7 +211,7 @@ namespace se {
                         {
                             _u._object->unroot();
                         }
-                        _u._object->release();
+                        _u._object->decRef();
                     }
                     _u._object = v._u._object;
                     _autoRootUnroot = v._autoRootUnroot;
@@ -370,7 +370,7 @@ namespace se {
         {
             if (object != nullptr)
             {
-                object->addRef();
+                object->incRef();
                 if (autoRootUnroot)
                 {
                     object->root();
@@ -383,7 +383,7 @@ namespace se {
                 {
                     _u._object->unroot();
                 }
-                _u._object->release();
+                _u._object->decRef();
             }
             _u._object = object;
             _autoRootUnroot = autoRootUnroot;
@@ -487,7 +487,11 @@ namespace se {
         else if (_type == Type::Number)
         {
             char tmp[350] = {0};
-            snprintf(tmp, sizeof(tmp), "%lf", _u._number);
+            double remainder = fmod(_u._number, 1.0);
+            if (std::abs(remainder) > 0)
+                snprintf(tmp, sizeof(tmp), "%lf", _u._number);
+            else
+                snprintf(tmp, sizeof(tmp), "%d", (int32_t)_u._number);
             ret = tmp;
         }
         else if (_type == Type::Object)
@@ -535,7 +539,7 @@ namespace se {
                         {
                             _u._object->unroot();
                         }
-                        _u._object->release();
+                        _u._object->decRef();
                         _u._object = nullptr;
                     }
 

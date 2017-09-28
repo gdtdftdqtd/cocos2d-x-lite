@@ -703,7 +703,7 @@ static bool js_cocos2dx_dragonbones_AnimationData_set_frameCount(se::State& s)
 
     CC_UNUSED bool ok = true;
     unsigned int arg0 = 0;
-    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_AnimationData_set_frameCount : Error processing new value");
     cobj->frameCount = arg0;
     return true;
@@ -731,7 +731,7 @@ static bool js_cocos2dx_dragonbones_AnimationData_set_playTimes(se::State& s)
 
     CC_UNUSED bool ok = true;
     unsigned int arg0 = 0;
-    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_AnimationData_set_playTimes : Error processing new value");
     cobj->playTimes = arg0;
     return true;
@@ -1294,7 +1294,7 @@ static bool js_cocos2dx_dragonbones_ArmatureData_set_frameRate(se::State& s)
 
     CC_UNUSED bool ok = true;
     unsigned int arg0 = 0;
-    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_ArmatureData_set_frameRate : Error processing new value");
     cobj->frameRate = arg0;
     return true;
@@ -1874,7 +1874,7 @@ static bool js_cocos2dx_dragonbones_Armature_setCacheFrameRate(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Armature_setCacheFrameRate : Error processing arguments");
         cobj->setCacheFrameRate(arg0);
         return true;
@@ -2146,7 +2146,7 @@ static bool js_cocos2dx_dragonbones_Animation_play(se::State& s)
         std::string arg0;
         int arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_play : Error processing arguments");
         dragonBones::AnimationState* result = cobj->play(arg0, arg1);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2331,7 +2331,7 @@ static bool js_cocos2dx_dragonbones_Animation_gotoAndPlayByTime(se::State& s)
         int arg2 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_gotoAndPlayByTime : Error processing arguments");
         dragonBones::AnimationState* result = cobj->gotoAndPlayByTime(arg0, arg1, arg2);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2394,7 +2394,7 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         int arg2 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_fadeIn : Error processing arguments");
         dragonBones::AnimationState* result = cobj->fadeIn(arg0, arg1, arg2);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2408,8 +2408,8 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         int arg3 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_fadeIn : Error processing arguments");
         dragonBones::AnimationState* result = cobj->fadeIn(arg0, arg1, arg2, arg3);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2424,8 +2424,8 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         std::string arg4;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         ok &= seval_to_std_string(args[4], &arg4);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_fadeIn : Error processing arguments");
         dragonBones::AnimationState* result = cobj->fadeIn(arg0, arg1, arg2, arg3, arg4);
@@ -2442,10 +2442,10 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         dragonBones::AnimationFadeOutMode arg5;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         ok &= seval_to_std_string(args[4], &arg4);
-        ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+        ok &= seval_to_int32(args[5], (int32_t*)&arg5);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_fadeIn : Error processing arguments");
         dragonBones::AnimationState* result = cobj->fadeIn(arg0, arg1, arg2, arg3, arg4, arg5);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2462,10 +2462,10 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         bool arg6;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         ok &= seval_to_std_string(args[4], &arg4);
-        ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+        ok &= seval_to_int32(args[5], (int32_t*)&arg5);
         ok &= seval_to_boolean(args[6], &arg6);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_fadeIn : Error processing arguments");
         dragonBones::AnimationState* result = cobj->fadeIn(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
@@ -2484,10 +2484,10 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         bool arg7;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         ok &= seval_to_std_string(args[4], &arg4);
-        ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+        ok &= seval_to_int32(args[5], (int32_t*)&arg5);
         ok &= seval_to_boolean(args[6], &arg6);
         ok &= seval_to_boolean(args[7], &arg7);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_fadeIn : Error processing arguments");
@@ -2508,10 +2508,10 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         bool arg8;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         ok &= seval_to_std_string(args[4], &arg4);
-        ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+        ok &= seval_to_int32(args[5], (int32_t*)&arg5);
         ok &= seval_to_boolean(args[6], &arg6);
         ok &= seval_to_boolean(args[7], &arg7);
         ok &= seval_to_boolean(args[8], &arg8);
@@ -2534,10 +2534,10 @@ static bool js_cocos2dx_dragonbones_Animation_fadeIn(se::State& s)
         bool arg9;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         ok &= seval_to_std_string(args[4], &arg4);
-        ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+        ok &= seval_to_int32(args[5], (int32_t*)&arg5);
         ok &= seval_to_boolean(args[6], &arg6);
         ok &= seval_to_boolean(args[7], &arg7);
         ok &= seval_to_boolean(args[8], &arg8);
@@ -2573,7 +2573,7 @@ static bool js_cocos2dx_dragonbones_Animation_gotoAndPlayByFrame(se::State& s)
         std::string arg0;
         unsigned int arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_gotoAndPlayByFrame : Error processing arguments");
         dragonBones::AnimationState* result = cobj->gotoAndPlayByFrame(arg0, arg1);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2585,8 +2585,8 @@ static bool js_cocos2dx_dragonbones_Animation_gotoAndPlayByFrame(se::State& s)
         unsigned int arg1 = 0;
         int arg2 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_gotoAndPlayByFrame : Error processing arguments");
         dragonBones::AnimationState* result = cobj->gotoAndPlayByFrame(arg0, arg1, arg2);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2606,7 +2606,7 @@ static bool js_cocos2dx_dragonbones_Animation_getLastAnimationName(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        const std::string& result = cobj->getLastAnimationName();
+        std::string result = cobj->getLastAnimationName();
         ok &= std_string_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_getLastAnimationName : Error processing arguments");
         return true;
@@ -2675,7 +2675,7 @@ static bool js_cocos2dx_dragonbones_Animation_gotoAndStopByFrame(se::State& s)
         std::string arg0;
         unsigned int arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_gotoAndStopByFrame : Error processing arguments");
         dragonBones::AnimationState* result = cobj->gotoAndStopByFrame(arg0, arg1);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -2720,7 +2720,7 @@ static bool js_cocos2dx_dragonbones_Animation_gotoAndPlayByProgress(se::State& s
         int arg2 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Animation_gotoAndPlayByProgress : Error processing arguments");
         dragonBones::AnimationState* result = cobj->gotoAndPlayByProgress(arg0, arg1, arg2);
         ok &= native_ptr_to_rooted_seval<dragonBones::AnimationState>((dragonBones::AnimationState*)result, &s.rval());
@@ -3187,7 +3187,7 @@ static bool js_cocos2dx_dragonbones_Slot_setDisplayIndex(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Slot_setDisplayIndex : Error processing arguments");
         cobj->setDisplayIndex(arg0);
         return true;
@@ -3760,7 +3760,7 @@ static bool js_cocos2dx_dragonbones_AnimationState_getName(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        const std::string& result = cobj->getName();
+        std::string result = cobj->getName();
         ok &= std_string_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_AnimationState_getName : Error processing arguments");
         return true;
@@ -4075,7 +4075,7 @@ static bool js_cocos2dx_dragonbones_AnimationState_set_playTimes(se::State& s)
 
     CC_UNUSED bool ok = true;
     unsigned int arg0 = 0;
-    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_AnimationState_set_playTimes : Error processing new value");
     cobj->playTimes = arg0;
     return true;
@@ -4400,7 +4400,7 @@ static bool js_cocos2dx_dragonbones_CCArmatureDisplay_setEventCallback(se::State
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](dragonBones::EventObject* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -4465,7 +4465,7 @@ static bool js_cocos2dx_dragonbones_CCArmatureDisplay_addEvent(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[1]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](dragonBones::EventObject* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -4561,7 +4561,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_dragonBones_CCArmatureDisplay_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (dragonBones::CCArmatureDisplay)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (dragonBones::CCArmatureDisplay)", s.nativeThisObject());
     dragonBones::CCArmatureDisplay* cobj = (dragonBones::CCArmatureDisplay*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -4622,7 +4622,7 @@ extern se::Object* __jsb_cocos2d_Sprite_proto;
 
 static bool js_dragonBones_DBCCSprite_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (dragonBones::DBCCSprite)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (dragonBones::DBCCSprite)", s.nativeThisObject());
     dragonBones::DBCCSprite* cobj = (dragonBones::DBCCSprite*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -4871,7 +4871,7 @@ extern se::Object* __jsb_dragonBones_BaseFactory_proto;
 
 static bool js_dragonBones_CCFactory_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (dragonBones::CCFactory)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (dragonBones::CCFactory)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {

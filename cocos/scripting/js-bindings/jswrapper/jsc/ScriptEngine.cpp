@@ -1,6 +1,6 @@
 #include "ScriptEngine.hpp"
 
-#ifdef SCRIPT_ENGINE_JSC
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
 #include "Object.hpp"
 #include "Class.hpp"
@@ -83,9 +83,13 @@ namespace se {
     ScriptEngine::ScriptEngine()
             : _cx(nullptr)
             , _globalObj(nullptr)
-            , _isInGC(false)
+            , _nodeEventListener(nullptr)
+            , _exceptionCallback(nullptr)
+            , _vmId(0)
+            , _isGarbageCollecting(false)
             , _isValid(false)
             , _isInCleanup(false)
+            , _isErrorHandleWorking(false)
     {
     }
 
@@ -93,6 +97,7 @@ namespace se {
     {
         cleanup();
         LOGD("Initializing JavaScriptCore \n");
+        ++_vmId;
 
         for (const auto& hook : _beforeInitHookArray)
         {
@@ -124,6 +129,8 @@ namespace se {
         _globalObj = Object::_createJSObject(nullptr, globalObj);
         _globalObj->root();
         _globalObj->setProperty("window", se::Value(_globalObj));
+
+        _globalObj->setProperty("scriptEngineType", se::Value("JavaScriptCore"));
 
         JSStringRef propertyName = JSStringCreateWithUTF8CString("log");
         JSObjectSetProperty(_cx, globalObj, propertyName, JSObjectMakeFunctionWithCallback(_cx, propertyName, __log), kJSPropertyAttributeReadOnly, nullptr);
@@ -158,7 +165,7 @@ namespace se {
         if (!_isValid)
             return;
 
-        LOGD("ScriptEngine::cleanup begin ...");
+        LOGD("ScriptEngine::cleanup begin ...\n");
         _isInCleanup = true;
         for (const auto& hook : _beforeCleanupHookArray)
         {
@@ -166,10 +173,10 @@ namespace se {
         }
         _beforeCleanupHookArray.clear();
 
-        SAFE_RELEASE(_globalObj);
+        SAFE_DEC_REF(_globalObj);
         Object::cleanup();
         Class::cleanup();
-        gc();
+        garbageCollect();
 
         JSGlobalContextRelease(_cx);
 
@@ -192,18 +199,34 @@ namespace se {
         LOGD("ScriptEngine::cleanup end ...\n");
     }
 
-    std::string ScriptEngine::_formatException(JSValueRef exception)
+    ScriptEngine::ExceptionInfo ScriptEngine::_formatException(JSValueRef exception)
     {
-        std::string ret;
-        internal::forceConvertJsValueToStdString(_cx, exception, &ret);
+        ExceptionInfo ret;
+        internal::forceConvertJsValueToStdString(_cx, exception, &ret.message);
 
         JSType type = JSValueGetType(_cx, exception);
 
         if (type == kJSTypeObject)
         {
             JSObjectRef obj = JSValueToObject(_cx, exception, nullptr);
-            JSPropertyNameArrayRef nameArr = JSObjectCopyPropertyNames(_cx, obj);
+            JSStringRef stackKey = JSStringCreateWithUTF8CString("stack");
+            JSValueRef stackVal = JSObjectGetProperty(_cx, obj, stackKey, nullptr);
+            if (stackKey != nullptr)
+            {
+                type = JSValueGetType(_cx, stackVal);
+                if (type == kJSTypeString)
+                {
+                    JSStringRef stackStr = JSValueToStringCopy(_cx, stackVal, nullptr);
+                    internal::jsStringToStdString(_cx, stackStr, &ret.stack);
+                    JSStringRelease(stackStr);
+                }
+                JSStringRelease(stackKey);
+            }
 
+            std::string line;
+            std::string column;
+            std::string filePath;
+            JSPropertyNameArrayRef nameArr = JSObjectCopyPropertyNames(_cx, obj);
             size_t count =JSPropertyNameArrayGetCount(nameArr);
             for (size_t i = 0; i < count; ++i)
             {
@@ -213,18 +236,28 @@ namespace se {
                 std::string name;
                 internal::jsStringToStdString(_cx, jsName, &name);
                 std::string value;
-                internal::forceConvertJsValueToStdString(_cx, jsValue, &value);
+
+                JSStringRef jsstr = JSValueToStringCopy(_cx, jsValue, nullptr);
+                internal::jsStringToStdString(_cx, jsstr, &value);
+                JSStringRelease(jsstr);
 
                 if (name == "line")
                 {
-                    ret += ", line: " + value;
+                    line = value;
+                    ret.lineno = (uint32_t)JSValueToNumber(_cx, jsValue, nullptr);
+                }
+                else if (name == "column")
+                {
+                    column = value;
                 }
                 else if (name == "sourceURL")
                 {
-                    ret += ", sourceURL: " + value;
+                    filePath = value;
+                    ret.filePath = value;
                 }
             }
 
+            ret.location = filePath + ":" + line + ":" + column;
             JSPropertyNameArrayRelease(nameArr);
         }
 
@@ -235,22 +268,60 @@ namespace se {
     {
         if (exception != nullptr)
         {
-            std::string exceptionStr = _formatException(exception);
-            if (!exceptionStr.empty())
+            ExceptionInfo exceptionInfo = _formatException(exception);
+            if (exceptionInfo.isValid())
             {
-                LOGD("%s\n", exceptionStr.c_str());
+                std::string exceptionStr = exceptionInfo.message;
+                exceptionStr += ", location: " + exceptionInfo.location;
+                if (!exceptionInfo.stack.empty())
+                {
+                    exceptionStr += "\nSTACK:\n" + exceptionInfo.stack;
+                }
+                LOGD("ERROR: %s\n", exceptionStr.c_str());
+
+                if (_exceptionCallback != nullptr)
+                {
+                    _exceptionCallback(exceptionInfo.location.c_str(), exceptionInfo.message.c_str(), exceptionInfo.stack.c_str());
+                }
+
+                if (!_isErrorHandleWorking)
+                {
+                    _isErrorHandleWorking = true;
+
+                    Value errorHandler;
+                    if (_globalObj->getProperty("__errorHandler", &errorHandler) && errorHandler.isObject() && errorHandler.toObject()->isFunction())
+                    {
+                        ValueArray args;
+                        args.push_back(Value(exceptionInfo.filePath));
+                        args.push_back(Value(exceptionInfo.lineno));
+                        args.push_back(Value(exceptionInfo.message));
+                        args.push_back(Value(exceptionInfo.stack));
+                        errorHandler.toObject()->call(args, _globalObj);
+                    }
+
+                    _isErrorHandleWorking = false;
+                }
+                else
+                {
+                    LOGE("ERROR: __errorHandler has exception\n");
+                }
             }
         }
     }
 
-    bool ScriptEngine::isInGC()
+    void ScriptEngine::setExceptionCallback(const ExceptionCallback& cb)
     {
-        return _isInGC;
+        _exceptionCallback = cb;
     }
 
-    void ScriptEngine::_setInGC(bool isInGC)
+    bool ScriptEngine::isGarbageCollecting()
     {
-        _isInGC = isInGC;
+        return _isGarbageCollecting;
+    }
+
+    void ScriptEngine::_setGarbageCollecting(bool isGarbageCollecting)
+    {
+        _isGarbageCollecting = isGarbageCollecting;
     }
 
     Object* ScriptEngine::getGlobalObject()
@@ -305,7 +376,7 @@ namespace se {
         return ok;
     }
 
-    void ScriptEngine::gc()
+    void ScriptEngine::garbageCollect()
     {
         LOGD("GC begin ..., (Native -> JS map) count: %d\n", (int)NativePtrToObjectMap::size());
         // JSGarbageCollect(_cx);
@@ -313,13 +384,14 @@ namespace se {
         LOGD("GC end ..., (Native -> JS map) count: %d\n", (int)NativePtrToObjectMap::size());
     }
 
-    bool ScriptEngine::executeScriptBuffer(const char *script, ssize_t length, Value *data, const char *fileName)
+    bool ScriptEngine::evalString(const char* script, ssize_t length/* = -1 */, Value* ret/* = nullptr */, const char* fileName/* = nullptr */)
     {
         assert(script != nullptr);
         if (length < 0)
-        {
             length = strlen(script);
-        }
+
+        if (fileName == nullptr)
+            fileName = "(no filename)";
 
         std::string exceptionStr;
         std::string scriptStr(script, length);
@@ -334,21 +406,14 @@ namespace se {
         {
             result = JSEvaluateScript(_cx, jsScript, nullptr, jsSourceUrl, 1, &exception);
 
-            if (exception)
+            if (exception != nullptr)
             {
-                exceptionStr = _formatException(exception);
-                clearException();
                 ok = false;
             }
         }
         else
         {
-            if (exception)
-            {
-                exceptionStr = _formatException(exception);
-                clearException();
-            }
-            else
+            if (exception == nullptr)
             {
                 LOGD("Unknown syntax error parsing file %s\n", fileName);
             }
@@ -359,15 +424,34 @@ namespace se {
 
         if (ok)
         {
-            if (data != nullptr)
-                internal::jsToSeValue(_cx, result, data); //FIXME: result is rooted, when to unrooted, it probably cause memory leak
-        }
-        else if (!exceptionStr.empty())
-        {
-            LOGD("%s\n", exceptionStr.c_str());
+            if (ret != nullptr)
+                internal::jsToSeValue(_cx, result, ret);
         }
 
+        _clearException(exception);
+
         return ok;
+    }
+
+    void ScriptEngine::setFileOperationDelegate(const FileOperationDelegate& delegate)
+    {
+        _fileOperationDelegate = delegate;
+    }
+
+    bool ScriptEngine::runScript(const std::string& path, Value* ret/* = nullptr */)
+    {
+        assert(!path.empty());
+        assert(_fileOperationDelegate.isValid());
+
+        std::string scriptBuffer = _fileOperationDelegate.onGetStringFromFile(path);
+
+        if (!scriptBuffer.empty())
+        {
+            return evalString(scriptBuffer.c_str(), scriptBuffer.length(), ret, path.c_str());
+        }
+
+        LOGE("ScriptEngine::runScript script %s, buffer is empty!\n", path.c_str());
+        return false;
     }
 
     void ScriptEngine::_retainScriptObject(void* owner, void* target)
@@ -385,7 +469,7 @@ namespace se {
         }
 
         clearException();
-        iterOwner->second->attachChild(iterTarget->second);
+        iterOwner->second->attachObject(iterTarget->second);
     }
 
     void ScriptEngine::_releaseScriptObject(void* owner, void* target)
@@ -403,7 +487,7 @@ namespace se {
         }
 
         clearException();
-        iterOwner->second->detachChild(iterTarget->second);
+        iterOwner->second->detachObject(iterTarget->second);
     }
 
     bool ScriptEngine::_onReceiveNodeEvent(void* node, NodeEventType type)
@@ -423,6 +507,16 @@ namespace se {
         //FIXME:
     }
 
+    void ScriptEngine::enableDebugger(unsigned int port/* = 5086*/)
+    {
+        // empty implementation
+    }
+
+    void ScriptEngine::mainLoopUpdate()
+    {
+        // empty implementation
+    }
+
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_JSC
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC

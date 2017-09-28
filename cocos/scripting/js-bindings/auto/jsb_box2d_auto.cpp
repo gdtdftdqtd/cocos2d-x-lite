@@ -14,7 +14,7 @@ static bool js_box2dclasses_b2Draw_AppendFlags(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Draw_AppendFlags : Error processing arguments");
         cobj->AppendFlags(arg0);
         return true;
@@ -53,7 +53,7 @@ static bool js_box2dclasses_b2Draw_ClearFlags(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Draw_ClearFlags : Error processing arguments");
         cobj->ClearFlags(arg0);
         return true;
@@ -76,7 +76,7 @@ static bool js_box2dclasses_b2Draw_DrawPolygon(se::State& s)
         b2Color arg2;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Vec2*
         ok = false;
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         #pragma warning NO CONVERSION TO NATIVE FOR b2Color
         ok = false;
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Draw_DrawPolygon : Error processing arguments");
@@ -116,7 +116,7 @@ static bool js_box2dclasses_b2Draw_DrawSolidPolygon(se::State& s)
         b2Color arg2;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Vec2*
         ok = false;
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         #pragma warning NO CONVERSION TO NATIVE FOR b2Color
         ok = false;
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Draw_DrawSolidPolygon : Error processing arguments");
@@ -161,7 +161,7 @@ static bool js_box2dclasses_b2Draw_SetFlags(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Draw_SetFlags : Error processing arguments");
         cobj->SetFlags(arg0);
         return true;
@@ -321,8 +321,8 @@ static bool js_box2dclasses_b2Shape_GetType(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->GetType();
-        ok &= int32_to_seval(result, &s.rval());
+        unsigned int result = (unsigned int)cobj->GetType();
+        ok &= uint32_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Shape_GetType : Error processing arguments");
         return true;
     }
@@ -349,7 +349,7 @@ static bool js_box2dclasses_b2Shape_RayCast(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Shape_RayCast : Error processing arguments");
         bool result = cobj->RayCast(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -376,7 +376,7 @@ static bool js_box2dclasses_b2Shape_ComputeAABB(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Shape_ComputeAABB : Error processing arguments");
         cobj->ComputeAABB(arg0, arg1, arg2);
         return true;
@@ -486,7 +486,7 @@ static bool js_box2dclasses_b2CircleShape_GetVertex(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2CircleShape_GetVertex : Error processing arguments");
         const b2Vec2& result = cobj->GetVertex(arg0);
         ok &= b2Vec2_to_seval(result, &s.rval());
@@ -537,7 +537,7 @@ static bool js_box2dclasses_b2CircleShape_RayCast(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2CircleShape_RayCast : Error processing arguments");
         bool result = cobj->RayCast(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -564,7 +564,7 @@ static bool js_box2dclasses_b2CircleShape_ComputeAABB(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2CircleShape_ComputeAABB : Error processing arguments");
         cobj->ComputeAABB(arg0, arg1, arg2);
         return true;
@@ -693,7 +693,7 @@ extern se::Object* __jsb_b2Shape_proto;
 
 static bool js_b2CircleShape_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2CircleShape)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2CircleShape)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {
@@ -815,7 +815,7 @@ static bool js_box2dclasses_b2EdgeShape_RayCast(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2EdgeShape_RayCast : Error processing arguments");
         bool result = cobj->RayCast(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -842,7 +842,7 @@ static bool js_box2dclasses_b2EdgeShape_ComputeAABB(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2EdgeShape_ComputeAABB : Error processing arguments");
         cobj->ComputeAABB(arg0, arg1, arg2);
         return true;
@@ -911,7 +911,7 @@ extern se::Object* __jsb_b2Shape_proto;
 
 static bool js_b2EdgeShape_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2EdgeShape)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2EdgeShape)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {
@@ -1020,7 +1020,7 @@ static bool js_box2dclasses_b2ChainShape_GetChildEdge(se::State& s)
         b2EdgeShape* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2ChainShape_GetChildEdge : Error processing arguments");
         cobj->GetChildEdge(arg0, arg1);
         return true;
@@ -1048,7 +1048,7 @@ static bool js_box2dclasses_b2ChainShape_RayCast(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2ChainShape_RayCast : Error processing arguments");
         bool result = cobj->RayCast(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -1075,7 +1075,7 @@ static bool js_box2dclasses_b2ChainShape_ComputeAABB(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2ChainShape_ComputeAABB : Error processing arguments");
         cobj->ComputeAABB(arg0, arg1, arg2);
         return true;
@@ -1179,7 +1179,7 @@ extern se::Object* __jsb_b2Shape_proto;
 
 static bool js_b2ChainShape_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2ChainShape)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2ChainShape)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {
@@ -1250,7 +1250,7 @@ static bool js_box2dclasses_b2PolygonShape_GetVertex(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2PolygonShape_GetVertex : Error processing arguments");
         const b2Vec2& result = cobj->GetVertex(arg0);
         ok &= b2Vec2_to_seval(result, &s.rval());
@@ -1301,7 +1301,7 @@ static bool js_box2dclasses_b2PolygonShape_RayCast(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2PolygonShape_RayCast : Error processing arguments");
         bool result = cobj->RayCast(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -1328,7 +1328,7 @@ static bool js_box2dclasses_b2PolygonShape_ComputeAABB(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2Transform
         ok = false;
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2PolygonShape_ComputeAABB : Error processing arguments");
         cobj->ComputeAABB(arg0, arg1, arg2);
         return true;
@@ -1433,7 +1433,7 @@ extern se::Object* __jsb_b2Shape_proto;
 
 static bool js_b2PolygonShape_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2PolygonShape)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2PolygonShape)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {
@@ -1926,7 +1926,7 @@ static bool js_box2dclasses_b2Body_SetType(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         b2BodyType arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Body_SetType : Error processing arguments");
         cobj->SetType(arg0);
         return true;
@@ -2329,8 +2329,8 @@ static bool js_box2dclasses_b2Body_GetType(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->GetType();
-        ok &= int32_to_seval(result, &s.rval());
+        unsigned int result = (unsigned int)cobj->GetType();
+        ok &= uint32_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Body_GetType : Error processing arguments");
         return true;
     }
@@ -2474,7 +2474,7 @@ SE_BIND_FUNC(js_box2dclasses_b2Body_GetPosition)
 
 static bool js_b2Body_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2Body)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2Body)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2Body_finalize)
@@ -2798,7 +2798,7 @@ static bool js_box2dclasses_b2Fixture_GetAABB(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Fixture_GetAABB : Error processing arguments");
         const b2AABB& result = cobj->GetAABB(arg0);
         ok &= b2AABB_to_seval(result, &s.rval());
@@ -2846,7 +2846,7 @@ static bool js_box2dclasses_b2Fixture_RayCast(se::State& s)
         ok = false;
         #pragma warning NO CONVERSION TO NATIVE FOR b2RayCastInput
         ok = false;
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Fixture_RayCast : Error processing arguments");
         bool result = cobj->RayCast(arg0, arg1, arg2);
         ok &= boolean_to_seval(result, &s.rval());
@@ -2882,7 +2882,7 @@ static bool js_box2dclasses_b2Fixture_Dump(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Fixture_Dump : Error processing arguments");
         cobj->Dump(arg0);
         return true;
@@ -2936,8 +2936,8 @@ static bool js_box2dclasses_b2Fixture_GetType(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->GetType();
-        ok &= int32_to_seval(result, &s.rval());
+        unsigned int result = (unsigned int)cobj->GetType();
+        ok &= uint32_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Fixture_GetType : Error processing arguments");
         return true;
     }
@@ -2968,7 +2968,7 @@ SE_BIND_FUNC(js_box2dclasses_b2Fixture_GetDensity)
 
 static bool js_b2Fixture_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2Fixture)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2Fixture)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2Fixture_finalize)
@@ -3610,8 +3610,8 @@ static bool js_box2dclasses_b2World_Step(se::State& s)
         int arg1 = 0;
         int arg2 = 0;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2World_Step : Error processing arguments");
         cobj->Step(arg0, arg1, arg2);
         return true;
@@ -3917,7 +3917,7 @@ SE_BIND_CTOR(js_box2dclasses_b2World_constructor, __jsb_b2World_class, js_b2Worl
 
 static bool js_b2World_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2World)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2World)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {
@@ -4385,7 +4385,7 @@ SE_BIND_FUNC(js_box2dclasses_b2Contact_ResetRestitution)
 
 static bool js_b2Contact_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2Contact)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2Contact)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2Contact_finalize)
@@ -4559,8 +4559,8 @@ static bool js_box2dclasses_b2Joint_GetType(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->GetType();
-        ok &= int32_to_seval(result, &s.rval());
+        unsigned int result = (unsigned int)cobj->GetType();
+        ok &= uint32_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2Joint_GetType : Error processing arguments");
         return true;
     }
@@ -4663,7 +4663,7 @@ SE_BIND_FUNC(js_box2dclasses_b2Joint_IsActive)
 
 static bool js_b2Joint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2Joint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2Joint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2Joint_finalize)
@@ -4943,7 +4943,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2DistanceJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2DistanceJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2DistanceJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2DistanceJoint_finalize)
@@ -5187,7 +5187,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2FrictionJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2FrictionJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2FrictionJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2FrictionJoint_finalize)
@@ -5392,7 +5392,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2GearJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2GearJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2GearJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2GearJoint_finalize)
@@ -5707,7 +5707,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2MotorJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2MotorJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2MotorJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2MotorJoint_finalize)
@@ -6010,7 +6010,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2MouseJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2MouseJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2MouseJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2MouseJoint_finalize)
@@ -6479,7 +6479,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2PrismaticJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2PrismaticJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2PrismaticJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2PrismaticJoint_finalize)
@@ -6768,7 +6768,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2PulleyJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2PulleyJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2PulleyJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2PulleyJoint_finalize)
@@ -7218,7 +7218,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2RevoluteJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2RevoluteJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2RevoluteJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2RevoluteJoint_finalize)
@@ -7437,8 +7437,8 @@ static bool js_box2dclasses_b2RopeJoint_GetLimitState(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->GetLimitState();
-        ok &= int32_to_seval(result, &s.rval());
+        unsigned int result = (unsigned int)cobj->GetLimitState();
+        ok &= uint32_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_box2dclasses_b2RopeJoint_GetLimitState : Error processing arguments");
         return true;
     }
@@ -7452,7 +7452,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2RopeJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2RopeJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2RopeJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2RopeJoint_finalize)
@@ -7711,7 +7711,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2WeldJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2WeldJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2WeldJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2WeldJoint_finalize)
@@ -8140,7 +8140,7 @@ extern se::Object* __jsb_b2Joint_proto;
 
 static bool js_b2WheelJoint_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (b2WheelJoint)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (b2WheelJoint)", s.nativeThisObject());
     return true;
 }
 SE_BIND_FINALIZE_FUNC(js_b2WheelJoint_finalize)

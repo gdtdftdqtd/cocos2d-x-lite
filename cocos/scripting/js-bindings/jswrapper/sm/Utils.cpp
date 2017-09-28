@@ -8,7 +8,7 @@
 
 #include "Utils.hpp"
 
-#ifdef SCRIPT_ENGINE_SM
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM
 
 #include "Class.hpp"
 #include "Object.hpp"
@@ -137,7 +137,7 @@ namespace se {
                 object = Object::_createJSObject(nullptr, jsval.toObjectOrNull());
             }
             v->setObject(object, true);
-            object->release();
+            object->decRef();
         }
         else if (jsval.isNull())
         {
@@ -225,7 +225,7 @@ namespace se {
 
             JS::RootedValue privateVal(cx, JS::ObjectValue(*privateObj->_getJSObject()));
             JS_SetProperty(cx, obj, KEY_PRIVATE_DATA, privateVal);
-            privateObj->release();
+            privateObj->decRef();
         }
     }
 
@@ -254,4 +254,4 @@ namespace se {
 
 }} // namespace se { namespace internal {
 
-#endif // #ifdef SCRIPT_ENGINE_SM
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM

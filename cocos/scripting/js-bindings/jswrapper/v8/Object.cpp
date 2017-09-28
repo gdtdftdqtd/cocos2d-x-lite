@@ -1,6 +1,6 @@
 #include "Object.hpp"
 
-#ifdef SCRIPT_ENGINE_V8
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 #include "Utils.hpp"
 #include "Class.hpp"
 #include "ScriptEngine.hpp"
@@ -57,7 +57,7 @@ namespace se {
                 if (obj->_getClass()->_finalizeFunc != nullptr)
                     obj->_getClass()->_finalizeFunc(nativeObj);
             }
-            obj->release();
+            obj->decRef();
             NativePtrToObjectMap::erase(iter);
         }
         else
@@ -105,7 +105,7 @@ namespace se {
                 free(obj->_internalData);
                 obj->_internalData = nullptr;
             }
-            obj->release();
+            obj->decRef();
         }
 
         NativePtrToObjectMap::clear();
@@ -127,7 +127,7 @@ namespace se {
 
         for (auto e : toReleaseObjects)
         {
-            e->release();
+            e->decRef();
         }
 
         __objectMap.clear();
@@ -148,7 +148,7 @@ namespace se {
         if (iter != NativePtrToObjectMap::end())
         {
             obj = iter->second;
-            obj->addRef();
+            obj->incRef();
         }
         return obj;
     }
@@ -642,15 +642,15 @@ namespace se {
         return _rootCount > 0;
     }
 
-    bool Object::isSame(Object *o) const
+    bool Object::strictEquals(Object *o) const
     {
         Object* a = const_cast<Object*>(this);
         return a->_obj.handle(__isolate) == o->_obj.handle(__isolate);
     }
 
-    bool Object::attachChild(Object *child)
+    bool Object::attachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
 
         Object* global = ScriptEngine::getInstance()->getGlobalObject();
         Value jsbVal;
@@ -665,14 +665,14 @@ namespace se {
 
         ValueArray args;
         args.push_back(Value(this));
-        args.push_back(Value(child));
+        args.push_back(Value(obj));
         func.toObject()->call(args, global);
         return true;
     }
 
-    bool Object::detachChild(Object *child)
+    bool Object::detachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
 
         Object* global = ScriptEngine::getInstance()->getGlobalObject();
         Value jsbVal;
@@ -687,7 +687,7 @@ namespace se {
 
         ValueArray args;
         args.push_back(Value(this));
-        args.push_back(Value(child));
+        args.push_back(Value(obj));
         func.toObject()->call(args, global);
         return true;
     }
@@ -695,4 +695,4 @@ namespace se {
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_V8
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8

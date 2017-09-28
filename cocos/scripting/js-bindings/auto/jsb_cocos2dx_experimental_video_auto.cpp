@@ -193,7 +193,7 @@ static bool js_cocos2dx_experimental_video_VideoPlayer_onPlayEvent(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_experimental_video_VideoPlayer_onPlayEvent : Error processing arguments");
         cobj->onPlayEvent(arg0);
         return true;
@@ -235,7 +235,7 @@ static bool js_cocos2dx_experimental_video_VideoPlayer_addEventListener(se::Stat
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0, cocos2d::experimental::ui::VideoPlayer::EventType larg1) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -359,7 +359,7 @@ extern se::Object* __jsb_cocos2d_ui_Widget_proto;
 
 static bool js_cocos2d_experimental_ui_VideoPlayer_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::experimental::ui::VideoPlayer)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::experimental::ui::VideoPlayer)", s.nativeThisObject());
     cocos2d::experimental::ui::VideoPlayer* cobj = (cocos2d::experimental::ui::VideoPlayer*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();

@@ -1,20 +1,44 @@
 #include "ScriptEngine.hpp"
 
-#ifdef SCRIPT_ENGINE_SM
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM
 
 #include "Object.hpp"
 #include "Class.hpp"
 #include "Utils.hpp"
 #include "../MappingUtils.hpp"
+#include "../State.hpp"
+
+// for debug socket
+#ifdef _WIN32
+#include <io.h>
+#include <WS2tcpip.h>
+#else
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+#endif
+
+#include <mutex>
+#include <thread>
+#include <sstream>
+
+#if SE_DEBUG
+#define TRACE_DEBUGGER_SERVER(...) LOGD(__VA_ARGS__)
+#else
+#define TRACE_DEBUGGER_SERVER(...)
+#endif // #if COCOS2D_DEBUG
 
 namespace se {
 
     Class* __jsb_CCPrivateData_class = nullptr;
 
     namespace {
+
+        const char* BYTE_CODE_FILE_EXT = ".jsc";
+
         ScriptEngine* __instance = nullptr;
 
-        const JSClassOps sandbox_classOps = {
+        const JSClassOps __sandboxClassOps = {
             nullptr, nullptr, nullptr, nullptr,
             nullptr, nullptr,
             nullptr, nullptr,
@@ -22,10 +46,10 @@ namespace se {
             JS_GlobalObjectTraceHook
         };
 
-        JSClass globalClass = {
+        JSClass __globalClass = {
             "global",
             JSCLASS_GLOBAL_FLAGS,
-            &sandbox_classOps
+            &__sandboxClassOps
         };
 
         void reportWarning(JSContext* cx, JSErrorReport* report)
@@ -63,7 +87,7 @@ namespace se {
 
                     LOGD("JS: %s\n", buffer);
 
-                    JS_free(cx, (void*)buffer);
+                    JS_free(cx, buffer);
                 }
             }
             args.rval().setUndefined();
@@ -98,13 +122,13 @@ namespace se {
              * garbage collected. */
             if (status == JSGC_BEGIN)
             {
-                ScriptEngine::getInstance()->_setInGC(true);
+                ScriptEngine::getInstance()->_setGarbageCollecting(true);
                 LOGD("on_garbage_collect: begin, Native -> JS map count: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
             }
             else if (status == JSGC_END)
             {
                 LOGD("on_garbage_collect: end, Native -> JS map count: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
-                ScriptEngine::getInstance()->_setInGC(false);
+                ScriptEngine::getInstance()->_setGarbageCollecting(false);
             }
         }
 
@@ -174,7 +198,24 @@ namespace se {
 
             return true;
         }
-    }
+
+        std::string removeFileExt(const std::string& filePath)
+        {
+            size_t pos = filePath.rfind('.');
+            if (0 < pos)
+            {
+                return filePath.substr(0, pos);
+            }
+            return filePath;
+        }
+
+        bool getBytecodeBuildId(JS::BuildIdCharVector* buildId)
+        {
+            static const char* buildid = "cocos_xdr";
+            bool ok = buildId->append(buildid, strlen(buildid));
+            return ok;
+        }
+    } // namespace {
 
     AutoHandleScope::AutoHandleScope()
     {
@@ -205,26 +246,30 @@ namespace se {
     ScriptEngine::ScriptEngine()
             : _cx(nullptr)
             , _globalObj(nullptr)
+            , _debugGlobalObj(nullptr)
             , _oldCompartment(nullptr)
-            , _isInGC(false)
+            , _nodeEventListener(nullptr)
+            , _exceptionCallback(nullptr)
+            , _vmId(0)
+            , _isGarbageCollecting(false)
             , _isValid(false)
             , _isInCleanup(false)
-            , _nodeEventListener(nullptr)
+            , _isErrorHandleWorking(false)
     {
         bool ok = JS_Init();
         assert(ok);
     }
 
     /* static */
-    void ScriptEngine::myWeakPointerCompartmentCallback(JSContext* cx, JSCompartment* comp, void* data)
+    void ScriptEngine::onWeakPointerCompartmentCallback(JSContext* cx, JSCompartment* comp, void* data)
     {
-        myWeakPointerZoneGroupCallback(cx, data);
+        onWeakPointerZoneGroupCallback(cx, data);
     }
 
     /* static */
-    void ScriptEngine::myWeakPointerZoneGroupCallback(JSContext* cx, void* data)
+    void ScriptEngine::onWeakPointerZoneGroupCallback(JSContext* cx, void* data)
     {
-        bool isInCleanup = getInstance()->_isInCleanup;
+        bool isInCleanup = getInstance()->isInCleanup();
         bool isIterUpdated = false;
         Object* obj = nullptr;
         auto iter = NativePtrToObjectMap::begin();
@@ -236,7 +281,7 @@ namespace se {
             {
                 if (obj->updateAfterGC(data))
                 {
-                    obj->release();
+                    obj->decRef();
                     iter = NativePtrToObjectMap::erase(iter);
                     isIterUpdated = true;
                 }
@@ -244,7 +289,7 @@ namespace se {
             else if (isInCleanup) // Rooted and in cleanup step
             {
                 obj->unprotect();
-                obj->release();
+                obj->decRef();
                 iter = NativePtrToObjectMap::erase(iter);
                 isIterUpdated = true;
             }
@@ -258,6 +303,7 @@ namespace se {
     {
         cleanup();
         LOGD("Initializing SpiderMonkey \n");
+        ++_vmId;
 
         for (const auto& hook : _beforeInitHookArray)
         {
@@ -315,32 +361,36 @@ namespace se {
                     .setAsmJS(false);
 #else
         JS::ContextOptionsRef(_cx)
-                    .setExtraWarnings(true)
+//                    .setExtraWarnings(true)
                     .setIon(true)
                     .setBaseline(true)
                     .setAsmJS(true)
                     .setNativeRegExp(true);
 #endif
 
-        JSObject* globalObj = JS_NewGlobalObject(_cx, &globalClass, nullptr, JS::DontFireOnNewGlobalHook, options);
+        JSObject* globalObj = JS_NewGlobalObject(_cx, &__globalClass, nullptr, JS::DontFireOnNewGlobalHook, options);
 
         if (nullptr == globalObj)
             return false;
 
         _globalObj = Object::_createJSObject(nullptr, globalObj);
         _globalObj->root();
+
         JS::RootedObject rootedGlobalObj(_cx, _globalObj->_getJSObject());
 
         _oldCompartment = JS_EnterCompartment(_cx, rootedGlobalObj);
         JS_InitStandardClasses(_cx, rootedGlobalObj) ;
 
+        _globalObj->setProperty("scriptEngineType", se::Value("SpiderMonkey"));
+
         JS_DefineFunction(_cx, rootedGlobalObj, "log", __log, 0, JSPROP_PERMANENT);
         JS_DefineFunction(_cx, rootedGlobalObj, "forceGC", __forceGC, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 
-//        JS_AddWeakPointerZoneGroupCallback(_cx, ScriptEngine::myWeakPointerZoneGroupCallback, nullptr);
-        JS_AddWeakPointerCompartmentCallback(_cx, ScriptEngine::myWeakPointerCompartmentCallback, nullptr);
+//        JS_AddWeakPointerZoneGroupCallback(_cx, ScriptEngine::onWeakPointerZoneGroupCallback, nullptr);
+        JS_AddWeakPointerCompartmentCallback(_cx, ScriptEngine::onWeakPointerCompartmentCallback, nullptr);
 
         JS_FireOnNewGlobalObject(_cx, rootedGlobalObj);
+        JS::SetBuildIdOp(_cx, getBytecodeBuildId);
 
         sc->jobQueue.init(_cx, JobQueue(js::SystemAllocPolicy()));
         JS::SetEnqueuePromiseJobCallback(_cx, onEnqueuePromiseJobCallback);
@@ -382,12 +432,12 @@ namespace se {
         auto sc = getPromiseState(_cx);
         sc->quitting = true;
 
-        SAFE_RELEASE(_globalObj);
+        SAFE_DEC_REF(_globalObj);
         Class::cleanup();
         Object::cleanup();
 
-        // JS_RemoveWeakPointerZoneGroupCallback(_cx, ScriptEngine::myWeakPointerZoneGroupCallback);
-//        JS_RemoveWeakPointerCompartmentCallback(_cx, ScriptEngine::myWeakPointerCompartmentCallback);
+        // JS_RemoveWeakPointerZoneGroupCallback(_cx, ScriptEngine::onWeakPointerZoneGroupCallback);
+//        JS_RemoveWeakPointerCompartmentCallback(_cx, ScriptEngine::onWeakPointerCompartmentCallback);
         JS_LeaveCompartment(_cx, _oldCompartment);
 
         JS::SetGetIncumbentGlobalCallback(_cx, nullptr);
@@ -406,6 +456,8 @@ namespace se {
         _nodeEventListener = nullptr;
 
         _registerCallbackArray.clear();
+
+        _filenameScriptMap.clear();
 
         for (const auto& hook : _afterCleanupHookArray)
         {
@@ -439,14 +491,14 @@ namespace se {
         _afterInitHookArray.push_back(hook);
     }
 
-    bool ScriptEngine::isInGC()
+    bool ScriptEngine::isGarbageCollecting()
     {
-        return _isInGC;
+        return _isGarbageCollecting;
     }
 
-    void ScriptEngine::_setInGC(bool isInGC)
+    void ScriptEngine::_setGarbageCollecting(bool isGarbageCollecting)
     {
-        _isInGC = isInGC;
+        _isGarbageCollecting = isGarbageCollecting;
     }
 
     Object* ScriptEngine::getGlobalObject()
@@ -481,32 +533,155 @@ namespace se {
         return ok;
     }
 
-    bool ScriptEngine::executeScriptBuffer(const char* string, Value* data, const char* fileName)
+    bool ScriptEngine::getScript(const std::string& path, JS::MutableHandleScript script)
     {
-        return executeScriptBuffer(string, strlen(string), data, fileName);
+        // a) check jsc file first
+        std::string byteCodePath = removeFileExt(path) + BYTE_CODE_FILE_EXT;
+        if (_filenameScriptMap.find(byteCodePath) != _filenameScriptMap.end())
+        {
+            script.set(_filenameScriptMap[byteCodePath]->get());
+            return true;
+        }
+
+        // b) no jsc file, check js file
+        if (_filenameScriptMap.find(path) != _filenameScriptMap.end())
+        {
+            script.set(_filenameScriptMap[path]->get());
+            return true;
+        }
+        
+        return false;
     }
 
-    bool ScriptEngine::executeScriptBuffer(const char* script, size_t length, Value* data, const char* fileName)
+    bool ScriptEngine::compileScript(const std::string& path, JS::MutableHandleScript script)
     {
+        if (path.empty())
+            return false;
+
+        bool ok = getScript(path, script);
+        if (ok)
+            return true;
+
+        assert(_fileOperationDelegate.isValid());
+
+        bool compileSucceed = false;
+
+        // a) check jsc file first
+        std::string byteCodePath = removeFileExt(path) + BYTE_CODE_FILE_EXT;
+
+        // Check whether '.jsc' files exist to avoid outputting log which says 'couldn't find .jsc file'.
+        if (_fileOperationDelegate.onCheckFileExist(byteCodePath))
+        {
+            const uint8_t* data = nullptr;
+            size_t dataLen = 0;
+            _fileOperationDelegate.onGetDataFromFile(byteCodePath, &data, &dataLen);
+            if (data != nullptr && dataLen > 0)
+            {
+                JS::TranscodeBuffer buffer;
+                bool appended = buffer.append(data, dataLen);
+                JS::TranscodeResult result = JS::DecodeScript(_cx, buffer, script);
+                if (appended && result == JS::TranscodeResult::TranscodeResult_Ok)
+                {
+                    compileSucceed = true;
+                    _filenameScriptMap[byteCodePath] = new (std::nothrow) JS::PersistentRootedScript(_cx, script.get());
+                }
+                assert(compileSucceed);
+            }
+        }
+
+        // b) no jsc file, check js file
+        if (!compileSucceed)
+        {
+            /* Clear any pending exception from previous failed decoding.  */
+            clearException();
+
+            ok = false;
+            std::string jsFileContent = _fileOperationDelegate.onGetStringFromFile(path);
+            if (!jsFileContent.empty())
+            {
+                JS::CompileOptions op(_cx);
+                op.setUTF8(true);
+                std::string fullPath = _fileOperationDelegate.onGetFullPath(path);
+                op.setFileAndLine(fullPath.c_str(), 1);
+                ok = JS::Compile(_cx, op, jsFileContent.c_str(), jsFileContent.size(), script);
+                if (ok)
+                {
+                    compileSucceed = true;
+                    _filenameScriptMap[fullPath] = new (std::nothrow) JS::PersistentRootedScript(_cx, script.get());
+                }
+                assert(compileSucceed);
+            }
+        }
+        
+        clearException();
+        
+        if (!compileSucceed)
+        {
+            LOGD("ScriptEngine::compileScript fail:%s\n", path.c_str());
+        }
+
+        return compileSucceed;
+    }
+
+    bool ScriptEngine::evalString(const char* script, ssize_t length/* = -1 */, Value* ret/* = nullptr */, const char* fileName/* = nullptr */)
+    {
+        assert(script != nullptr);
+
+        if (length < 0)
+            length = strlen(script);
+
         if (fileName == nullptr)
             fileName = "(no filename)";
+
         JS::CompileOptions options(_cx);
         options.setFile(fileName)
                .setUTF8(true)
                .setVersion(JSVERSION_LATEST);
 
-        JS::RootedValue rcValue(_cx);
-        bool ok = JS::Evaluate(_cx, options, script, length, &rcValue);
+        JS::RootedValue rval(_cx);
+        bool ok = JS::Evaluate(_cx, options, script, length, &rval);
         if (!ok)
         {
             clearException();
         }
         assert(ok);
 
-        if (ok && data && !rcValue.isNullOrUndefined())
+        if (ok && ret != nullptr && !rval.isNullOrUndefined())
         {
-            internal::jsToSeValue(_cx, rcValue, data);
+            internal::jsToSeValue(_cx, rval, ret);
         }
+        return ok;
+    }
+
+    void ScriptEngine::setFileOperationDelegate(const FileOperationDelegate& delegate)
+    {
+        _fileOperationDelegate = delegate;
+    }
+
+    bool ScriptEngine::runScript(const std::string& path, Value* ret/* = nullptr */)
+    {
+        assert(_fileOperationDelegate.isValid());
+
+        JS::RootedScript script(_cx);
+        bool ok = compileScript(path, &script);
+        if (ok)
+        {
+            JS::RootedValue rval(_cx);
+            ok = JS_ExecuteScript(_cx, script, &rval);
+            if (!ok)
+            {
+                LOGE("Evaluating %s failed (evaluatedOK == JS_FALSE)\n", path.c_str());
+                clearException();
+            }
+
+            assert(ok);
+
+            if (ok && ret != nullptr && !rval.isNullOrUndefined())
+            {
+                internal::jsToSeValue(_cx, rval, ret);
+            }
+        }
+        
         return ok;
     }
 
@@ -525,7 +700,7 @@ namespace se {
         }
 
         clearException();
-        iterOwner->second->attachChild(iterTarget->second);
+        iterOwner->second->attachObject(iterTarget->second);
     }
 
     void ScriptEngine::_releaseScriptObject(void* owner, void* target)
@@ -543,7 +718,7 @@ namespace se {
         }
 
         clearException();
-        iterOwner->second->detachChild(iterTarget->second);
+        iterOwner->second->detachObject(iterTarget->second);
     }
 
     bool ScriptEngine::_onReceiveNodeEvent(void* node, NodeEventType type)
@@ -568,16 +743,416 @@ namespace se {
             JS::RootedValue exceptionValue(_cx);
             JS_GetPendingException(_cx, &exceptionValue);
             JS_ClearPendingException(_cx);
+
             assert(exceptionValue.isObject());
             JS::RootedObject exceptionObj(_cx, exceptionValue.toObjectOrNull());
             JSErrorReport* report = JS_ErrorFromException(_cx, exceptionObj);
-            const char* fileName = report->filename != nullptr ? report->filename : "(no filename)";
-            LOGD("ERROR: %s, file: %s, lineno: %u\n", report->message().c_str(), fileName, report->lineno);
+            const char* message = report->message().c_str();
+            const std::string filePath = report->filename != nullptr ? report->filename : "(no filename)";
+            char line[50] = {0};
+            snprintf(line, sizeof(line), "%u", report->lineno);
+            char column[50] = {0};
+            snprintf(column, sizeof(column), "%u", report->column);
+            const std::string location = filePath + ":" + line + ":" + column;
 
-            JS_ClearPendingException(_cx);
+            char* stack = nullptr; // Need to be freed by JS_free
+
+            JS::RootedValue stackVal(_cx);
+            if (JS_GetProperty(_cx, exceptionObj, "stack", &stackVal) && stackVal.isString())
+            {
+                JS::RootedString jsstackStr(_cx, stackVal.toString());
+                stack = JS_EncodeStringToUTF8(_cx, jsstackStr);
+            }
+
+            std::string exceptionStr = message;
+            exceptionStr += ", location: " + location;
+            if (stack != nullptr)
+            {
+                exceptionStr += "\nSTACK:\n";
+                exceptionStr += stack;
+            }
+
+            LOGE("ERROR: %s\n", exceptionStr.c_str());
+            if (_exceptionCallback != nullptr)
+            {
+                _exceptionCallback(location.c_str(), message, stack);
+            }
+
+            if (!_isErrorHandleWorking)
+            {
+                _isErrorHandleWorking = true;
+
+                Value errorHandler;
+                if (_globalObj->getProperty("__errorHandler", &errorHandler) && errorHandler.isObject() && errorHandler.toObject()->isFunction())
+                {
+                    ValueArray args;
+                    args.push_back(Value(filePath));
+                    args.push_back(Value(report->lineno));
+                    args.push_back(Value(message));
+                    args.push_back(Value(stack));
+                    errorHandler.toObject()->call(args, _globalObj);
+                }
+
+                _isErrorHandleWorking = false;
+            }
+            else
+            {
+                LOGE("ERROR: __errorHandler has exception\n");
+            }
+
+            if (stack != nullptr)
+            {
+                JS_free(_cx, stack);
+                stack = nullptr;
+            }
+        }
+    }
+
+    void ScriptEngine::setExceptionCallback(const ExceptionCallback& cb)
+    {
+        _exceptionCallback = cb;
+    }
+
+#pragma mark - Debug
+
+    static std::string inData;
+    static std::string outData;
+    static std::vector<std::string> g_queue;
+    static std::mutex g_qMutex;
+    static std::mutex g_rwMutex;
+    static int clientSocket = -1;
+    static uint32_t s_nestedLoopLevel = 0;
+
+    static void cc_closesocket(int fd)
+    {
+#ifdef _WIN32
+        closesocket(fd);
+#else
+        close(fd);
+#endif
+    }
+
+    void ScriptEngine::_debugProcessInput(const std::string& str)
+    {
+        JS::RootedObject debugGlobal(_cx, _debugGlobalObj->_getJSObject());
+        JSCompartment *globalCpt = JS_EnterCompartment(_cx, debugGlobal);
+
+        Value func;
+        if (_debugGlobalObj->getProperty("processInput", &func) && func.isObject() && func.toObject()->isFunction())
+        {
+            ValueArray args;
+            args.push_back(Value(str));
+            func.toObject()->call(args, _debugGlobalObj);
+        }
+
+        JS_LeaveCompartment(_cx, globalCpt);
+    }
+
+    static bool NS_ProcessNextEvent()
+    {
+        std::string message;
+        size_t messageCount = 0;
+        while (true)
+        {
+            g_qMutex.lock();
+            messageCount = g_queue.size();
+            if (messageCount > 0)
+            {
+                auto first = g_queue.begin();
+                message = *first;
+                g_queue.erase(first);
+                --messageCount;
+            }
+            g_qMutex.unlock();
+
+            if (!message.empty())
+            {
+                ScriptEngine::getInstance()->_debugProcessInput(message);
+            }
+
+            if (messageCount == 0)
+                break;
+        }
+        //    std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        return true;
+    }
+
+    static bool JSBDebug_enterNestedEventLoop(State& s)
+    {
+        enum {
+            NS_OK = 0,
+            NS_ERROR_UNEXPECTED
+        };
+
+#define NS_SUCCEEDED(v) ((v) == NS_OK)
+
+        int rv = NS_OK;
+
+        uint32_t nestLevel = ++s_nestedLoopLevel;
+
+        while (NS_SUCCEEDED(rv) && s_nestedLoopLevel >= nestLevel) {
+            drainJobQueue();
+            if (!NS_ProcessNextEvent())
+                rv = NS_ERROR_UNEXPECTED;
+        }
+
+        assert(s_nestedLoopLevel <= nestLevel);
+
+        s.rval().setInt32(s_nestedLoopLevel);
+        return true;
+    }
+    SE_BIND_FUNC(JSBDebug_enterNestedEventLoop)
+
+    static bool JSBDebug_exitNestedEventLoop(State& s)
+    {
+        if (s_nestedLoopLevel > 0) {
+            --s_nestedLoopLevel;
+        } else {
+            s.rval().setInt32(0);
+            return true;
+        }
+        return true;
+    }
+    SE_BIND_FUNC(JSBDebug_exitNestedEventLoop)
+
+    static bool JSBDebug_getEventLoopNestLevel(State& s)
+    {
+        s.rval().setInt32(s_nestedLoopLevel);
+        return true;
+    }
+    SE_BIND_FUNC(JSBDebug_getEventLoopNestLevel)
+
+    static void _clientSocketWriteAndClearString(std::string& s)
+    {
+        ::send(clientSocket, s.c_str(), s.length(), 0);
+        s.clear();
+    }
+
+    static void processInput(const std::string& data) {
+        std::lock_guard<std::mutex> lk(g_qMutex);
+        g_queue.push_back(data);
+    }
+
+    static void clearBuffers() {
+        std::lock_guard<std::mutex> lk(g_rwMutex);
+        // only process input if there's something and we're not locked
+        if (!inData.empty()) {
+            processInput(inData);
+            inData.clear();
+        }
+        if (!outData.empty()) {
+            _clientSocketWriteAndClearString(outData);
+        }
+    }
+
+    static void serverEntryPoint(unsigned int port)
+    {
+        // start a server, accept the connection and keep reading data from it
+        struct addrinfo hints, *result = nullptr, *rp = nullptr;
+        int s = 0;
+        memset(&hints, 0, sizeof(struct addrinfo));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+        hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+        std::stringstream portstr;
+        portstr << port;
+
+        int err = 0;
+
+#ifdef _WIN32
+        WSADATA wsaData;
+        err = WSAStartup(MAKEWORD(2, 2),&wsaData);
+#endif
+
+        if ((err = getaddrinfo(NULL, portstr.str().c_str(), &hints, &result)) != 0) {
+            LOGD("getaddrinfo error : %s\n", gai_strerror(err));
+        }
+
+        for (rp = result; rp != NULL; rp = rp->ai_next) {
+            if ((s = socket(rp->ai_family, rp->ai_socktype, 0)) < 0) {
+                continue;
+            }
+            int optval = 1;
+            if ((setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char*)&optval, sizeof(optval))) < 0) {
+                cc_closesocket(s);
+                TRACE_DEBUGGER_SERVER("debug server : error setting socket option SO_REUSEADDR");
+                return;
+            }
+
+#ifdef __APPLE__
+            if ((setsockopt(s, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(optval))) < 0) {
+                close(s);
+                TRACE_DEBUGGER_SERVER("debug server : error setting socket option SO_NOSIGPIPE");
+                return;
+            }
+#endif
+
+            if ((::bind(s, rp->ai_addr, rp->ai_addrlen)) == 0) {
+                break;
+            }
+            cc_closesocket(s);
+            s = -1;
+        }
+        if (s < 0 || rp == NULL) {
+            TRACE_DEBUGGER_SERVER("debug server : error creating/binding socket");
+            return;
+        }
+
+        freeaddrinfo(result);
+
+        listen(s, 1);
+
+#define MAX_RECEIVED_SIZE 1024
+#define BUF_SIZE MAX_RECEIVED_SIZE + 1
+
+        char buf[BUF_SIZE] = {0};
+        int readBytes = 0;
+        while (true) {
+            clientSocket = accept(s, NULL, NULL);
+
+            if (clientSocket < 0)
+            {
+                TRACE_DEBUGGER_SERVER("debug server : error on accept");
+                return;
+            }
+            else
+            {
+                // read/write data
+                TRACE_DEBUGGER_SERVER("debug server : client connected");
+
+                inData = "connected";
+                // process any input, send any output
+                clearBuffers();
+
+                while ((readBytes = (int)::recv(clientSocket, buf, MAX_RECEIVED_SIZE, 0)) > 0)
+                {
+                    buf[readBytes] = '\0';
+                    // TRACE_DEBUGGER_SERVER("debug server : received command >%s", buf);
+
+                    // no other thread is using this
+                    inData.append(buf);
+                    // process any input, send any output
+                    clearBuffers();
+                } // while(read)
+
+                cc_closesocket(clientSocket);
+            }
+        } // while(true)
+
+#undef BUF_SIZE
+#undef MAX_RECEIVED_SIZE
+    }
+
+    static bool JSBDebug_require(State& s)
+    {
+        const auto& args = s.args();
+        int argc = (int)args.size();
+
+        if (argc >= 1)
+        {
+            ScriptEngine::getInstance()->runScript(args[0].toString());
+            return true;
+        }
+
+        SE_REPORT_ERROR("Wrong number of arguments: %d, expected: %d", argc, 1);
+        return false;
+    }
+    SE_BIND_FUNC(JSBDebug_require)
+
+    static bool JSBDebug_BufferWrite(State& s)
+    {
+        const auto& args = s.args();
+        int argc = (int)args.size();
+        if (argc == 1)
+        {
+            // this is safe because we're already inside a lock (from clearBuffers)
+            outData.append(args[0].toString());
+            _clientSocketWriteAndClearString(outData);
+        }
+        return true;
+    }
+    SE_BIND_FUNC(JSBDebug_BufferWrite)
+
+    void ScriptEngine::enableDebugger(unsigned int port)
+    {
+        if (_debugGlobalObj != nullptr)
+        {
+            LOGD("Debugger was enabled!");
+            return;
+        }
+
+        JS::CompartmentOptions options;
+        options.behaviors().setVersion(JSVERSION_LATEST);
+        options.creationOptions().setSharedMemoryAndAtomicsEnabled(true);
+
+        JS::RootedObject debugGlobal(_cx, JS_NewGlobalObject(_cx, &__globalClass, nullptr, JS::DontFireOnNewGlobalHook, options));
+        _debugGlobalObj = Object::_createJSObject(nullptr, debugGlobal);
+        _debugGlobalObj->root();
+
+        JSCompartment *globalCpt = JS_EnterCompartment(_cx, debugGlobal);
+        JS_InitStandardClasses(_cx, debugGlobal);
+        //cjh        registerDefaultClasses(_cx, debugGlobal);
+        JS_FireOnNewGlobalObject(_cx, debugGlobal);
+        JS_DefineDebuggerObject(_cx, debugGlobal);
+
+        // these are used in the debug program
+        JS_DefineFunction(_cx, debugGlobal, "log", __log, 0, JSPROP_PERMANENT);
+        _debugGlobalObj->defineFunction("require", _SE(JSBDebug_require));
+        _debugGlobalObj->defineFunction("_bufferWrite", _SE(JSBDebug_BufferWrite));
+        _debugGlobalObj->defineFunction("_enterNestedEventLoop", _SE(JSBDebug_enterNestedEventLoop));
+        _debugGlobalObj->defineFunction("_exitNestedEventLoop", _SE(JSBDebug_exitNestedEventLoop));
+        _debugGlobalObj->defineFunction("_getEventLoopNestLevel", _SE(JSBDebug_getEventLoopNestLevel));
+
+        JS::RootedObject globalObj(_cx, _globalObj->_getJSObject());
+        JS_WrapObject(_cx, &globalObj);
+
+        runScript("script/jsb_debugger.js");
+
+        // prepare the debugger
+        Value prepareDebuggerFunc;
+        assert(_debugGlobalObj->getProperty("_prepareDebugger", &prepareDebuggerFunc) && prepareDebuggerFunc.isObject() && prepareDebuggerFunc.toObject()->isFunction());
+
+        ValueArray args;
+        args.push_back(Value(_globalObj));
+        prepareDebuggerFunc.toObject()->call(args, _debugGlobalObj);
+
+        // start bg thread
+        auto t = std::thread(&serverEntryPoint, port);
+        t.detach();
+        
+        JS_LeaveCompartment(_cx, globalCpt);
+    }
+
+    void ScriptEngine::mainLoopUpdate()
+    {
+        std::string message;
+        size_t messageCount = 0;
+        while (true)
+        {
+            g_qMutex.lock();
+            messageCount = g_queue.size();
+            if (messageCount > 0)
+            {
+                auto first = g_queue.begin();
+                message = *first;
+                g_queue.erase(first);
+                --messageCount;
+            }
+            g_qMutex.unlock();
+
+            if (!message.empty())
+            {
+                _debugProcessInput(message);
+            }
+
+            if (messageCount == 0)
+                break;
         }
     }
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_SM
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM

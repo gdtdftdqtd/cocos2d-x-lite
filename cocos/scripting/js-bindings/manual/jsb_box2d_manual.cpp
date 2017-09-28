@@ -1097,7 +1097,7 @@ bool register_all_box2d_manual(se::Object* obj)
                 se::Object* seObj = iter->second;
                 seObj->clearPrivateData();
                 seObj->unroot();
-                seObj->release();
+                seObj->decRef();
             }
             else
             {
@@ -1106,7 +1106,7 @@ bool register_all_box2d_manual(se::Object* obj)
             }
         };
 
-        if (!se::ScriptEngine::getInstance()->isInGC())
+        if (!se::ScriptEngine::getInstance()->isGarbageCollecting())
         {
             cleanup();
         }

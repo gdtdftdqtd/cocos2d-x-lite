@@ -2,7 +2,7 @@
 
 #include "../config.hpp"
 
-#ifdef SCRIPT_ENGINE_JSC
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
 #include "Base.h"
 
@@ -118,18 +118,70 @@ namespace se {
          *  @param[in] fileName A string containing a URL for the script's source file. This is used by debuggers and when reporting exceptions. Pass NULL if you do not care to include source file information.
          *  @return true if succeed, otherwise false.
          */
-        bool executeScriptBuffer(const char* scriptStr, ssize_t length = -1, Value* rval = nullptr, const char* fileName = nullptr);
+        bool evalString(const char* scriptStr, ssize_t length = -1, Value* rval = nullptr, const char* fileName = nullptr);
+
+        /**
+         *  Delegate class for file operation
+         */
+        class FileOperationDelegate
+        {
+        public:
+            FileOperationDelegate()
+            : onGetDataFromFile(nullptr)
+            , onGetStringFromFile(nullptr)
+            , onCheckFileExist(nullptr)
+            , onGetFullPath(nullptr)
+            {}
+
+            /**
+             *  @brief Tests whether delegate is valid.
+             */
+            bool isValid() {
+                return onGetDataFromFile != nullptr
+                && onGetStringFromFile != nullptr
+                && onCheckFileExist != nullptr
+                && onGetFullPath != nullptr; }
+
+            // path, buffer, buffer size
+            std::function<void(const std::string&, const uint8_t**, size_t*)> onGetDataFromFile;
+            // path, return file string content.
+            std::function<std::string(const std::string&)> onGetStringFromFile;
+            // path
+            std::function<bool(const std::string&)> onCheckFileExist;
+            // path, return full path
+            std::function<std::string(const std::string&)> onGetFullPath;
+        };
+
+        /**
+         *  @brief Sets the delegate for file operation.
+         *  @param delegate[in] The delegate instance for file operation.
+         */
+        void setFileOperationDelegate(const FileOperationDelegate& delegate);
+
+        /**
+         *  @brief Executes a file which contains JavaScript code.
+         *  @param[in] path Script file path.
+         *  @param[in] rval The se::Value that results from evaluating script. Passing nullptr if you don't care about the result.
+         *  @return true if succeed, otherwise false.
+         */
+        bool runScript(const std::string& path, Value* ret = nullptr);
 
         /**
          *  @brief Tests whether script engine is doing garbage collection.
          *  @return true if it's in garbage collection, otherwise false.
          */
-        bool isInGC();
+        bool isGarbageCollecting();
 
         /**
          *  @brief Performs a JavaScript garbage collection.
          */
-        void gc();
+        void garbageCollect();
+
+        /**
+         *  @brief Tests whether script engine is being cleaned up.
+         *  @return true if it's in cleaning up, otherwise false.
+         */
+        bool isInCleanup() { return _isInCleanup; }
 
         /**
          *  @brief Tests whether script engine is valid.
@@ -142,10 +194,34 @@ namespace se {
          */
         void clearException();
 
+        using ExceptionCallback = std::function<void(const char*, const char*, const char*)>; // location, message, stack
+
+        /**
+         *  @brief Sets the callback function while an exception is fired.
+         *  @param[in] cb The callback function to notify that an exception is fired.
+         */
+        void setExceptionCallback(const ExceptionCallback& cb);
+
         /**
          *  @brief Gets the start time of script engine.
          */
         const std::chrono::steady_clock::time_point& getStartTime() const { return _startTime; }
+
+        /**
+         *  @brief Enables JavaScript debugger
+         *  @param[in] port The port of debugger server will use.
+         */
+        void enableDebugger(unsigned int port = 5086);
+
+        /**
+         *  @brief Main loop update trigger, it's need to invoked in main thread every frame.
+         */
+        void mainLoopUpdate();
+
+        /**
+         *  @brief Gets script virtual machine instance ID. Default value is 1, increase by 1 if `init` is invoked.
+         */
+        uint32_t getVMId() const { return _vmId; }
 
         // Private API used in wrapper
         void _retainScriptObject(void* owner, void* target);
@@ -163,41 +239,62 @@ namespace se {
         using NodeEventListener = bool(*)(void*, NodeEventType);
         bool _setNodeEventListener(NodeEventListener listener);
 
-        std::string _formatException(JSValueRef exception);
         void _clearException(JSValueRef exception);
-
         JSContextRef _getContext() const { return _cx; }
 
-        void _setInGC(bool isInGC);
+        void _setGarbageCollecting(bool isGarbageCollecting);
         //
     private:
 
         ScriptEngine();
         ~ScriptEngine();
 
-        JSGlobalContextRef _cx;
+        struct ExceptionInfo
+        {
+            std::string location;
+            std::string message;
+            std::string stack;
 
-        Object* _globalObj;
+            // For compatibility
+            std::string filePath;
+            uint32_t lineno;
 
-        bool _isInGC;
-        bool _isValid;
-        bool _isInCleanup;
-        NodeEventListener _nodeEventListener;
+            ExceptionInfo()
+            : lineno(0)
+            {}
 
-        std::vector<RegisterCallback> _registerCallbackArray;
+            bool isValid() const
+            {
+                return !message.empty();
+            }
+        };
+        ExceptionInfo _formatException(JSValueRef exception);
+
         std::chrono::steady_clock::time_point _startTime;
-
+        std::vector<RegisterCallback> _registerCallbackArray;
         std::vector<std::function<void()>> _beforeInitHookArray;
         std::vector<std::function<void()>> _afterInitHookArray;
 
         std::vector<std::function<void()>> _beforeCleanupHookArray;
         std::vector<std::function<void()>> _afterCleanupHookArray;
 
-        friend class Object;
+        JSGlobalContextRef _cx;
+
+        Object* _globalObj;
+        NodeEventListener _nodeEventListener;
+        FileOperationDelegate _fileOperationDelegate;
+        ExceptionCallback _exceptionCallback;
+
+        uint32_t _vmId;
+
+        bool _isGarbageCollecting;
+        bool _isValid;
+        bool _isInCleanup;
+        bool _isErrorHandleWorking;
     };
 
  } // namespace se {
 
-#endif // SCRIPT_ENGINE_JSC
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
 

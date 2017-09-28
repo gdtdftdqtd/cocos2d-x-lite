@@ -1,6 +1,6 @@
 #include "Object.hpp"
 
-#ifdef SCRIPT_ENGINE_SM
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM
 
 #include "Utils.hpp"
 #include "Class.hpp"
@@ -28,15 +28,14 @@ namespace se {
         }
     }
 
-    // ------------------------------------------------------- Object
-
     Object::Object()
-    : _rootCount(0)
-    , _root(nullptr)
+    : _root(nullptr)
     , _privateData(nullptr)
     , _cls(nullptr)
     , _finalizeCb(nullptr)
+    , _rootCount(0)
     {
+        _currentVMId = ScriptEngine::getInstance()->getVMId();
     }
 
     Object::~Object()
@@ -96,7 +95,7 @@ namespace se {
         if (iter != NativePtrToObjectMap::end())
         {
             obj = iter->second;
-            obj->addRef();
+            obj->incRef();
         }
         return obj;
     }
@@ -411,7 +410,7 @@ namespace se {
             const auto& instance = NativePtrToObjectMap::instance();
             for (const auto& e : instance)
             {
-                e.second->release();
+                e.second->decRef();
             }
             NativePtrToObjectMap::clear();
             NonRefNativePtrCreatedByCtorMap::clear();
@@ -459,6 +458,7 @@ namespace se {
         if (_root == nullptr)
             return;
 
+        assert(_currentVMId == ScriptEngine::getInstance()->getVMId());
         assert(_heap == JS::GCPolicy<JSObject*>::initial());
         _heap = *_root;
         delete _root;
@@ -517,7 +517,7 @@ namespace se {
         return _rootCount > 0;
     }
 
-    bool Object::isSame(Object* o) const
+    bool Object::strictEquals(Object* o) const
     {
         JSObject* thisObj = _getJSObject();
         JSObject* oThisObj = o->_getJSObject();
@@ -533,11 +533,11 @@ namespace se {
         return ok && same;
     }
 
-    bool Object::attachChild(Object* child)
+    bool Object::attachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
         JSObject* ownerObj = _getJSObject();
-        JSObject* targetObj = child->_getJSObject();
+        JSObject* targetObj = obj->_getJSObject();
         if (ownerObj == nullptr || targetObj == nullptr)
             return false;
 
@@ -558,11 +558,11 @@ namespace se {
         return JS_CallFunctionName(__cx, jsbObj, "registerNativeRef", args, &rval);
     }
 
-    bool Object::detachChild(Object* child)
+    bool Object::detachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
         JSObject* ownerObj = _getJSObject();
-        JSObject* targetObj = child->_getJSObject();
+        JSObject* targetObj = obj->_getJSObject();
         if (ownerObj == nullptr || targetObj == nullptr)
         {
             LOGD("%s: try to detach on invalid object, owner: %p, target: %p\n", __FUNCTION__, ownerObj, targetObj);
@@ -588,4 +588,4 @@ namespace se {
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_SM
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_SM

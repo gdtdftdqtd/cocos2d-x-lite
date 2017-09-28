@@ -250,7 +250,7 @@ static bool js_cocos2dx_extension_EventAssetsManagerEx_constructor(se::State& s)
     cocos2d::extension::EventAssetsManagerEx::EventCode arg2;
     ok &= seval_to_std_string(args[0], &arg0);
     ok &= seval_to_native_ptr(args[1], &arg1);
-    ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+    ok &= seval_to_int32(args[2], (int32_t*)&arg2);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_EventAssetsManagerEx_constructor : Error processing arguments");
     cocos2d::extension::EventAssetsManagerEx* cobj = new (std::nothrow) cocos2d::extension::EventAssetsManagerEx(arg0, arg1, arg2);
     s.thisObject()->setPrivateData(cobj);
@@ -264,7 +264,7 @@ extern se::Object* __jsb_cocos2d_EventCustom_proto;
 
 static bool js_cocos2d_extension_EventAssetsManagerEx_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::EventAssetsManagerEx)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::EventAssetsManagerEx)", s.nativeThisObject());
     cocos2d::extension::EventAssetsManagerEx* cobj = (cocos2d::extension::EventAssetsManagerEx*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -573,7 +573,7 @@ SE_BIND_CTOR(js_cocos2dx_extension_Manifest_constructor, __jsb_cocos2d_extension
 
 static bool js_cocos2d_extension_Manifest_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::Manifest)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::Manifest)", s.nativeThisObject());
     cocos2d::extension::Manifest* cobj = (cocos2d::extension::Manifest*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -753,7 +753,7 @@ static bool js_cocos2dx_extension_AssetsManagerEx_setVerifyCallback(se::State& s
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](const std::basic_string<char> & larg0, cocos2d::extension::ManifestAsset larg1) -> bool {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -839,7 +839,7 @@ static bool js_cocos2dx_extension_AssetsManagerEx_setVersionCompareHandle(se::St
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](const std::basic_string<char> & larg0, const std::basic_string<char> & larg1) -> int {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -857,7 +857,7 @@ static bool js_cocos2dx_extension_AssetsManagerEx_setVersionCompareHandle(se::St
                         se::ScriptEngine::getInstance()->clearException();
                     }
                     int result;
-                    ok &= seval_to_int32(rval, (int32_t *)&result);
+                    ok &= seval_to_int32(rval, (int32_t*)&result);
                     SE_PRECONDITION2(ok, result, "lambda function : Error processing return value with type int");
                     return result;
                 };
@@ -887,7 +887,7 @@ static bool js_cocos2dx_extension_AssetsManagerEx_setMaxConcurrentTask(se::State
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_AssetsManagerEx_setMaxConcurrentTask : Error processing arguments");
         cobj->setMaxConcurrentTask(arg0);
         return true;
@@ -1082,7 +1082,7 @@ static bool js_cocos2dx_extension_AssetsManagerEx_constructor(se::State& s)
                 {
                     se::Value jsThis(s.thisObject());
                     se::Value jsFunc(args[2]);
-                    jsThis.toObject()->attachChild(jsFunc.toObject());
+                    jsThis.toObject()->attachObject(jsFunc.toObject());
                     auto lambda = [=](const std::basic_string<char> & larg0, const std::basic_string<char> & larg1) -> int {
                         se::ScriptEngine::getInstance()->clearException();
                         se::AutoHandleScope hs;
@@ -1100,7 +1100,7 @@ static bool js_cocos2dx_extension_AssetsManagerEx_constructor(se::State& s)
                             se::ScriptEngine::getInstance()->clearException();
                         }
                         int result;
-                        ok &= seval_to_int32(rval, (int32_t *)&result);
+                        ok &= seval_to_int32(rval, (int32_t*)&result);
                         SE_PRECONDITION2(ok, result, "lambda function : Error processing return value with type int");
                         return result;
                     };
@@ -1141,7 +1141,7 @@ SE_BIND_CTOR(js_cocos2dx_extension_AssetsManagerEx_constructor, __jsb_cocos2d_ex
 
 static bool js_cocos2d_extension_AssetsManagerEx_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::AssetsManagerEx)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::AssetsManagerEx)", s.nativeThisObject());
     cocos2d::extension::AssetsManagerEx* cobj = (cocos2d::extension::AssetsManagerEx*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1205,7 +1205,7 @@ static bool js_cocos2dx_extension_EventListenerAssetsManagerEx_init(se::State& s
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[1]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::extension::EventAssetsManagerEx* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -1309,7 +1309,7 @@ extern se::Object* __jsb_cocos2d_EventListenerCustom_proto;
 
 static bool js_cocos2d_extension_EventListenerAssetsManagerEx_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::EventListenerAssetsManagerEx)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::EventListenerAssetsManagerEx)", s.nativeThisObject());
     cocos2d::extension::EventListenerAssetsManagerEx* cobj = (cocos2d::extension::EventListenerAssetsManagerEx*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1385,7 +1385,7 @@ static bool js_cocos2dx_extension_Control_sendActionsForControlEvents(se::State&
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::EventType arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_Control_sendActionsForControlEvents : Error processing arguments");
         cobj->sendActionsForControlEvents(arg0);
         return true;
@@ -1596,7 +1596,7 @@ extern se::Object* __jsb_cocos2d_Layer_proto;
 
 static bool js_cocos2d_extension_Control_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::Control)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::Control)", s.nativeThisObject());
     cocos2d::extension::Control* cobj = (cocos2d::extension::Control*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1666,7 +1666,7 @@ static bool js_cocos2dx_extension_ControlButton_setTitleLabelForState(se::State&
         cocos2d::Node* arg0 = nullptr;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setTitleLabelForState : Error processing arguments");
         cobj->setTitleLabelForState(arg0, arg1);
         return true;
@@ -1706,7 +1706,7 @@ static bool js_cocos2dx_extension_ControlButton_setTitleForState(se::State& s)
         std::string arg0;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setTitleForState : Error processing arguments");
         cobj->setTitleForState(arg0, arg1);
         return true;
@@ -1783,7 +1783,7 @@ static bool js_cocos2dx_extension_ControlButton_getTitleTTFSizeForState(se::Stat
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getTitleTTFSizeForState : Error processing arguments");
         float result = cobj->getTitleTTFSizeForState(arg0);
         ok &= float_to_seval(result, &s.rval());
@@ -1806,7 +1806,7 @@ static bool js_cocos2dx_extension_ControlButton_setTitleTTFForState(se::State& s
         std::string arg0;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setTitleTTFForState : Error processing arguments");
         cobj->setTitleTTFForState(arg0, arg1);
         return true;
@@ -1827,7 +1827,7 @@ static bool js_cocos2dx_extension_ControlButton_setTitleTTFSizeForState(se::Stat
         float arg0 = 0;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setTitleTTFSizeForState : Error processing arguments");
         cobj->setTitleTTFSizeForState(arg0, arg1);
         return true;
@@ -1940,7 +1940,7 @@ static bool js_cocos2dx_extension_ControlButton_getBackgroundSpriteForState(se::
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getBackgroundSpriteForState : Error processing arguments");
         cocos2d::ui::Scale9Sprite* result = cobj->getBackgroundSpriteForState(arg0);
         ok &= native_ptr_to_seval<cocos2d::ui::Scale9Sprite>((cocos2d::ui::Scale9Sprite*)result, &s.rval());
@@ -2006,7 +2006,7 @@ static bool js_cocos2dx_extension_ControlButton_setTitleBMFontForState(se::State
         std::string arg0;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setTitleBMFontForState : Error processing arguments");
         cobj->setTitleBMFontForState(arg0, arg1);
         return true;
@@ -2043,7 +2043,7 @@ static bool js_cocos2dx_extension_ControlButton_getTitleTTFForState(se::State& s
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getTitleTTFForState : Error processing arguments");
         const std::string& result = cobj->getTitleTTFForState(arg0);
         ok &= std_string_to_seval(result, &s.rval());
@@ -2082,7 +2082,7 @@ static bool js_cocos2dx_extension_ControlButton_getTitleColorForState(se::State&
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getTitleColorForState : Error processing arguments");
         cocos2d::Color3B result = cobj->getTitleColorForState(arg0);
         ok &= Color3B_to_seval(result, &s.rval());
@@ -2105,7 +2105,7 @@ static bool js_cocos2dx_extension_ControlButton_setTitleColorForState(se::State&
         cocos2d::Color3B arg0;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_Color3B(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setTitleColorForState : Error processing arguments");
         cobj->setTitleColorForState(arg0, arg1);
         return true;
@@ -2144,7 +2144,7 @@ static bool js_cocos2dx_extension_ControlButton_setBackgroundSpriteFrameForState
         cocos2d::SpriteFrame* arg0 = nullptr;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setBackgroundSpriteFrameForState : Error processing arguments");
         cobj->setBackgroundSpriteFrameForState(arg0, arg1);
         return true;
@@ -2165,7 +2165,7 @@ static bool js_cocos2dx_extension_ControlButton_setBackgroundSpriteForState(se::
         cocos2d::ui::Scale9Sprite* arg0 = nullptr;
         cocos2d::extension::Control::State arg1;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setBackgroundSpriteForState : Error processing arguments");
         cobj->setBackgroundSpriteForState(arg0, arg1);
         return true;
@@ -2203,7 +2203,7 @@ static bool js_cocos2dx_extension_ControlButton_getTitleBMFontForState(se::State
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getTitleBMFontForState : Error processing arguments");
         const std::string& result = cobj->getTitleBMFontForState(arg0);
         ok &= std_string_to_seval(result, &s.rval());
@@ -2278,7 +2278,7 @@ static bool js_cocos2dx_extension_ControlButton_getTitleLabelForState(se::State&
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getTitleLabelForState : Error processing arguments");
         cocos2d::Node* result = cobj->getTitleLabelForState(arg0);
         ok &= native_ptr_to_seval<cocos2d::Node>((cocos2d::Node*)result, &s.rval());
@@ -2300,8 +2300,8 @@ static bool js_cocos2dx_extension_ControlButton_setMargins(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         int arg1 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_setMargins : Error processing arguments");
         cobj->setMargins(arg0, arg1);
         return true;
@@ -2393,7 +2393,7 @@ static bool js_cocos2dx_extension_ControlButton_getTitleForState(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::Control::State arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlButton_getTitleForState : Error processing arguments");
         std::string result = cobj->getTitleForState(arg0);
         ok &= std_string_to_seval(result, &s.rval());
@@ -2507,7 +2507,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlButton_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlButton)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlButton)", s.nativeThisObject());
     cocos2d::extension::ControlButton* cobj = (cocos2d::extension::ControlButton*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -2568,7 +2568,7 @@ bool js_register_cocos2dx_extension_ControlButton(se::Object* obj)
     __jsb_cocos2d_extension_ControlButton_proto = cls->getProto();
     __jsb_cocos2d_extension_ControlButton_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ControlButton.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ControlButton.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -2804,7 +2804,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlHuePicker_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlHuePicker)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlHuePicker)", s.nativeThisObject());
     cocos2d::extension::ControlHuePicker* cobj = (cocos2d::extension::ControlHuePicker*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -3031,7 +3031,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlSaturationBrightnessPicker_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlSaturationBrightnessPicker)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlSaturationBrightnessPicker)", s.nativeThisObject());
     cocos2d::extension::ControlSaturationBrightnessPicker* cobj = (cocos2d::extension::ControlSaturationBrightnessPicker*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -3079,7 +3079,7 @@ static bool js_cocos2dx_extension_ControlColourPicker_hueSliderValueChanged(se::
         cocos2d::Ref* arg0 = nullptr;
         cocos2d::extension::Control::EventType arg1;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlColourPicker_hueSliderValueChanged : Error processing arguments");
         cobj->hueSliderValueChanged(arg0, arg1);
         return true;
@@ -3174,7 +3174,7 @@ static bool js_cocos2dx_extension_ControlColourPicker_colourSliderValueChanged(s
         cocos2d::Ref* arg0 = nullptr;
         cocos2d::extension::Control::EventType arg1;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ControlColourPicker_colourSliderValueChanged : Error processing arguments");
         cobj->colourSliderValueChanged(arg0, arg1);
         return true;
@@ -3264,7 +3264,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlColourPicker_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlColourPicker)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlColourPicker)", s.nativeThisObject());
     cocos2d::extension::ControlColourPicker* cobj = (cocos2d::extension::ControlColourPicker*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -3295,7 +3295,7 @@ bool js_register_cocos2dx_extension_ControlColourPicker(se::Object* obj)
     __jsb_cocos2d_extension_ControlColourPicker_proto = cls->getProto();
     __jsb_cocos2d_extension_ControlColourPicker_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ControlColourPicker.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ControlColourPicker.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -3707,7 +3707,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlPotentiometer_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlPotentiometer)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlPotentiometer)", s.nativeThisObject());
     cocos2d::extension::ControlPotentiometer* cobj = (cocos2d::extension::ControlPotentiometer*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -3748,7 +3748,7 @@ bool js_register_cocos2dx_extension_ControlPotentiometer(se::Object* obj)
     __jsb_cocos2d_extension_ControlPotentiometer_proto = cls->getProto();
     __jsb_cocos2d_extension_ControlPotentiometer_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ControlPotentiometer.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ControlPotentiometer.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -4270,7 +4270,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlSlider_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlSlider)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlSlider)", s.nativeThisObject());
     cocos2d::extension::ControlSlider* cobj = (cocos2d::extension::ControlSlider*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -4313,7 +4313,7 @@ bool js_register_cocos2dx_extension_ControlSlider(se::Object* obj)
     __jsb_cocos2d_extension_ControlSlider_proto = cls->getProto();
     __jsb_cocos2d_extension_ControlSlider_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ControlSlider.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ControlSlider.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -4741,7 +4741,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlStepper_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlStepper)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlStepper)", s.nativeThisObject());
     cocos2d::extension::ControlStepper* cobj = (cocos2d::extension::ControlStepper*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -4784,7 +4784,7 @@ bool js_register_cocos2dx_extension_ControlStepper(se::Object* obj)
     __jsb_cocos2d_extension_ControlStepper_proto = cls->getProto();
     __jsb_cocos2d_extension_ControlStepper_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ControlStepper.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ControlStepper.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -5022,7 +5022,7 @@ extern se::Object* __jsb_cocos2d_extension_Control_proto;
 
 static bool js_cocos2d_extension_ControlSwitch_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ControlSwitch)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ControlSwitch)", s.nativeThisObject());
     cocos2d::extension::ControlSwitch* cobj = (cocos2d::extension::ControlSwitch*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -5050,7 +5050,7 @@ bool js_register_cocos2dx_extension_ControlSwitch(se::Object* obj)
     __jsb_cocos2d_extension_ControlSwitch_proto = cls->getProto();
     __jsb_cocos2d_extension_ControlSwitch_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ControlSwitch.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ControlSwitch.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -5334,7 +5334,7 @@ static bool js_cocos2dx_extension_ScrollView_setDirection(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::ScrollView::Direction arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_ScrollView_setDirection : Error processing arguments");
         cobj->setDirection(arg0);
         return true;
@@ -5738,7 +5738,7 @@ extern se::Object* __jsb_cocos2d_Layer_proto;
 
 static bool js_cocos2d_extension_ScrollView_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::ScrollView)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::ScrollView)", s.nativeThisObject());
     cocos2d::extension::ScrollView* cobj = (cocos2d::extension::ScrollView*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -5793,7 +5793,7 @@ bool js_register_cocos2dx_extension_ScrollView(se::Object* obj)
     __jsb_cocos2d_extension_ScrollView_proto = cls->getProto();
     __jsb_cocos2d_extension_ScrollView_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ScrollView.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ScrollView.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -5896,7 +5896,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_extension_TableViewCell_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::TableViewCell)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::TableViewCell)", s.nativeThisObject());
     cocos2d::extension::TableViewCell* cobj = (cocos2d::extension::TableViewCell*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -5922,7 +5922,7 @@ bool js_register_cocos2dx_extension_TableViewCell(se::Object* obj)
     __jsb_cocos2d_extension_TableViewCell_proto = cls->getProto();
     __jsb_cocos2d_extension_TableViewCell_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TableViewCell.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TableViewCell.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -5958,7 +5958,7 @@ static bool js_cocos2dx_extension_TableView_setVerticalFillOrder(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::extension::TableView::VerticalFillOrder arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_extension_TableView_setVerticalFillOrder : Error processing arguments");
         cobj->setVerticalFillOrder(arg0);
         return true;
@@ -6179,7 +6179,7 @@ extern se::Object* __jsb_cocos2d_extension_ScrollView_proto;
 
 static bool js_cocos2d_extension_TableView_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::extension::TableView)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::extension::TableView)", s.nativeThisObject());
     cocos2d::extension::TableView* cobj = (cocos2d::extension::TableView*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -6213,7 +6213,7 @@ bool js_register_cocos2dx_extension_TableView(se::Object* obj)
     __jsb_cocos2d_extension_TableView_proto = cls->getProto();
     __jsb_cocos2d_extension_TableView_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TableView.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TableView.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }

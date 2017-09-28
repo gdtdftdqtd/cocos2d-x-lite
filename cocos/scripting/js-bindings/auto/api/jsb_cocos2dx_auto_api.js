@@ -55,16 +55,6 @@ texture2d
 },
 
 /**
- * @method getStringForFormat
- * @return {char}
- */
-getStringForFormat : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method initWithImage
 * @param {cc.Image|cc.Image} image
 * @param {cc.Texture2D::PixelFormat} pixelformat
@@ -123,28 +113,6 @@ getPixelsHigh : function (
  * @return {unsigned int}
  */
 getAlphaTextureName : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method getBitsPerPixelForFormat
-* @param {cc.Texture2D::PixelFormat} pixelformat
-* @return {unsigned int|unsigned int}
-*/
-getBitsPerPixelForFormat : function(
-pixelformat 
-)
-{
-    return 0;
-},
-
-/**
- * @method getName
- * @return {unsigned int}
- */
-getName : function (
 )
 {
     return 0;
@@ -894,16 +862,6 @@ str
 },
 
 /**
- * @method updateDisplayedOpacity
- * @param {unsigned char} arg0
- */
-updateDisplayedOpacity : function (
-char 
-)
-{
-},
-
-/**
  * @method init
  * @return {bool}
  */
@@ -1342,14 +1300,6 @@ getNumberOfRunningActions : function (
 },
 
 /**
- * @method updateTransform
- */
-updateTransform : function (
-)
-{
-},
-
-/**
  * @method isVisible
  * @return {bool}
  */
@@ -1406,15 +1356,17 @@ component
 },
 
 /**
- * @method runAction
- * @param {cc.Action} arg0
- * @return {cc.Action}
- */
-runAction : function (
-action 
+ * @method visit
+* @param {cc.Renderer} renderer
+* @param {mat4_object} mat4
+* @param {unsigned int} int
+*/
+visit : function(
+renderer,
+mat4,
+int 
 )
 {
-    return cc.Action;
 },
 
 /**
@@ -1448,17 +1400,15 @@ getAnchorPointInPoints : function (
 },
 
 /**
- * @method visit
-* @param {cc.Renderer} renderer
-* @param {mat4_object} mat4
-* @param {unsigned int} int
-*/
-visit : function(
-renderer,
-mat4,
-int 
+ * @method runAction
+ * @param {cc.Action} arg0
+ * @return {cc.Action}
+ */
+runAction : function (
+action 
 )
 {
+    return cc.Action;
 },
 
 /**
@@ -1721,16 +1671,6 @@ bool
 },
 
 /**
- * @method updateDisplayedColor
- * @param {color3b_object} arg0
- */
-updateDisplayedColor : function (
-color3b 
-)
-{
-},
-
-/**
  * @method setVisible
  * @param {bool} arg0
  */
@@ -1985,16 +1925,6 @@ touch
 },
 
 /**
- * @method update
- * @param {float} arg0
- */
-update : function (
-float 
-)
-{
-},
-
-/**
  * @method sortAllChildren
  */
 sortAllChildren : function (
@@ -2030,14 +1960,6 @@ getOpacity : function (
 )
 {
     return 0;
-},
-
-/**
- * @method updateOrderOfArrival
- */
-updateOrderOfArrival : function (
-)
-{
 },
 
 /**
@@ -3250,6 +3172,14 @@ getTimeScale : function (
  */
 unscheduleAllWithMinPriority : function (
 int 
+)
+{
+},
+
+/**
+ * @method removeAllFunctionsToBePerformedInCocosThread
+ */
+removeAllFunctionsToBePerformedInCocosThread : function (
 )
 {
 },
@@ -4716,16 +4646,6 @@ getOriginalTarget : function (
  * @method stop
  */
 stop : function (
-)
-{
-},
-
-/**
- * @method update
- * @param {float} arg0
- */
-update : function (
-float 
 )
 {
 },
@@ -9164,6 +9084,18 @@ labeleffect
 },
 
 /**
+ * @method setTTFConfig
+ * @param {cc._ttfConfig} arg0
+ * @return {bool}
+ */
+setTTFConfig : function (
+_ttfconfig 
+)
+{
+    return false;
+},
+
+/**
  * @method getTextColor
  * @return {color4b_object}
  */
@@ -9851,6 +9783,28 @@ str,
 float, 
 size, 
 texthalignment, 
+textvalignment 
+)
+{
+    return cc.Label;
+},
+
+/**
+ * @method createWithTTF
+* @param {cc._ttfConfig|String} _ttfconfig
+* @param {String|String} str
+* @param {cc.TextHAlignment|float} texthalignment
+* @param {int|size_object} int
+* @param {cc.TextHAlignment} texthalignment
+* @param {cc.TextVAlignment} textvalignment
+* @return {cc.Label|cc.Label}
+*/
+createWithTTF : function(
+str,
+str,
+float,
+size,
+texthalignment,
 textvalignment 
 )
 {

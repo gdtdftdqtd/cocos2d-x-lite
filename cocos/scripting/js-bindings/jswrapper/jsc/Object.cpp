@@ -1,6 +1,6 @@
 #include "Object.hpp"
 
-#ifdef SCRIPT_ENGINE_JSC
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
 #include "Utils.hpp"
 #include "Class.hpp"
@@ -11,16 +11,23 @@ namespace se {
 
     namespace {
         JSContextRef __cx = nullptr;
+#if SE_DEBUG > 0
+        uint32_t __id = 0;
+#endif
     }
 
     Object::Object()
     : _cls(nullptr)
     , _obj(nullptr)
-    , _rootCount(0)
     , _privateData(nullptr)
-    , _isCleanup(false)
     , _finalizeCb(nullptr)
+    , _rootCount(0)
+#if SE_DEBUG > 0
+    , _id(++__id)
+#endif
+    , _isCleanup(false)
     {
+        _currentVMId = ScriptEngine::getInstance()->getVMId();
     }
 
     Object::~Object()
@@ -109,7 +116,7 @@ namespace se {
         if (iter != NativePtrToObjectMap::end())
         {
             obj = iter->second;
-            obj->addRef();
+            obj->incRef();
         }
         return obj;
     }
@@ -145,35 +152,43 @@ namespace se {
         if (_isCleanup)
             return;
 
-        if (_privateData != nullptr)
+        auto se = ScriptEngine::getInstance();
+        if (_currentVMId == se->getVMId())
         {
-            if (nativeObj == nullptr)
+            if (_privateData != nullptr)
             {
-                nativeObj = internal::getPrivate(_obj);
-            }
-
-            if (nativeObj != nullptr)
-            {
-                auto iter = NativePtrToObjectMap::find(nativeObj);
-                if (iter != NativePtrToObjectMap::end())
+                if (nativeObj == nullptr)
                 {
-                    NativePtrToObjectMap::erase(iter);
+                    nativeObj = internal::getPrivate(_obj);
+                }
+
+                if (nativeObj != nullptr)
+                {
+                    auto iter = NativePtrToObjectMap::find(nativeObj);
+                    if (iter != NativePtrToObjectMap::end())
+                    {
+                        NativePtrToObjectMap::erase(iter);
+                    }
+                }
+                else
+                {
+                    assert(false);
                 }
             }
-            else
+
+            if (_rootCount > 0)
             {
-                assert(false);
+    //            LOGD("Object::_cleanup, (%p) rootCount: %u\n", this, _rootCount);
+                // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
+                if (!se->isInCleanup() && !se->isGarbageCollecting())
+                    JSValueUnprotect(__cx, _obj);
+
+                _rootCount = 0;
             }
         }
-
-        if (_rootCount > 0)
+        else
         {
-//            printf("Object::_cleanup, (%p) rootCount: %u\n", this, _rootCount);
-            // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
-            if (!ScriptEngine::getInstance()->_isInCleanup)
-                JSValueUnprotect(__cx, _obj);
-
-            _rootCount = 0;
+            LOGD("Object::_cleanup, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
         }
 
         _isCleanup = true;
@@ -181,6 +196,7 @@ namespace se {
 
     void Object::_setFinalizeCallback(JSObjectFinalizeCallback finalizeCb)
     {
+        assert(finalizeCb != nullptr);
         _finalizeCb = finalizeCb;
     }
 
@@ -511,10 +527,14 @@ namespace se {
     {
         ScriptEngine::getInstance()->addAfterCleanupHook([](){
             const auto& instance = NativePtrToObjectMap::instance();
+            se::Object* obj = nullptr;
             for (const auto& e : instance)
             {
-                e.second->release();
+                obj = e.second;
+                obj->_isCleanup = true; // _cleanup will invoke NativePtrToObjectMap::erase method which will break this for loop. It isn't needed at ScriptEngine::cleanup step.
+                obj->decRef();
             }
+
             NativePtrToObjectMap::clear();
             NonRefNativePtrCreatedByCtorMap::clear();
             __cx = nullptr;
@@ -548,8 +568,16 @@ namespace se {
             if (_rootCount == 0)
             {
                 // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
-                if (!ScriptEngine::getInstance()->_isInCleanup)
-                    JSValueUnprotect(__cx, _obj);
+                auto se = ScriptEngine::getInstance();
+                if (_currentVMId == se->getVMId())
+                {
+                    if (!se->isInCleanup() && !se->isGarbageCollecting())
+                        JSValueUnprotect(__cx, _obj);
+                }
+                else
+                {
+                    LOGD("Object::unroot, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
+                }
             }
         }
     }
@@ -559,14 +587,14 @@ namespace se {
         return _rootCount > 0;
     }
 
-    bool Object::isSame(Object* o) const
+    bool Object::strictEquals(Object* o) const
     {
         return JSValueIsStrictEqual(__cx, _obj, o->_obj);
     }
 
-    bool Object::attachChild(Object* child)
+    bool Object::attachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
 
         Object* global = ScriptEngine::getInstance()->getGlobalObject();
         Value jsbVal;
@@ -581,14 +609,14 @@ namespace se {
 
         ValueArray args;
         args.push_back(Value(this));
-        args.push_back(Value(child));
+        args.push_back(Value(obj));
         func.toObject()->call(args, global);
         return true;
     }
 
-    bool Object::detachChild(Object* child)
+    bool Object::detachObject(Object* obj)
     {
-        assert(child);
+        assert(obj);
         Object* global = ScriptEngine::getInstance()->getGlobalObject();
         Value jsbVal;
         if (!global->getProperty("jsb", &jsbVal))
@@ -602,11 +630,11 @@ namespace se {
 
         ValueArray args;
         args.push_back(Value(this));
-        args.push_back(Value(child));
+        args.push_back(Value(obj));
         func.toObject()->call(args, global);
         return true;
     }
 
 } // namespace se {
 
-#endif // SCRIPT_ENGINE_JSC
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC

@@ -2,7 +2,7 @@
 
 #include "../config.hpp"
 
-#ifdef SCRIPT_ENGINE_CHAKRACORE
+#if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE
 
 #ifdef __GNUC__
 #define SE_UNUSED __attribute__ ((unused))
@@ -10,8 +10,8 @@
 #define SE_UNUSED
 #endif
 
-#define SAFE_ADD_REF(obj) if (obj != nullptr) obj->addRef()
-#define SAFE_RELEASE(obj) if (obj != nullptr) obj->release()
+#define SAFE_INC_REF(obj) if (obj != nullptr) obj->incRef()
+#define SAFE_DEC_REF(obj) if (obj != nullptr) obj->decRef()
 
 #define _SE(name) name##Registry
 
@@ -41,14 +41,14 @@
         if (nativeThisObject != nullptr) \
         { \
             auto se = se::ScriptEngine::getInstance(); \
-            se->_setInGC(true); \
+            se->_setGarbageCollecting(true); \
             bool ret = false; \
             se::State state(nativeThisObject); \
             se::Object* _thisObject = state.thisObject(); \
             if (_thisObject) _thisObject->_cleanup(nativeThisObject); \
             ret = funcName(state); \
-            SAFE_RELEASE(_thisObject); \
-            se->_setInGC(false); \
+            SAFE_DEC_REF(_thisObject); \
+            se->_setGarbageCollecting(false); \
         } \
     }
 
@@ -171,4 +171,4 @@
     } while(0)
 
 
-#endif // #ifdef SCRIPT_ENGINE_CHAKRACORE
+#endif // #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_CHAKRACORE

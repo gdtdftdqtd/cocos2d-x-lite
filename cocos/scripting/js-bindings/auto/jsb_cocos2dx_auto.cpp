@@ -133,7 +133,7 @@ SE_BIND_CTOR(js_cocos2dx_Acceleration_constructor, __jsb_cocos2d_Acceleration_cl
 
 static bool js_cocos2d_Acceleration_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Acceleration)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Acceleration)", s.nativeThisObject());
     cocos2d::Acceleration* cobj = (cocos2d::Acceleration*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -220,24 +220,6 @@ static bool js_cocos2dx_Texture2D_setAlphaTexture(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Texture2D_setAlphaTexture)
 
-static bool js_cocos2dx_Texture2D_getStringForFormat(se::State& s)
-{
-    cocos2d::Texture2D* cobj = (cocos2d::Texture2D*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Texture2D_getStringForFormat : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 0) {
-        const char* result = cobj->getStringForFormat();
-        ok &= std_string_to_seval(result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Texture2D_getStringForFormat : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Texture2D_getStringForFormat)
-
 static bool js_cocos2dx_Texture2D_initWithImage(se::State& s)
 {
     CC_UNUSED bool ok = true;
@@ -251,7 +233,7 @@ static bool js_cocos2dx_Texture2D_initWithImage(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Texture2D::PixelFormat arg1;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithImage(arg0, arg1);
             ok &= boolean_to_seval(result, &s.rval());
@@ -368,57 +350,6 @@ static bool js_cocos2dx_Texture2D_getAlphaTextureName(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Texture2D_getAlphaTextureName)
 
-static bool js_cocos2dx_Texture2D_getBitsPerPixelForFormat(se::State& s)
-{
-    CC_UNUSED bool ok = true;
-    cocos2d::Texture2D* cobj = (cocos2d::Texture2D*)s.nativeThisObject();
-    SE_PRECONDITION2( cobj, false, "js_cocos2dx_Texture2D_getBitsPerPixelForFormat : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    do {
-        if (argc == 1) {
-            cocos2d::Texture2D::PixelFormat arg0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
-            if (!ok) { ok = true; break; }
-            unsigned int result = cobj->getBitsPerPixelForFormat(arg0);
-            ok &= uint32_to_seval(result, &s.rval());
-            SE_PRECONDITION2(ok, false, "js_cocos2dx_Texture2D_getBitsPerPixelForFormat : Error processing arguments");
-            return true;
-        }
-    } while(false);
-
-    do {
-        if (argc == 0) {
-            unsigned int result = cobj->getBitsPerPixelForFormat();
-            ok &= uint32_to_seval(result, &s.rval());
-            SE_PRECONDITION2(ok, false, "js_cocos2dx_Texture2D_getBitsPerPixelForFormat : Error processing arguments");
-            return true;
-        }
-    } while(false);
-
-    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Texture2D_getBitsPerPixelForFormat)
-
-static bool js_cocos2dx_Texture2D_getName(se::State& s)
-{
-    cocos2d::Texture2D* cobj = (cocos2d::Texture2D*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Texture2D_getName : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 0) {
-        unsigned int result = cobj->getName();
-        ok &= uint32_to_seval(result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Texture2D_getName : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Texture2D_getName)
-
 static bool js_cocos2dx_Texture2D_initWithString(se::State& s)
 {
     CC_UNUSED bool ok = true;
@@ -495,7 +426,7 @@ static bool js_cocos2dx_Texture2D_initWithString(se::State& s)
             ok &= seval_to_Size(args[3], &arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg4;
-            ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithString(arg0, arg1, arg2, arg3, arg4);
             ok &= boolean_to_seval(result, &s.rval());
@@ -519,10 +450,10 @@ static bool js_cocos2dx_Texture2D_initWithString(se::State& s)
             ok &= seval_to_Size(args[3], &arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg4;
-            ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
             if (!ok) { ok = true; break; }
             cocos2d::TextVAlignment arg5;
-            ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+            ok &= seval_to_int8(args[5], (int8_t*)&arg5);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithString(arg0, arg1, arg2, arg3, arg4, arg5);
             ok &= boolean_to_seval(result, &s.rval());
@@ -546,10 +477,10 @@ static bool js_cocos2dx_Texture2D_initWithString(se::State& s)
             ok &= seval_to_Size(args[3], &arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg4;
-            ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
             if (!ok) { ok = true; break; }
             cocos2d::TextVAlignment arg5;
-            ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+            ok &= seval_to_int8(args[5], (int8_t*)&arg5);
             if (!ok) { ok = true; break; }
             bool arg6;
             ok &= seval_to_boolean(args[6], &arg6);
@@ -575,15 +506,15 @@ static bool js_cocos2dx_Texture2D_initWithString(se::State& s)
             ok &= seval_to_Size(args[3], &arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg4;
-            ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
             if (!ok) { ok = true; break; }
             cocos2d::TextVAlignment arg5;
-            ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+            ok &= seval_to_int8(args[5], (int8_t*)&arg5);
             if (!ok) { ok = true; break; }
             bool arg6;
             ok &= seval_to_boolean(args[6], &arg6);
             int arg7 = 0;
-            ok &= seval_to_int32(args[7], (int32_t *)&arg7);
+            ok &= seval_to_int32(args[7], (int32_t*)&arg7);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithString(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
             ok &= boolean_to_seval(result, &s.rval());
@@ -866,7 +797,7 @@ static bool js_cocos2dx_Texture2D_setDefaultAlphaPixelFormat(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::Texture2D::PixelFormat arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Texture2D_setDefaultAlphaPixelFormat : Error processing arguments");
         cocos2d::Texture2D::setDefaultAlphaPixelFormat(arg0);
         return true;
@@ -907,7 +838,7 @@ SE_BIND_CTOR(js_cocos2dx_Texture2D_constructor, __jsb_cocos2d_Texture2D_class, j
 
 static bool js_cocos2d_Texture2D_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Texture2D)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Texture2D)", s.nativeThisObject());
     cocos2d::Texture2D* cobj = (cocos2d::Texture2D*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -924,15 +855,12 @@ bool js_register_cocos2dx_Texture2D(se::Object* obj)
     cls->defineFunction("getShaderProgram", _SE(js_cocos2dx_Texture2D_getGLProgram));
     cls->defineFunction("getMaxT", _SE(js_cocos2dx_Texture2D_getMaxT));
     cls->defineFunction("setAlphaTexture", _SE(js_cocos2dx_Texture2D_setAlphaTexture));
-    cls->defineFunction("getStringForFormat", _SE(js_cocos2dx_Texture2D_getStringForFormat));
     cls->defineFunction("initWithImage", _SE(js_cocos2dx_Texture2D_initWithImage));
     cls->defineFunction("setShaderProgram", _SE(js_cocos2dx_Texture2D_setGLProgram));
     cls->defineFunction("getMaxS", _SE(js_cocos2dx_Texture2D_getMaxS));
     cls->defineFunction("hasPremultipliedAlpha", _SE(js_cocos2dx_Texture2D_hasPremultipliedAlpha));
     cls->defineFunction("getPixelsHigh", _SE(js_cocos2dx_Texture2D_getPixelsHigh));
     cls->defineFunction("getAlphaTextureName", _SE(js_cocos2dx_Texture2D_getAlphaTextureName));
-    cls->defineFunction("getBitsPerPixelForFormat", _SE(js_cocos2dx_Texture2D_getBitsPerPixelForFormat));
-    cls->defineFunction("getName", _SE(js_cocos2dx_Texture2D_getName));
     cls->defineFunction("initWithString", _SE(js_cocos2dx_Texture2D_initWithString));
     cls->defineFunction("setMaxT", _SE(js_cocos2dx_Texture2D_setMaxT));
     cls->defineFunction("getPath", _SE(js_cocos2dx_Texture2D_getPath));
@@ -1101,7 +1029,7 @@ static bool js_cocos2dx_Touch_setTouchInfo(se::State& s)
     do {
         if (argc == 5) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             float arg1 = 0;
             ok &= seval_to_float(args[1], &arg1);
@@ -1123,7 +1051,7 @@ static bool js_cocos2dx_Touch_setTouchInfo(se::State& s)
     do {
         if (argc == 3) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             float arg1 = 0;
             ok &= seval_to_float(args[1], &arg1);
@@ -1210,7 +1138,7 @@ SE_BIND_CTOR(js_cocos2dx_Touch_constructor, __jsb_cocos2d_Touch_class, js_cocos2
 
 static bool js_cocos2d_Touch_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Touch)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Touch)", s.nativeThisObject());
     cocos2d::Touch* cobj = (cocos2d::Touch*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1325,7 +1253,7 @@ static bool js_cocos2dx_Event_constructor(se::State& s)
     CC_UNUSED bool ok = true;
     const auto& args = s.args();
     cocos2d::Event::Type arg0;
-    ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+    ok &= seval_to_int32(args[0], (int32_t*)&arg0);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_Event_constructor : Error processing arguments");
     cocos2d::Event* cobj = new (std::nothrow) cocos2d::Event(arg0);
     s.thisObject()->setPrivateData(cobj);
@@ -1338,7 +1266,7 @@ SE_BIND_CTOR(js_cocos2dx_Event_constructor, __jsb_cocos2d_Event_class, js_cocos2
 
 static bool js_cocos2d_Event_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Event)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Event)", s.nativeThisObject());
     cocos2d::Event* cobj = (cocos2d::Event*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1416,7 +1344,7 @@ static bool js_cocos2dx_EventTouch_setEventCode(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::EventTouch::EventCode arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_EventTouch_setEventCode : Error processing arguments");
         cobj->setEventCode(arg0);
         return true;
@@ -1460,7 +1388,7 @@ extern se::Object* __jsb_cocos2d_Event_proto;
 
 static bool js_cocos2d_EventTouch_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventTouch)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventTouch)", s.nativeThisObject());
     cocos2d::EventTouch* cobj = (cocos2d::EventTouch*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1819,7 +1747,7 @@ SE_BIND_SUB_CLS_CTOR(js_cocos2dx_Component_ctor, __jsb_cocos2d_Component_class, 
 
 static bool js_cocos2d_Component_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Component)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Component)", s.nativeThisObject());
     cocos2d::Component* cobj = (cocos2d::Component*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1849,7 +1777,7 @@ bool js_register_cocos2dx_Component(se::Object* obj)
     __jsb_cocos2d_Component_proto = cls->getProto();
     __jsb_cocos2d_Component_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Component.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Component.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -1870,7 +1798,7 @@ static bool js_cocos2dx_Node_addChild(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->addChild(arg0, arg1);
             return true;
@@ -1893,10 +1821,10 @@ static bool js_cocos2dx_Node_addChild(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             int arg2 = 0;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             cobj->addChild(arg0, arg1, arg2);
             return true;
@@ -1909,7 +1837,7 @@ static bool js_cocos2dx_Node_addChild(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             std::string arg2;
             ok &= seval_to_std_string(args[2], &arg2);
@@ -2154,25 +2082,6 @@ static bool js_cocos2dx_Node_getChildByName(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Node_getChildByName)
 
-static bool js_cocos2dx_Node_updateDisplayedOpacity(se::State& s)
-{
-    cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_updateDisplayedOpacity : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        uint8_t arg0;
-        ok &= seval_to_uint8(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_updateDisplayedOpacity : Error processing arguments");
-        cobj->updateDisplayedOpacity(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Node_updateDisplayedOpacity)
-
 static bool js_cocos2dx_Node_init(se::State& s)
 {
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
@@ -2345,7 +2254,7 @@ static bool js_cocos2dx_Node__setLocalZOrder(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node__setLocalZOrder : Error processing arguments");
         cobj->_setLocalZOrder(arg0);
         return true;
@@ -2415,7 +2324,7 @@ static bool js_cocos2dx_Node_setAfterVisitCallback(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Renderer* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -2599,7 +2508,7 @@ static bool js_cocos2dx_Node_stopActionsByFlags(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_stopActionsByFlags : Error processing arguments");
         cobj->stopActionsByFlags(arg0);
         return true;
@@ -2879,7 +2788,7 @@ static bool js_cocos2dx_Node_stopActionByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_stopActionByTag : Error processing arguments");
         cobj->stopActionByTag(arg0);
         return true;
@@ -2900,7 +2809,7 @@ static bool js_cocos2dx_Node_reorderChild(se::State& s)
         cocos2d::Node* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_reorderChild : Error processing arguments");
         cobj->reorderChild(arg0, arg1);
         return true;
@@ -3041,21 +2950,6 @@ static bool js_cocos2dx_Node_getNumberOfRunningActions(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Node_getNumberOfRunningActions)
 
-static bool js_cocos2dx_Node_updateTransform(se::State& s)
-{
-    cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_updateTransform : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    if (argc == 0) {
-        cobj->updateTransform();
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Node_updateTransform)
-
 static bool js_cocos2dx_Node_isVisible(se::State& s)
 {
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
@@ -3167,26 +3061,40 @@ static bool js_cocos2dx_Node_addComponent(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Node_addComponent)
 
-static bool js_cocos2dx_Node_runAction(se::State& s)
+static bool js_cocos2dx_Node_visit(se::State& s)
 {
+    CC_UNUSED bool ok = true;
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_runAction : Invalid Native Object");
+    SE_PRECONDITION2( cobj, false, "js_cocos2dx_Node_visit : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        cocos2d::Action* arg0 = nullptr;
-        ok &= seval_to_native_ptr(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_runAction : Error processing arguments");
-        cocos2d::Action* result = cobj->runAction(arg0);
-        ok &= native_ptr_to_seval<cocos2d::Action>((cocos2d::Action*)result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_runAction : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    do {
+        if (argc == 0) {
+            cobj->visit();
+            return true;
+        }
+    } while(false);
+
+    do {
+        if (argc == 3) {
+            cocos2d::Renderer* arg0 = nullptr;
+            ok &= seval_to_native_ptr(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            cocos2d::Mat4 arg1;
+            ok &= seval_to_Mat4(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            unsigned int arg2 = 0;
+            ok &= seval_to_uint32(args[2], (uint32_t*)&arg2);
+            if (!ok) { ok = true; break; }
+            cobj->visit(arg0, arg1, arg2);
+            return true;
+        }
+    } while(false);
+
+    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
     return false;
 }
-SE_BIND_FUNC(js_cocos2dx_Node_runAction)
+SE_BIND_FUNC(js_cocos2dx_Node_visit)
 
 static bool js_cocos2dx_Node_setGLProgram(se::State& s)
 {
@@ -3243,40 +3151,26 @@ static bool js_cocos2dx_Node_getAnchorPointInPoints(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Node_getAnchorPointInPoints)
 
-static bool js_cocos2dx_Node_visit(se::State& s)
+static bool js_cocos2dx_Node_runAction(se::State& s)
 {
-    CC_UNUSED bool ok = true;
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2( cobj, false, "js_cocos2dx_Node_visit : Invalid Native Object");
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_runAction : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
-    do {
-        if (argc == 0) {
-            cobj->visit();
-            return true;
-        }
-    } while(false);
-
-    do {
-        if (argc == 3) {
-            cocos2d::Renderer* arg0 = nullptr;
-            ok &= seval_to_native_ptr(args[0], &arg0);
-            if (!ok) { ok = true; break; }
-            cocos2d::Mat4 arg1;
-            ok &= seval_to_Mat4(args[1], &arg1);
-            if (!ok) { ok = true; break; }
-            unsigned int arg2 = 0;
-            ok &= seval_to_uint32(args[2], &arg2);
-            if (!ok) { ok = true; break; }
-            cobj->visit(arg0, arg1, arg2);
-            return true;
-        }
-    } while(false);
-
-    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::Action* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_runAction : Error processing arguments");
+        cocos2d::Action* result = cobj->runAction(arg0);
+        ok &= native_ptr_to_seval<cocos2d::Action>((cocos2d::Action*)result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_runAction : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-SE_BIND_FUNC(js_cocos2dx_Node_visit)
+SE_BIND_FUNC(js_cocos2dx_Node_runAction)
 
 static bool js_cocos2dx_Node_removeChildByName(se::State& s)
 {
@@ -3440,7 +3334,7 @@ static bool js_cocos2dx_Node_getActionByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_getActionByTag : Error processing arguments");
         cocos2d::Action* result = cobj->getActionByTag(arg0);
         ok &= native_ptr_to_seval<cocos2d::Action>((cocos2d::Action*)result, &s.rval());
@@ -3589,7 +3483,7 @@ static bool js_cocos2dx_Node_setBeforeVisitCallback(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Renderer* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -3810,7 +3704,7 @@ static bool js_cocos2dx_Node_removeChildByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_removeChildByTag : Error processing arguments");
         cobj->removeChildByTag(arg0);
         return true;
@@ -3818,7 +3712,7 @@ static bool js_cocos2dx_Node_removeChildByTag(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         bool arg1;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_boolean(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_removeChildByTag : Error processing arguments");
         cobj->removeChildByTag(arg0, arg1);
@@ -3828,25 +3722,6 @@ static bool js_cocos2dx_Node_removeChildByTag(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_Node_removeChildByTag)
-
-static bool js_cocos2dx_Node_updateDisplayedColor(se::State& s)
-{
-    cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_updateDisplayedColor : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        cocos2d::Color3B arg0;
-        ok &= seval_to_Color3B(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_updateDisplayedColor : Error processing arguments");
-        cobj->updateDisplayedColor(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Node_updateDisplayedColor)
 
 static bool js_cocos2dx_Node_setVisible(se::State& s)
 {
@@ -3966,7 +3841,7 @@ static bool js_cocos2dx_Node_getChildByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_getChildByTag : Error processing arguments");
         cocos2d::Node* result = cobj->getChildByTag(arg0);
         ok &= native_ptr_to_seval<cocos2d::Node>((cocos2d::Node*)result, &s.rval());
@@ -4041,7 +3916,7 @@ static bool js_cocos2dx_Node_setLocalZOrder(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_setLocalZOrder : Error processing arguments");
         cobj->setLocalZOrder(arg0);
         return true;
@@ -4079,7 +3954,7 @@ static bool js_cocos2dx_Node_setOpacity(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         uint8_t arg0;
-        ok &= seval_to_uint8(args[0], &arg0);
+        ok &= seval_to_uint8(args[0], (uint8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_setOpacity : Error processing arguments");
         cobj->setOpacity(arg0);
         return true;
@@ -4137,7 +4012,7 @@ static bool js_cocos2dx_Node_stopAllActionsByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_stopAllActionsByTag : Error processing arguments");
         cobj->stopAllActionsByTag(arg0);
         return true;
@@ -4244,7 +4119,7 @@ static bool js_cocos2dx_Node_draw(se::State& s)
             ok &= seval_to_Mat4(args[1], &arg1);
             if (!ok) { ok = true; break; }
             unsigned int arg2 = 0;
-            ok &= seval_to_uint32(args[2], &arg2);
+            ok &= seval_to_uint32(args[2], (uint32_t*)&arg2);
             if (!ok) { ok = true; break; }
             cobj->draw(arg0, arg1, arg2);
             return true;
@@ -4291,7 +4166,7 @@ static bool js_cocos2dx_Node_enumerateChildren(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[1]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Node* larg0) -> bool {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -4378,25 +4253,6 @@ static bool js_cocos2dx_Node_convertTouchToNodeSpaceAR(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Node_convertTouchToNodeSpaceAR)
 
-static bool js_cocos2dx_Node_update(se::State& s)
-{
-    cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_update : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        float arg0 = 0;
-        ok &= seval_to_float(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_update : Error processing arguments");
-        cobj->update(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Node_update)
-
 static bool js_cocos2dx_Node_sortAllChildren(se::State& s)
 {
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
@@ -4466,21 +4322,6 @@ static bool js_cocos2dx_Node_getOpacity(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Node_getOpacity)
 
-static bool js_cocos2dx_Node_updateOrderOfArrival(se::State& s)
-{
-    cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Node_updateOrderOfArrival : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    if (argc == 0) {
-        cobj->updateOrderOfArrival();
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Node_updateOrderOfArrival)
-
 static bool js_cocos2dx_Node_getNormalizedPosition(se::State& s)
 {
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
@@ -4547,7 +4388,7 @@ static bool js_cocos2dx_Node_setTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Node_setTag : Error processing arguments");
         cobj->setTag(arg0);
         return true;
@@ -4666,7 +4507,7 @@ SE_BIND_SUB_CLS_CTOR(js_cocos2dx_Node_ctor, __jsb_cocos2d_Node_class, js_cocos2d
 
 static bool js_cocos2d_Node_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Node)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Node)", s.nativeThisObject());
     cocos2d::Node* cobj = (cocos2d::Node*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -4692,7 +4533,6 @@ bool js_register_cocos2dx_Node(se::Object* obj)
     cls->defineFunction("convertToWorldSpaceAR", _SE(js_cocos2dx_Node_convertToWorldSpaceAR));
     cls->defineFunction("isIgnoreAnchorPointForPosition", _SE(js_cocos2dx_Node_isIgnoreAnchorPointForPosition));
     cls->defineFunction("getChildByName", _SE(js_cocos2dx_Node_getChildByName));
-    cls->defineFunction("updateDisplayedOpacity", _SE(js_cocos2dx_Node_updateDisplayedOpacity));
     cls->defineFunction("init", _SE(js_cocos2dx_Node_init));
     cls->defineFunction("getBeforeVisitCallback", _SE(js_cocos2dx_Node_getBeforeVisitCallback));
     cls->defineFunction("getCameraMask", _SE(js_cocos2dx_Node_getCameraMask));
@@ -4736,17 +4576,16 @@ bool js_register_cocos2dx_Node(se::Object* obj)
     cls->defineFunction("setNodeToParentTransform", _SE(js_cocos2dx_Node_setNodeToParentTransform));
     cls->defineFunction("getAnchorPoint", _SE(js_cocos2dx_Node_getAnchorPoint));
     cls->defineFunction("getNumberOfRunningActions", _SE(js_cocos2dx_Node_getNumberOfRunningActions));
-    cls->defineFunction("updateTransform", _SE(js_cocos2dx_Node_updateTransform));
     cls->defineFunction("isVisible", _SE(js_cocos2dx_Node_isVisible));
     cls->defineFunction("getChildrenCount", _SE(js_cocos2dx_Node_getChildrenCount));
     cls->defineFunction("getNodeToParentTransform3D", _SE(js_cocos2dx_Node_getNodeToParentTransform));
     cls->defineFunction("convertToNodeSpaceAR", _SE(js_cocos2dx_Node_convertToNodeSpaceAR));
     cls->defineFunction("addComponent", _SE(js_cocos2dx_Node_addComponent));
-    cls->defineFunction("runAction", _SE(js_cocos2dx_Node_runAction));
+    cls->defineFunction("visit", _SE(js_cocos2dx_Node_visit));
     cls->defineFunction("setShaderProgram", _SE(js_cocos2dx_Node_setGLProgram));
     cls->defineFunction("getRotation", _SE(js_cocos2dx_Node_getRotation));
     cls->defineFunction("getAnchorPointInPoints", _SE(js_cocos2dx_Node_getAnchorPointInPoints));
-    cls->defineFunction("visit", _SE(js_cocos2dx_Node_visit));
+    cls->defineFunction("runAction", _SE(js_cocos2dx_Node_runAction));
     cls->defineFunction("removeChildByName", _SE(js_cocos2dx_Node_removeChildByName));
     cls->defineFunction("setVertexZ", _SE(js_cocos2dx_Node_setPositionZ));
     cls->defineFunction("getGLProgramState", _SE(js_cocos2dx_Node_getGLProgramState));
@@ -4772,7 +4611,6 @@ bool js_register_cocos2dx_Node(se::Object* obj)
     cls->defineFunction("getPositionY", _SE(js_cocos2dx_Node_getPositionY));
     cls->defineFunction("getPositionX", _SE(js_cocos2dx_Node_getPositionX));
     cls->defineFunction("removeChildByTag", _SE(js_cocos2dx_Node_removeChildByTag));
-    cls->defineFunction("updateDisplayedColor", _SE(js_cocos2dx_Node_updateDisplayedColor));
     cls->defineFunction("setVisible", _SE(js_cocos2dx_Node_setVisible));
     cls->defineFunction("getParentToNodeTransform", _SE(js_cocos2dx_Node_getParentToNodeAffineTransform));
     cls->defineFunction("getVertexZ", _SE(js_cocos2dx_Node_getPositionZ));
@@ -4797,12 +4635,10 @@ bool js_register_cocos2dx_Node(se::Object* obj)
     cls->defineFunction("enumerateChildren", _SE(js_cocos2dx_Node_enumerateChildren));
     cls->defineFunction("removeFromParent", _SE(js_cocos2dx_Node_removeFromParentAndCleanup));
     cls->defineFunction("convertTouchToNodeSpaceAR", _SE(js_cocos2dx_Node_convertTouchToNodeSpaceAR));
-    cls->defineFunction("update", _SE(js_cocos2dx_Node_update));
     cls->defineFunction("sortAllChildren", _SE(js_cocos2dx_Node_sortAllChildren));
     cls->defineFunction("getWorldToNodeTransform", _SE(js_cocos2dx_Node_getWorldToNodeAffineTransform));
     cls->defineFunction("getScale", _SE(js_cocos2dx_Node_getScale));
     cls->defineFunction("getOpacity", _SE(js_cocos2dx_Node_getOpacity));
-    cls->defineFunction("updateOrderOfArrival", _SE(js_cocos2dx_Node_updateOrderOfArrival));
     cls->defineFunction("getNormalizedPosition", _SE(js_cocos2dx_Node_getNormalizedPosition));
     cls->defineFunction("getParentToNodeTransform3D", _SE(js_cocos2dx_Node_getParentToNodeTransform));
     cls->defineFunction("convertToNodeSpace", _SE(js_cocos2dx_Node_convertToNodeSpace));
@@ -4819,7 +4655,7 @@ bool js_register_cocos2dx_Node(se::Object* obj)
     __jsb_cocos2d_Node_proto = cls->getProto();
     __jsb_cocos2d_Node_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Node.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Node.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -4944,7 +4780,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_Scene_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Scene)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Scene)", s.nativeThisObject());
     cocos2d::Scene* cobj = (cocos2d::Scene*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -4970,7 +4806,7 @@ bool js_register_cocos2dx_Scene(se::Object* obj)
     __jsb_cocos2d_Scene_proto = cls->getProto();
     __jsb_cocos2d_Scene_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Scene.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Scene.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -5331,7 +5167,7 @@ static bool js_cocos2dx_GLView_setDesignResolutionSize(se::State& s)
         ResolutionPolicy arg2;
         ok &= seval_to_float(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLView_setDesignResolutionSize : Error processing arguments");
         cobj->setDesignResolutionSize(arg0, arg1, arg2);
         return true;
@@ -5820,7 +5656,7 @@ static bool js_cocos2dx_Director_loadMatrix(se::State& s)
     if (argc == 2) {
         cocos2d::MATRIX_STACK_TYPE arg0;
         cocos2d::Mat4 arg1;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_Mat4(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_loadMatrix : Error processing arguments");
         cobj->loadMatrix(arg0, arg1);
@@ -6051,7 +5887,7 @@ static bool js_cocos2dx_Director_pushMatrix(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::MATRIX_STACK_TYPE arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_pushMatrix : Error processing arguments");
         cobj->pushMatrix(arg0);
         return true;
@@ -6122,7 +5958,7 @@ static bool js_cocos2dx_Director_getMatrix(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::MATRIX_STACK_TYPE arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_getMatrix : Error processing arguments");
         const cocos2d::Mat4& result = cobj->getMatrix(arg0);
         ok &= Mat4_to_seval(result, &s.rval());
@@ -6242,7 +6078,7 @@ static bool js_cocos2dx_Director_popToSceneStackLevel(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_popToSceneStackLevel : Error processing arguments");
         cobj->popToSceneStackLevel(arg0);
         return true;
@@ -6469,7 +6305,7 @@ static bool js_cocos2dx_Director_loadIdentityMatrix(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::MATRIX_STACK_TYPE arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_loadIdentityMatrix : Error processing arguments");
         cobj->loadIdentityMatrix(arg0);
         return true;
@@ -6506,7 +6342,7 @@ static bool js_cocos2dx_Director_setProjection(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::Director::Projection arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_setProjection : Error processing arguments");
         cobj->setProjection(arg0);
         return true;
@@ -6526,7 +6362,7 @@ static bool js_cocos2dx_Director_multiplyMatrix(se::State& s)
     if (argc == 2) {
         cocos2d::MATRIX_STACK_TYPE arg0;
         cocos2d::Mat4 arg1;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_Mat4(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_multiplyMatrix : Error processing arguments");
         cobj->multiplyMatrix(arg0, arg1);
@@ -6583,7 +6419,7 @@ static bool js_cocos2dx_Director_popMatrix(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::MATRIX_STACK_TYPE arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Director_popMatrix : Error processing arguments");
         cobj->popMatrix(arg0);
         return true;
@@ -6946,7 +6782,7 @@ static bool js_cocos2dx_Scheduler_unscheduleScriptEntry(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Scheduler_unscheduleScriptEntry : Error processing arguments");
         cobj->unscheduleScriptEntry(arg0);
         return true;
@@ -6998,7 +6834,7 @@ static bool js_cocos2dx_Scheduler_unscheduleAllWithMinPriority(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Scheduler_unscheduleAllWithMinPriority : Error processing arguments");
         cobj->unscheduleAllWithMinPriority(arg0);
         return true;
@@ -7007,6 +6843,21 @@ static bool js_cocos2dx_Scheduler_unscheduleAllWithMinPriority(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_Scheduler_unscheduleAllWithMinPriority)
+
+static bool js_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread(se::State& s)
+{
+    cocos2d::Scheduler* cobj = (cocos2d::Scheduler*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->removeAllFunctionsToBePerformedInCocosThread();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread)
 
 SE_DECLARE_FINALIZE_FUNC(js_cocos2d_Scheduler_finalize)
 
@@ -7023,7 +6874,7 @@ SE_BIND_CTOR(js_cocos2dx_Scheduler_constructor, __jsb_cocos2d_Scheduler_class, j
 
 static bool js_cocos2d_Scheduler_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Scheduler)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Scheduler)", s.nativeThisObject());
     cocos2d::Scheduler* cobj = (cocos2d::Scheduler*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -7044,6 +6895,7 @@ bool js_register_cocos2dx_Scheduler(se::Object* obj)
     cls->defineFunction("unscheduleAll", _SE(js_cocos2dx_Scheduler_unscheduleAll));
     cls->defineFunction("getTimeScale", _SE(js_cocos2dx_Scheduler_getTimeScale));
     cls->defineFunction("unscheduleAllWithMinPriority", _SE(js_cocos2dx_Scheduler_unscheduleAllWithMinPriority));
+    cls->defineFunction("removeAllFunctionsToBePerformedInCocosThread", _SE(js_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread));
     cls->defineFinalizeFunction(_SE(js_cocos2d_Scheduler_finalize));
     cls->install();
     JSBClassType::registerClass<cocos2d::Scheduler>(cls);
@@ -7067,7 +6919,7 @@ static bool js_cocos2dx_AsyncTaskPool_stopTasks(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::AsyncTaskPool::TaskType arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_AsyncTaskPool_stopTasks : Error processing arguments");
         cobj->stopTasks(arg0);
         return true;
@@ -7964,7 +7816,7 @@ static bool js_cocos2dx_FileUtils_getValueMapFromData(se::State& s)
         const char* arg0 = nullptr;
         int arg1 = 0;
         std::string arg0_tmp; ok &= seval_to_std_string(args[0], &arg0_tmp); arg0 = arg0_tmp.c_str();
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_FileUtils_getValueMapFromData : Error processing arguments");
         cocos2d::ValueMap result = cobj->getValueMapFromData(arg0, arg1);
         ok &= ccvaluemap_to_seval(result, &s.rval());
@@ -8530,7 +8382,7 @@ extern se::Object* __jsb_cocos2d_Event_proto;
 
 static bool js_cocos2d_EventAcceleration_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventAcceleration)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventAcceleration)", s.nativeThisObject());
     cocos2d::EventAcceleration* cobj = (cocos2d::EventAcceleration*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -8597,7 +8449,7 @@ extern se::Object* __jsb_cocos2d_Event_proto;
 
 static bool js_cocos2d_EventCustom_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventCustom)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventCustom)", s.nativeThisObject());
     cocos2d::EventCustom* cobj = (cocos2d::EventCustom*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -8841,7 +8693,7 @@ static bool js_cocos2dx_EventDispatcher_addEventListenerWithFixedPriority(se::St
         cocos2d::EventListener* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_EventDispatcher_addEventListenerWithFixedPriority : Error processing arguments");
         cobj->addEventListenerWithFixedPriority(arg0, arg1);
         return true;
@@ -8883,7 +8735,7 @@ static bool js_cocos2dx_EventDispatcher_removeEventListenersForTarget(se::State&
     do {
         if (argc == 1) {
             cocos2d::EventListener::Type arg0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cobj->removeEventListenersForType(arg0);
             return true;
@@ -8934,7 +8786,7 @@ static bool js_cocos2dx_EventDispatcher_setPriority(se::State& s)
         cocos2d::EventListener* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_EventDispatcher_setPriority : Error processing arguments");
         cobj->setPriority(arg0, arg1);
         return true;
@@ -9083,7 +8935,7 @@ SE_BIND_CTOR(js_cocos2dx_EventDispatcher_constructor, __jsb_cocos2d_EventDispatc
 
 static bool js_cocos2d_EventDispatcher_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventDispatcher)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventDispatcher)", s.nativeThisObject());
     cocos2d::EventDispatcher* cobj = (cocos2d::EventDispatcher*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9148,7 +9000,7 @@ extern se::Object* __jsb_cocos2d_Event_proto;
 
 static bool js_cocos2d_EventFocus_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventFocus)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventFocus)", s.nativeThisObject());
     cocos2d::EventFocus* cobj = (cocos2d::EventFocus*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9190,7 +9042,7 @@ static bool js_cocos2dx_EventListenerAcceleration_init(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Acceleration* larg0, cocos2d::Event* larg1) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -9243,7 +9095,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerAcceleration_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerAcceleration)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerAcceleration)", s.nativeThisObject());
     cocos2d::EventListenerAcceleration* cobj = (cocos2d::EventListenerAcceleration*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9288,7 +9140,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerCustom_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerCustom)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerCustom)", s.nativeThisObject());
     cocos2d::EventListenerCustom* cobj = (cocos2d::EventListenerCustom*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9350,7 +9202,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerFocus_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerFocus)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerFocus)", s.nativeThisObject());
     cocos2d::EventListenerFocus* cobj = (cocos2d::EventListenerFocus*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9413,7 +9265,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerKeyboard_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerKeyboard)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerKeyboard)", s.nativeThisObject());
     cocos2d::EventListenerKeyboard* cobj = (cocos2d::EventListenerKeyboard*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9487,7 +9339,7 @@ static bool js_cocos2dx_EventMouse_setMouseButton(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_EventMouse_setMouseButton : Error processing arguments");
         cobj->setMouseButton(arg0);
         return true;
@@ -9726,7 +9578,7 @@ static bool js_cocos2dx_EventMouse_constructor(se::State& s)
     CC_UNUSED bool ok = true;
     const auto& args = s.args();
     cocos2d::EventMouse::MouseEventType arg0;
-    ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+    ok &= seval_to_int32(args[0], (int32_t*)&arg0);
     SE_PRECONDITION2(ok, false, "js_cocos2dx_EventMouse_constructor : Error processing arguments");
     cocos2d::EventMouse* cobj = new (std::nothrow) cocos2d::EventMouse(arg0);
     s.thisObject()->setPrivateData(cobj);
@@ -9740,7 +9592,7 @@ extern se::Object* __jsb_cocos2d_Event_proto;
 
 static bool js_cocos2d_EventMouse_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventMouse)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventMouse)", s.nativeThisObject());
     cocos2d::EventMouse* cobj = (cocos2d::EventMouse*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9817,7 +9669,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerMouse_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerMouse)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerMouse)", s.nativeThisObject());
     cocos2d::EventListenerMouse* cobj = (cocos2d::EventListenerMouse*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9917,7 +9769,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerTouchOneByOne_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerTouchOneByOne)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerTouchOneByOne)", s.nativeThisObject());
     cocos2d::EventListenerTouchOneByOne* cobj = (cocos2d::EventListenerTouchOneByOne*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -9982,7 +9834,7 @@ extern se::Object* __jsb_cocos2d_EventListener_proto;
 
 static bool js_cocos2d_EventListenerTouchAllAtOnce_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EventListenerTouchAllAtOnce)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EventListenerTouchAllAtOnce)", s.nativeThisObject());
     cocos2d::EventListenerTouchAllAtOnce* cobj = (cocos2d::EventListenerTouchAllAtOnce*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -10100,25 +9952,6 @@ static bool js_cocos2dx_Action_stop(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Action_stop)
 
-static bool js_cocos2dx_Action_update(se::State& s)
-{
-    cocos2d::Action* cobj = (cocos2d::Action*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Action_update : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        float arg0 = 0;
-        ok &= seval_to_float(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_Action_update : Error processing arguments");
-        cobj->update(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_Action_update)
-
 static bool js_cocos2dx_Action_getTarget(se::State& s)
 {
     cocos2d::Action* cobj = (cocos2d::Action*)s.nativeThisObject();
@@ -10183,7 +10016,7 @@ static bool js_cocos2dx_Action_setTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Action_setTag : Error processing arguments");
         cobj->setTag(arg0);
         return true;
@@ -10202,7 +10035,7 @@ static bool js_cocos2dx_Action_setFlags(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Action_setFlags : Error processing arguments");
         cobj->setFlags(arg0);
         return true;
@@ -10297,7 +10130,6 @@ bool js_register_cocos2dx_Action(se::Object* obj)
     cls->defineFunction("clone", _SE(js_cocos2dx_Action_clone));
     cls->defineFunction("getOriginalTarget", _SE(js_cocos2dx_Action_getOriginalTarget));
     cls->defineFunction("stop", _SE(js_cocos2dx_Action_stop));
-    cls->defineFunction("update", _SE(js_cocos2dx_Action_update));
     cls->defineFunction("getTarget", _SE(js_cocos2dx_Action_getTarget));
     cls->defineFunction("getFlags", _SE(js_cocos2dx_Action_getFlags));
     cls->defineFunction("step", _SE(js_cocos2dx_Action_step));
@@ -10493,7 +10325,7 @@ extern se::Object* __jsb_cocos2d_Action_proto;
 
 static bool js_cocos2d_Speed_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Speed)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Speed)", s.nativeThisObject());
     cocos2d::Speed* cobj = (cocos2d::Speed*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -10826,7 +10658,7 @@ SE_BIND_CTOR(js_cocos2dx_Image_constructor, __jsb_cocos2d_Image_class, js_cocos2
 
 static bool js_cocos2d_Image_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Image)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Image)", s.nativeThisObject());
     cocos2d::Image* cobj = (cocos2d::Image*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -10879,7 +10711,7 @@ static bool js_cocos2dx_GLProgramState_setUniformCallback(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             std::function<void (cocos2d::GLProgram *, cocos2d::Uniform *)> arg1;
             do {
@@ -10887,7 +10719,7 @@ static bool js_cocos2dx_GLProgramState_setUniformCallback(se::State& s)
                 {
                     se::Value jsThis(s.thisObject());
                     se::Value jsFunc(args[1]);
-                    jsThis.toObject()->attachChild(jsFunc.toObject());
+                    jsThis.toObject()->attachObject(jsFunc.toObject());
                     auto lambda = [=](cocos2d::GLProgram* larg0, cocos2d::Uniform* larg1) -> void {
                         se::ScriptEngine::getInstance()->clearException();
                         se::AutoHandleScope hs;
@@ -10930,7 +10762,7 @@ static bool js_cocos2dx_GLProgramState_setUniformCallback(se::State& s)
                 {
                     se::Value jsThis(s.thisObject());
                     se::Value jsFunc(args[1]);
-                    jsThis.toObject()->attachChild(jsFunc.toObject());
+                    jsThis.toObject()->attachObject(jsFunc.toObject());
                     auto lambda = [=](cocos2d::GLProgram* larg0, cocos2d::Uniform* larg1) -> void {
                         se::ScriptEngine::getInstance()->clearException();
                         se::AutoHandleScope hs;
@@ -11016,7 +10848,7 @@ static bool js_cocos2dx_GLProgramState_setUniformVec2(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg1;
             ok &= seval_to_Vec2(args[1], &arg1);
@@ -11054,7 +10886,7 @@ static bool js_cocos2dx_GLProgramState_setUniformVec3(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Vec3 arg1;
             ok &= seval_to_Vec3(args[1], &arg1);
@@ -11098,7 +10930,7 @@ static bool js_cocos2dx_GLProgramState_setVertexAttribCallback(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[1]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::VertexAttrib* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -11217,10 +11049,10 @@ static bool js_cocos2dx_GLProgramState_setUniformInt(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->setUniformInt(arg0, arg1);
             return true;
@@ -11233,7 +11065,7 @@ static bool js_cocos2dx_GLProgramState_setUniformInt(se::State& s)
             ok &= seval_to_std_string(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->setUniformInt(arg0, arg1);
             return true;
@@ -11276,7 +11108,7 @@ static bool js_cocos2dx_GLProgramState_setUniformVec2v(se::State& s)
     do {
         if (argc == 3) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             ssize_t arg1 = 0;
             ok &= seval_to_ssize(args[1], &arg1);
@@ -11398,7 +11230,7 @@ static bool js_cocos2dx_GLProgramState_setUniformFloatv(se::State& s)
     do {
         if (argc == 3) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             ssize_t arg1 = 0;
             ok &= seval_to_ssize(args[1], &arg1);
@@ -11465,7 +11297,7 @@ static bool js_cocos2dx_GLProgramState_setUniformTexture(se::State& s)
             ok &= seval_to_std_string(args[0], &arg0);
             if (!ok) { ok = true; break; }
             unsigned int arg1 = 0;
-            ok &= seval_to_uint32(args[1], &arg1);
+            ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->setUniformTexture(arg0, arg1);
             return true;
@@ -11488,7 +11320,7 @@ static bool js_cocos2dx_GLProgramState_setUniformTexture(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Texture2D* arg1 = nullptr;
             ok &= seval_to_native_ptr(args[1], &arg1);
@@ -11501,10 +11333,10 @@ static bool js_cocos2dx_GLProgramState_setUniformTexture(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             unsigned int arg1 = 0;
-            ok &= seval_to_uint32(args[1], &arg1);
+            ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->setUniformTexture(arg0, arg1);
             return true;
@@ -11541,7 +11373,7 @@ static bool js_cocos2dx_GLProgramState_setUniformFloat(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             float arg1 = 0;
             ok &= seval_to_float(args[1], &arg1);
@@ -11579,7 +11411,7 @@ static bool js_cocos2dx_GLProgramState_setUniformMat4(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Mat4 arg1;
             ok &= seval_to_Mat4(args[1], &arg1);
@@ -11617,7 +11449,7 @@ static bool js_cocos2dx_GLProgramState_setUniformVec3v(se::State& s)
     do {
         if (argc == 3) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             ssize_t arg1 = 0;
             ok &= seval_to_ssize(args[1], &arg1);
@@ -11755,7 +11587,7 @@ SE_BIND_FUNC(js_cocos2dx_GLProgramState_getOrCreateWithShaders)
 
 static bool js_cocos2d_GLProgramState_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::GLProgramState)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::GLProgramState)", s.nativeThisObject());
     cocos2d::GLProgramState* cobj = (cocos2d::GLProgramState*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -12399,7 +12231,7 @@ SE_BIND_SUB_CLS_CTOR(js_cocos2dx_SpriteFrame_ctor, __jsb_cocos2d_SpriteFrame_cla
 
 static bool js_cocos2d_SpriteFrame_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::SpriteFrame)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::SpriteFrame)", s.nativeThisObject());
     cocos2d::SpriteFrame* cobj = (cocos2d::SpriteFrame*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -12445,7 +12277,7 @@ bool js_register_cocos2dx_SpriteFrame(se::Object* obj)
     __jsb_cocos2d_SpriteFrame_proto = cls->getProto();
     __jsb_cocos2d_SpriteFrame_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.SpriteFrame.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.SpriteFrame.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -12623,7 +12455,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_Sequence_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Sequence)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Sequence)", s.nativeThisObject());
     cocos2d::Sequence* cobj = (cocos2d::Sequence*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -12647,7 +12479,7 @@ bool js_register_cocos2dx_Sequence(se::Object* obj)
     __jsb_cocos2d_Sequence_proto = cls->getProto();
     __jsb_cocos2d_Sequence_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Sequence.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Sequence.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -12685,7 +12517,7 @@ static bool js_cocos2dx_Repeat_initWithAction(se::State& s)
         cocos2d::FiniteTimeAction* arg0 = nullptr;
         unsigned int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Repeat_initWithAction : Error processing arguments");
         bool result = cobj->initWithAction(arg0, arg1);
         ok &= boolean_to_seval(result, &s.rval());
@@ -12740,7 +12572,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_Repeat_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Repeat)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Repeat)", s.nativeThisObject());
     cocos2d::Repeat* cobj = (cocos2d::Repeat*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -12765,7 +12597,7 @@ bool js_register_cocos2dx_Repeat(se::Object* obj)
     __jsb_cocos2d_Repeat_proto = cls->getProto();
     __jsb_cocos2d_Repeat_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Repeat.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Repeat.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -12856,7 +12688,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_RepeatForever_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::RepeatForever)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::RepeatForever)", s.nativeThisObject());
     cocos2d::RepeatForever* cobj = (cocos2d::RepeatForever*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -12881,7 +12713,7 @@ bool js_register_cocos2dx_RepeatForever(se::Object* obj)
     __jsb_cocos2d_RepeatForever_proto = cls->getProto();
     __jsb_cocos2d_RepeatForever_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.RepeatForever.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.RepeatForever.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -12958,7 +12790,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_Spawn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Spawn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Spawn)", s.nativeThisObject());
     cocos2d::Spawn* cobj = (cocos2d::Spawn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -12982,7 +12814,7 @@ bool js_register_cocos2dx_Spawn(se::Object* obj)
     __jsb_cocos2d_Spawn_proto = cls->getProto();
     __jsb_cocos2d_Spawn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Spawn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Spawn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13081,7 +12913,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_RotateTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::RotateTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::RotateTo)", s.nativeThisObject());
     cocos2d::RotateTo* cobj = (cocos2d::RotateTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13105,7 +12937,7 @@ bool js_register_cocos2dx_RotateTo(se::Object* obj)
     __jsb_cocos2d_RotateTo_proto = cls->getProto();
     __jsb_cocos2d_RotateTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.RotateTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.RotateTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13224,7 +13056,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_RotateBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::RotateBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::RotateBy)", s.nativeThisObject());
     cocos2d::RotateBy* cobj = (cocos2d::RotateBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13248,7 +13080,7 @@ bool js_register_cocos2dx_RotateBy(se::Object* obj)
     __jsb_cocos2d_RotateBy_proto = cls->getProto();
     __jsb_cocos2d_RotateBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.RotateBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.RotateBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13327,7 +13159,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_MoveBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MoveBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MoveBy)", s.nativeThisObject());
     cocos2d::MoveBy* cobj = (cocos2d::MoveBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13351,7 +13183,7 @@ bool js_register_cocos2dx_MoveBy(se::Object* obj)
     __jsb_cocos2d_MoveBy_proto = cls->getProto();
     __jsb_cocos2d_MoveBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MoveBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MoveBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13430,7 +13262,7 @@ extern se::Object* __jsb_cocos2d_MoveBy_proto;
 
 static bool js_cocos2d_MoveTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MoveTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MoveTo)", s.nativeThisObject());
     cocos2d::MoveTo* cobj = (cocos2d::MoveTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13454,7 +13286,7 @@ bool js_register_cocos2dx_MoveTo(se::Object* obj)
     __jsb_cocos2d_MoveTo_proto = cls->getProto();
     __jsb_cocos2d_MoveTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MoveTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MoveTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13537,7 +13369,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_SkewTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::SkewTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::SkewTo)", s.nativeThisObject());
     cocos2d::SkewTo* cobj = (cocos2d::SkewTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13561,7 +13393,7 @@ bool js_register_cocos2dx_SkewTo(se::Object* obj)
     __jsb_cocos2d_SkewTo_proto = cls->getProto();
     __jsb_cocos2d_SkewTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.SkewTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.SkewTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13644,7 +13476,7 @@ extern se::Object* __jsb_cocos2d_SkewTo_proto;
 
 static bool js_cocos2d_SkewBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::SkewBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::SkewBy)", s.nativeThisObject());
     cocos2d::SkewBy* cobj = (cocos2d::SkewBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13668,7 +13500,7 @@ bool js_register_cocos2dx_SkewBy(se::Object* obj)
     __jsb_cocos2d_SkewBy_proto = cls->getProto();
     __jsb_cocos2d_SkewBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.SkewBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.SkewBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13691,7 +13523,7 @@ static bool js_cocos2dx_JumpBy_initWithDuration(se::State& s)
         ok &= seval_to_float(args[0], &arg0);
         ok &= seval_to_Vec2(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_JumpBy_initWithDuration : Error processing arguments");
         bool result = cobj->initWithDuration(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -13716,7 +13548,7 @@ static bool js_cocos2dx_JumpBy_create(se::State& s)
         ok &= seval_to_float(args[0], &arg0);
         ok &= seval_to_Vec2(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_JumpBy_create : Error processing arguments");
         auto result = cocos2d::JumpBy::create(arg0, arg1, arg2, arg3);
         result->retain();
@@ -13755,7 +13587,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_JumpBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::JumpBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::JumpBy)", s.nativeThisObject());
     cocos2d::JumpBy* cobj = (cocos2d::JumpBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13779,7 +13611,7 @@ bool js_register_cocos2dx_JumpBy(se::Object* obj)
     __jsb_cocos2d_JumpBy_proto = cls->getProto();
     __jsb_cocos2d_JumpBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.JumpBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.JumpBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13802,7 +13634,7 @@ static bool js_cocos2dx_JumpTo_initWithDuration(se::State& s)
         ok &= seval_to_float(args[0], &arg0);
         ok &= seval_to_Vec2(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_JumpTo_initWithDuration : Error processing arguments");
         bool result = cobj->initWithDuration(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -13827,7 +13659,7 @@ static bool js_cocos2dx_JumpTo_create(se::State& s)
         ok &= seval_to_float(args[0], &arg0);
         ok &= seval_to_Vec2(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_JumpTo_create : Error processing arguments");
         auto result = cocos2d::JumpTo::create(arg0, arg1, arg2, arg3);
         result->retain();
@@ -13866,7 +13698,7 @@ extern se::Object* __jsb_cocos2d_JumpBy_proto;
 
 static bool js_cocos2d_JumpTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::JumpTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::JumpTo)", s.nativeThisObject());
     cocos2d::JumpTo* cobj = (cocos2d::JumpTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13890,7 +13722,7 @@ bool js_register_cocos2dx_JumpTo(se::Object* obj)
     __jsb_cocos2d_JumpTo_proto = cls->getProto();
     __jsb_cocos2d_JumpTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.JumpTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.JumpTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13923,7 +13755,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_BezierBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::BezierBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::BezierBy)", s.nativeThisObject());
     cocos2d::BezierBy* cobj = (cocos2d::BezierBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -13945,7 +13777,7 @@ bool js_register_cocos2dx_BezierBy(se::Object* obj)
     __jsb_cocos2d_BezierBy_proto = cls->getProto();
     __jsb_cocos2d_BezierBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.BezierBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.BezierBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -13978,7 +13810,7 @@ extern se::Object* __jsb_cocos2d_BezierBy_proto;
 
 static bool js_cocos2d_BezierTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::BezierTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::BezierTo)", s.nativeThisObject());
     cocos2d::BezierTo* cobj = (cocos2d::BezierTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14000,7 +13832,7 @@ bool js_register_cocos2dx_BezierTo(se::Object* obj)
     __jsb_cocos2d_BezierTo_proto = cls->getProto();
     __jsb_cocos2d_BezierTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.BezierTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.BezierTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14160,7 +13992,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_ScaleTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ScaleTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ScaleTo)", s.nativeThisObject());
     cocos2d::ScaleTo* cobj = (cocos2d::ScaleTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14184,7 +14016,7 @@ bool js_register_cocos2dx_ScaleTo(se::Object* obj)
     __jsb_cocos2d_ScaleTo_proto = cls->getProto();
     __jsb_cocos2d_ScaleTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ScaleTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ScaleTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14278,7 +14110,7 @@ extern se::Object* __jsb_cocos2d_ScaleTo_proto;
 
 static bool js_cocos2d_ScaleBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ScaleBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ScaleBy)", s.nativeThisObject());
     cocos2d::ScaleBy* cobj = (cocos2d::ScaleBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14301,7 +14133,7 @@ bool js_register_cocos2dx_ScaleBy(se::Object* obj)
     __jsb_cocos2d_ScaleBy_proto = cls->getProto();
     __jsb_cocos2d_ScaleBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ScaleBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ScaleBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14320,7 +14152,7 @@ static bool js_cocos2dx_Blink_initWithDuration(se::State& s)
         float arg0 = 0;
         int arg1 = 0;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Blink_initWithDuration : Error processing arguments");
         bool result = cobj->initWithDuration(arg0, arg1);
         ok &= boolean_to_seval(result, &s.rval());
@@ -14341,7 +14173,7 @@ static bool js_cocos2dx_Blink_create(se::State& s)
         float arg0 = 0;
         int arg1 = 0;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Blink_create : Error processing arguments");
         auto result = cocos2d::Blink::create(arg0, arg1);
         result->retain();
@@ -14380,7 +14212,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_Blink_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Blink)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Blink)", s.nativeThisObject());
     cocos2d::Blink* cobj = (cocos2d::Blink*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14404,7 +14236,7 @@ bool js_register_cocos2dx_Blink(se::Object* obj)
     __jsb_cocos2d_Blink_proto = cls->getProto();
     __jsb_cocos2d_Blink_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Blink.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Blink.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14423,7 +14255,7 @@ static bool js_cocos2dx_FadeTo_initWithDuration(se::State& s)
         float arg0 = 0;
         uint8_t arg1;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_uint8(args[1], &arg1);
+        ok &= seval_to_uint8(args[1], (uint8_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_FadeTo_initWithDuration : Error processing arguments");
         bool result = cobj->initWithDuration(arg0, arg1);
         ok &= boolean_to_seval(result, &s.rval());
@@ -14444,7 +14276,7 @@ static bool js_cocos2dx_FadeTo_create(se::State& s)
         float arg0 = 0;
         uint8_t arg1;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_uint8(args[1], &arg1);
+        ok &= seval_to_uint8(args[1], (uint8_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_FadeTo_create : Error processing arguments");
         auto result = cocos2d::FadeTo::create(arg0, arg1);
         result->retain();
@@ -14483,7 +14315,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_FadeTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::FadeTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::FadeTo)", s.nativeThisObject());
     cocos2d::FadeTo* cobj = (cocos2d::FadeTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14507,7 +14339,7 @@ bool js_register_cocos2dx_FadeTo(se::Object* obj)
     __jsb_cocos2d_FadeTo_proto = cls->getProto();
     __jsb_cocos2d_FadeTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.FadeTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.FadeTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14580,7 +14412,7 @@ extern se::Object* __jsb_cocos2d_FadeTo_proto;
 
 static bool js_cocos2d_FadeIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::FadeIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::FadeIn)", s.nativeThisObject());
     cocos2d::FadeIn* cobj = (cocos2d::FadeIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14604,7 +14436,7 @@ bool js_register_cocos2dx_FadeIn(se::Object* obj)
     __jsb_cocos2d_FadeIn_proto = cls->getProto();
     __jsb_cocos2d_FadeIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.FadeIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.FadeIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14677,7 +14509,7 @@ extern se::Object* __jsb_cocos2d_FadeTo_proto;
 
 static bool js_cocos2d_FadeOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::FadeOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::FadeOut)", s.nativeThisObject());
     cocos2d::FadeOut* cobj = (cocos2d::FadeOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14701,7 +14533,7 @@ bool js_register_cocos2dx_FadeOut(se::Object* obj)
     __jsb_cocos2d_FadeOut_proto = cls->getProto();
     __jsb_cocos2d_FadeOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.FadeOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.FadeOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14722,9 +14554,9 @@ static bool js_cocos2dx_TintTo_initWithDuration(se::State& s)
         uint8_t arg2;
         uint8_t arg3;
         ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_uint8(args[1], &arg1);
-        ok &= seval_to_uint8(args[2], &arg2);
-        ok &= seval_to_uint8(args[3], &arg3);
+        ok &= seval_to_uint8(args[1], (uint8_t*)&arg1);
+        ok &= seval_to_uint8(args[2], (uint8_t*)&arg2);
+        ok &= seval_to_uint8(args[3], (uint8_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TintTo_initWithDuration : Error processing arguments");
         bool result = cobj->initWithDuration(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -14761,13 +14593,13 @@ static bool js_cocos2dx_TintTo_create(se::State& s)
             ok &= seval_to_float(args[0], &arg0);
             if (!ok) { ok = true; break; }
             uint8_t arg1;
-            ok &= seval_to_uint8(args[1], &arg1);
+            ok &= seval_to_uint8(args[1], (uint8_t*)&arg1);
             if (!ok) { ok = true; break; }
             uint8_t arg2;
-            ok &= seval_to_uint8(args[2], &arg2);
+            ok &= seval_to_uint8(args[2], (uint8_t*)&arg2);
             if (!ok) { ok = true; break; }
             uint8_t arg3;
-            ok &= seval_to_uint8(args[3], &arg3);
+            ok &= seval_to_uint8(args[3], (uint8_t*)&arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TintTo* result = cocos2d::TintTo::create(arg0, arg1, arg2, arg3);
             ok &= native_ptr_to_seval<cocos2d::TintTo>((cocos2d::TintTo*)result, &s.rval());
@@ -14805,7 +14637,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_TintTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TintTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TintTo)", s.nativeThisObject());
     cocos2d::TintTo* cobj = (cocos2d::TintTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14829,7 +14661,7 @@ bool js_register_cocos2dx_TintTo(se::Object* obj)
     __jsb_cocos2d_TintTo_proto = cls->getProto();
     __jsb_cocos2d_TintTo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TintTo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TintTo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14916,7 +14748,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_TintBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TintBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TintBy)", s.nativeThisObject());
     cocos2d::TintBy* cobj = (cocos2d::TintBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -14940,7 +14772,7 @@ bool js_register_cocos2dx_TintBy(se::Object* obj)
     __jsb_cocos2d_TintBy_proto = cls->getProto();
     __jsb_cocos2d_TintBy_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TintBy.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TintBy.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -14994,7 +14826,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_DelayTime_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::DelayTime)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::DelayTime)", s.nativeThisObject());
     cocos2d::DelayTime* cobj = (cocos2d::DelayTime*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15017,7 +14849,7 @@ bool js_register_cocos2dx_DelayTime(se::Object* obj)
     __jsb_cocos2d_DelayTime_proto = cls->getProto();
     __jsb_cocos2d_DelayTime_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.DelayTime.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.DelayTime.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15092,7 +14924,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_ReverseTime_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ReverseTime)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ReverseTime)", s.nativeThisObject());
     cocos2d::ReverseTime* cobj = (cocos2d::ReverseTime*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15116,7 +14948,7 @@ bool js_register_cocos2dx_ReverseTime(se::Object* obj)
     __jsb_cocos2d_ReverseTime_proto = cls->getProto();
     __jsb_cocos2d_ReverseTime_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ReverseTime.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ReverseTime.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15221,7 +15053,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_TargetedAction_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TargetedAction)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TargetedAction)", s.nativeThisObject());
     cocos2d::TargetedAction* cobj = (cocos2d::TargetedAction*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15246,7 +15078,7 @@ bool js_register_cocos2dx_TargetedAction(se::Object* obj)
     __jsb_cocos2d_TargetedAction_proto = cls->getProto();
     __jsb_cocos2d_TargetedAction_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TargetedAction.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TargetedAction.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15289,7 +15121,7 @@ extern se::Object* __jsb_cocos2d_ActionInterval_proto;
 
 static bool js_cocos2d_CardinalSplineTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::CardinalSplineTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::CardinalSplineTo)", s.nativeThisObject());
     cocos2d::CardinalSplineTo* cobj = (cocos2d::CardinalSplineTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15334,7 +15166,7 @@ extern se::Object* __jsb_cocos2d_CardinalSplineTo_proto;
 
 static bool js_cocos2d_CardinalSplineBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::CardinalSplineBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::CardinalSplineBy)", s.nativeThisObject());
     cocos2d::CardinalSplineBy* cobj = (cocos2d::CardinalSplineBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15367,7 +15199,7 @@ extern se::Object* __jsb_cocos2d_CardinalSplineTo_proto;
 
 static bool js_cocos2d_CatmullRomTo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::CatmullRomTo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::CatmullRomTo)", s.nativeThisObject());
     cocos2d::CatmullRomTo* cobj = (cocos2d::CatmullRomTo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15400,7 +15232,7 @@ extern se::Object* __jsb_cocos2d_CardinalSplineBy_proto;
 
 static bool js_cocos2d_CatmullRomBy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::CatmullRomBy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::CatmullRomBy)", s.nativeThisObject());
     cocos2d::CatmullRomBy* cobj = (cocos2d::CatmullRomBy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15646,7 +15478,7 @@ extern se::Object* __jsb_cocos2d_EaseRateAction_proto;
 
 static bool js_cocos2d_EaseIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseIn)", s.nativeThisObject());
     cocos2d::EaseIn* cobj = (cocos2d::EaseIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15669,7 +15501,7 @@ bool js_register_cocos2dx_EaseIn(se::Object* obj)
     __jsb_cocos2d_EaseIn_proto = cls->getProto();
     __jsb_cocos2d_EaseIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15725,7 +15557,7 @@ extern se::Object* __jsb_cocos2d_EaseRateAction_proto;
 
 static bool js_cocos2d_EaseOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseOut)", s.nativeThisObject());
     cocos2d::EaseOut* cobj = (cocos2d::EaseOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15748,7 +15580,7 @@ bool js_register_cocos2dx_EaseOut(se::Object* obj)
     __jsb_cocos2d_EaseOut_proto = cls->getProto();
     __jsb_cocos2d_EaseOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15804,7 +15636,7 @@ extern se::Object* __jsb_cocos2d_EaseRateAction_proto;
 
 static bool js_cocos2d_EaseInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseInOut)", s.nativeThisObject());
     cocos2d::EaseInOut* cobj = (cocos2d::EaseInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15827,7 +15659,7 @@ bool js_register_cocos2dx_EaseInOut(se::Object* obj)
     __jsb_cocos2d_EaseInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15881,7 +15713,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseExponentialIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseExponentialIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseExponentialIn)", s.nativeThisObject());
     cocos2d::EaseExponentialIn* cobj = (cocos2d::EaseExponentialIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15904,7 +15736,7 @@ bool js_register_cocos2dx_EaseExponentialIn(se::Object* obj)
     __jsb_cocos2d_EaseExponentialIn_proto = cls->getProto();
     __jsb_cocos2d_EaseExponentialIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseExponentialIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseExponentialIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -15958,7 +15790,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseExponentialOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseExponentialOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseExponentialOut)", s.nativeThisObject());
     cocos2d::EaseExponentialOut* cobj = (cocos2d::EaseExponentialOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -15981,7 +15813,7 @@ bool js_register_cocos2dx_EaseExponentialOut(se::Object* obj)
     __jsb_cocos2d_EaseExponentialOut_proto = cls->getProto();
     __jsb_cocos2d_EaseExponentialOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseExponentialOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseExponentialOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16035,7 +15867,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseExponentialInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseExponentialInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseExponentialInOut)", s.nativeThisObject());
     cocos2d::EaseExponentialInOut* cobj = (cocos2d::EaseExponentialInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16058,7 +15890,7 @@ bool js_register_cocos2dx_EaseExponentialInOut(se::Object* obj)
     __jsb_cocos2d_EaseExponentialInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseExponentialInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseExponentialInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseExponentialInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16112,7 +15944,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseSineIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseSineIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseSineIn)", s.nativeThisObject());
     cocos2d::EaseSineIn* cobj = (cocos2d::EaseSineIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16135,7 +15967,7 @@ bool js_register_cocos2dx_EaseSineIn(se::Object* obj)
     __jsb_cocos2d_EaseSineIn_proto = cls->getProto();
     __jsb_cocos2d_EaseSineIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseSineIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseSineIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16189,7 +16021,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseSineOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseSineOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseSineOut)", s.nativeThisObject());
     cocos2d::EaseSineOut* cobj = (cocos2d::EaseSineOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16212,7 +16044,7 @@ bool js_register_cocos2dx_EaseSineOut(se::Object* obj)
     __jsb_cocos2d_EaseSineOut_proto = cls->getProto();
     __jsb_cocos2d_EaseSineOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseSineOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseSineOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16266,7 +16098,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseSineInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseSineInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseSineInOut)", s.nativeThisObject());
     cocos2d::EaseSineInOut* cobj = (cocos2d::EaseSineInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16289,7 +16121,7 @@ bool js_register_cocos2dx_EaseSineInOut(se::Object* obj)
     __jsb_cocos2d_EaseSineInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseSineInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseSineInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseSineInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16450,7 +16282,7 @@ extern se::Object* __jsb_cocos2d_EaseElastic_proto;
 
 static bool js_cocos2d_EaseElasticIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseElasticIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseElasticIn)", s.nativeThisObject());
     cocos2d::EaseElasticIn* cobj = (cocos2d::EaseElasticIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16473,7 +16305,7 @@ bool js_register_cocos2dx_EaseElasticIn(se::Object* obj)
     __jsb_cocos2d_EaseElasticIn_proto = cls->getProto();
     __jsb_cocos2d_EaseElasticIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseElasticIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseElasticIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16541,7 +16373,7 @@ extern se::Object* __jsb_cocos2d_EaseElastic_proto;
 
 static bool js_cocos2d_EaseElasticOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseElasticOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseElasticOut)", s.nativeThisObject());
     cocos2d::EaseElasticOut* cobj = (cocos2d::EaseElasticOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16564,7 +16396,7 @@ bool js_register_cocos2dx_EaseElasticOut(se::Object* obj)
     __jsb_cocos2d_EaseElasticOut_proto = cls->getProto();
     __jsb_cocos2d_EaseElasticOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseElasticOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseElasticOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16632,7 +16464,7 @@ extern se::Object* __jsb_cocos2d_EaseElastic_proto;
 
 static bool js_cocos2d_EaseElasticInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseElasticInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseElasticInOut)", s.nativeThisObject());
     cocos2d::EaseElasticInOut* cobj = (cocos2d::EaseElasticInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16655,7 +16487,7 @@ bool js_register_cocos2dx_EaseElasticInOut(se::Object* obj)
     __jsb_cocos2d_EaseElasticInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseElasticInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseElasticInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseElasticInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16730,7 +16562,7 @@ extern se::Object* __jsb_cocos2d_EaseBounce_proto;
 
 static bool js_cocos2d_EaseBounceIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBounceIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBounceIn)", s.nativeThisObject());
     cocos2d::EaseBounceIn* cobj = (cocos2d::EaseBounceIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16753,7 +16585,7 @@ bool js_register_cocos2dx_EaseBounceIn(se::Object* obj)
     __jsb_cocos2d_EaseBounceIn_proto = cls->getProto();
     __jsb_cocos2d_EaseBounceIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBounceIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBounceIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16807,7 +16639,7 @@ extern se::Object* __jsb_cocos2d_EaseBounce_proto;
 
 static bool js_cocos2d_EaseBounceOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBounceOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBounceOut)", s.nativeThisObject());
     cocos2d::EaseBounceOut* cobj = (cocos2d::EaseBounceOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16830,7 +16662,7 @@ bool js_register_cocos2dx_EaseBounceOut(se::Object* obj)
     __jsb_cocos2d_EaseBounceOut_proto = cls->getProto();
     __jsb_cocos2d_EaseBounceOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBounceOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBounceOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16884,7 +16716,7 @@ extern se::Object* __jsb_cocos2d_EaseBounce_proto;
 
 static bool js_cocos2d_EaseBounceInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBounceInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBounceInOut)", s.nativeThisObject());
     cocos2d::EaseBounceInOut* cobj = (cocos2d::EaseBounceInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16907,7 +16739,7 @@ bool js_register_cocos2dx_EaseBounceInOut(se::Object* obj)
     __jsb_cocos2d_EaseBounceInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseBounceInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBounceInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBounceInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -16961,7 +16793,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseBackIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBackIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBackIn)", s.nativeThisObject());
     cocos2d::EaseBackIn* cobj = (cocos2d::EaseBackIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -16984,7 +16816,7 @@ bool js_register_cocos2dx_EaseBackIn(se::Object* obj)
     __jsb_cocos2d_EaseBackIn_proto = cls->getProto();
     __jsb_cocos2d_EaseBackIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBackIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBackIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17038,7 +16870,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseBackOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBackOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBackOut)", s.nativeThisObject());
     cocos2d::EaseBackOut* cobj = (cocos2d::EaseBackOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17061,7 +16893,7 @@ bool js_register_cocos2dx_EaseBackOut(se::Object* obj)
     __jsb_cocos2d_EaseBackOut_proto = cls->getProto();
     __jsb_cocos2d_EaseBackOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBackOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBackOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17115,7 +16947,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseBackInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBackInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBackInOut)", s.nativeThisObject());
     cocos2d::EaseBackInOut* cobj = (cocos2d::EaseBackInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17138,7 +16970,7 @@ bool js_register_cocos2dx_EaseBackInOut(se::Object* obj)
     __jsb_cocos2d_EaseBackInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseBackInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBackInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBackInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17217,7 +17049,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseBezierAction_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseBezierAction)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseBezierAction)", s.nativeThisObject());
     cocos2d::EaseBezierAction* cobj = (cocos2d::EaseBezierAction*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17241,7 +17073,7 @@ bool js_register_cocos2dx_EaseBezierAction(se::Object* obj)
     __jsb_cocos2d_EaseBezierAction_proto = cls->getProto();
     __jsb_cocos2d_EaseBezierAction_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseBezierAction.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseBezierAction.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17295,7 +17127,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuadraticActionIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuadraticActionIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuadraticActionIn)", s.nativeThisObject());
     cocos2d::EaseQuadraticActionIn* cobj = (cocos2d::EaseQuadraticActionIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17318,7 +17150,7 @@ bool js_register_cocos2dx_EaseQuadraticActionIn(se::Object* obj)
     __jsb_cocos2d_EaseQuadraticActionIn_proto = cls->getProto();
     __jsb_cocos2d_EaseQuadraticActionIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuadraticActionIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuadraticActionIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17372,7 +17204,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuadraticActionOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuadraticActionOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuadraticActionOut)", s.nativeThisObject());
     cocos2d::EaseQuadraticActionOut* cobj = (cocos2d::EaseQuadraticActionOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17395,7 +17227,7 @@ bool js_register_cocos2dx_EaseQuadraticActionOut(se::Object* obj)
     __jsb_cocos2d_EaseQuadraticActionOut_proto = cls->getProto();
     __jsb_cocos2d_EaseQuadraticActionOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuadraticActionOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuadraticActionOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17449,7 +17281,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuadraticActionInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuadraticActionInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuadraticActionInOut)", s.nativeThisObject());
     cocos2d::EaseQuadraticActionInOut* cobj = (cocos2d::EaseQuadraticActionInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17472,7 +17304,7 @@ bool js_register_cocos2dx_EaseQuadraticActionInOut(se::Object* obj)
     __jsb_cocos2d_EaseQuadraticActionInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseQuadraticActionInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuadraticActionInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuadraticActionInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17526,7 +17358,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuarticActionIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuarticActionIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuarticActionIn)", s.nativeThisObject());
     cocos2d::EaseQuarticActionIn* cobj = (cocos2d::EaseQuarticActionIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17549,7 +17381,7 @@ bool js_register_cocos2dx_EaseQuarticActionIn(se::Object* obj)
     __jsb_cocos2d_EaseQuarticActionIn_proto = cls->getProto();
     __jsb_cocos2d_EaseQuarticActionIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuarticActionIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuarticActionIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17603,7 +17435,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuarticActionOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuarticActionOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuarticActionOut)", s.nativeThisObject());
     cocos2d::EaseQuarticActionOut* cobj = (cocos2d::EaseQuarticActionOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17626,7 +17458,7 @@ bool js_register_cocos2dx_EaseQuarticActionOut(se::Object* obj)
     __jsb_cocos2d_EaseQuarticActionOut_proto = cls->getProto();
     __jsb_cocos2d_EaseQuarticActionOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuarticActionOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuarticActionOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17680,7 +17512,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuarticActionInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuarticActionInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuarticActionInOut)", s.nativeThisObject());
     cocos2d::EaseQuarticActionInOut* cobj = (cocos2d::EaseQuarticActionInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17703,7 +17535,7 @@ bool js_register_cocos2dx_EaseQuarticActionInOut(se::Object* obj)
     __jsb_cocos2d_EaseQuarticActionInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseQuarticActionInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuarticActionInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuarticActionInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17757,7 +17589,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuinticActionIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuinticActionIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuinticActionIn)", s.nativeThisObject());
     cocos2d::EaseQuinticActionIn* cobj = (cocos2d::EaseQuinticActionIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17780,7 +17612,7 @@ bool js_register_cocos2dx_EaseQuinticActionIn(se::Object* obj)
     __jsb_cocos2d_EaseQuinticActionIn_proto = cls->getProto();
     __jsb_cocos2d_EaseQuinticActionIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuinticActionIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuinticActionIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17834,7 +17666,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuinticActionOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuinticActionOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuinticActionOut)", s.nativeThisObject());
     cocos2d::EaseQuinticActionOut* cobj = (cocos2d::EaseQuinticActionOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17857,7 +17689,7 @@ bool js_register_cocos2dx_EaseQuinticActionOut(se::Object* obj)
     __jsb_cocos2d_EaseQuinticActionOut_proto = cls->getProto();
     __jsb_cocos2d_EaseQuinticActionOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuinticActionOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuinticActionOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17911,7 +17743,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseQuinticActionInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseQuinticActionInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseQuinticActionInOut)", s.nativeThisObject());
     cocos2d::EaseQuinticActionInOut* cobj = (cocos2d::EaseQuinticActionInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -17934,7 +17766,7 @@ bool js_register_cocos2dx_EaseQuinticActionInOut(se::Object* obj)
     __jsb_cocos2d_EaseQuinticActionInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseQuinticActionInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseQuinticActionInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseQuinticActionInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -17988,7 +17820,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseCircleActionIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseCircleActionIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseCircleActionIn)", s.nativeThisObject());
     cocos2d::EaseCircleActionIn* cobj = (cocos2d::EaseCircleActionIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18011,7 +17843,7 @@ bool js_register_cocos2dx_EaseCircleActionIn(se::Object* obj)
     __jsb_cocos2d_EaseCircleActionIn_proto = cls->getProto();
     __jsb_cocos2d_EaseCircleActionIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseCircleActionIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseCircleActionIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18065,7 +17897,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseCircleActionOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseCircleActionOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseCircleActionOut)", s.nativeThisObject());
     cocos2d::EaseCircleActionOut* cobj = (cocos2d::EaseCircleActionOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18088,7 +17920,7 @@ bool js_register_cocos2dx_EaseCircleActionOut(se::Object* obj)
     __jsb_cocos2d_EaseCircleActionOut_proto = cls->getProto();
     __jsb_cocos2d_EaseCircleActionOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseCircleActionOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseCircleActionOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18142,7 +17974,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseCircleActionInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseCircleActionInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseCircleActionInOut)", s.nativeThisObject());
     cocos2d::EaseCircleActionInOut* cobj = (cocos2d::EaseCircleActionInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18165,7 +17997,7 @@ bool js_register_cocos2dx_EaseCircleActionInOut(se::Object* obj)
     __jsb_cocos2d_EaseCircleActionInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseCircleActionInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseCircleActionInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseCircleActionInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18219,7 +18051,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseCubicActionIn_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseCubicActionIn)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseCubicActionIn)", s.nativeThisObject());
     cocos2d::EaseCubicActionIn* cobj = (cocos2d::EaseCubicActionIn*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18242,7 +18074,7 @@ bool js_register_cocos2dx_EaseCubicActionIn(se::Object* obj)
     __jsb_cocos2d_EaseCubicActionIn_proto = cls->getProto();
     __jsb_cocos2d_EaseCubicActionIn_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseCubicActionIn.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseCubicActionIn.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18296,7 +18128,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseCubicActionOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseCubicActionOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseCubicActionOut)", s.nativeThisObject());
     cocos2d::EaseCubicActionOut* cobj = (cocos2d::EaseCubicActionOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18319,7 +18151,7 @@ bool js_register_cocos2dx_EaseCubicActionOut(se::Object* obj)
     __jsb_cocos2d_EaseCubicActionOut_proto = cls->getProto();
     __jsb_cocos2d_EaseCubicActionOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseCubicActionOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseCubicActionOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18373,7 +18205,7 @@ extern se::Object* __jsb_cocos2d_ActionEase_proto;
 
 static bool js_cocos2d_EaseCubicActionInOut_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::EaseCubicActionInOut)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::EaseCubicActionInOut)", s.nativeThisObject());
     cocos2d::EaseCubicActionInOut* cobj = (cocos2d::EaseCubicActionInOut*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18396,7 +18228,7 @@ bool js_register_cocos2dx_EaseCubicActionInOut(se::Object* obj)
     __jsb_cocos2d_EaseCubicActionInOut_proto = cls->getProto();
     __jsb_cocos2d_EaseCubicActionInOut_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.EaseCubicActionInOut.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.EaseCubicActionInOut.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18468,7 +18300,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_Show_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Show)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Show)", s.nativeThisObject());
     cocos2d::Show* cobj = (cocos2d::Show*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18491,7 +18323,7 @@ bool js_register_cocos2dx_Show(se::Object* obj)
     __jsb_cocos2d_Show_proto = cls->getProto();
     __jsb_cocos2d_Show_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Show.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Show.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18542,7 +18374,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_Hide_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Hide)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Hide)", s.nativeThisObject());
     cocos2d::Hide* cobj = (cocos2d::Hide*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18565,7 +18397,7 @@ bool js_register_cocos2dx_Hide(se::Object* obj)
     __jsb_cocos2d_Hide_proto = cls->getProto();
     __jsb_cocos2d_Hide_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Hide.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Hide.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18607,7 +18439,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_ToggleVisibility_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ToggleVisibility)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ToggleVisibility)", s.nativeThisObject());
     cocos2d::ToggleVisibility* cobj = (cocos2d::ToggleVisibility*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18702,7 +18534,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_RemoveSelf_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::RemoveSelf)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::RemoveSelf)", s.nativeThisObject());
     cocos2d::RemoveSelf* cobj = (cocos2d::RemoveSelf*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18799,7 +18631,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_FlipX_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::FlipX)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::FlipX)", s.nativeThisObject());
     cocos2d::FlipX* cobj = (cocos2d::FlipX*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18823,7 +18655,7 @@ bool js_register_cocos2dx_FlipX(se::Object* obj)
     __jsb_cocos2d_FlipX_proto = cls->getProto();
     __jsb_cocos2d_FlipX_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.FlipX.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.FlipX.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18898,7 +18730,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_FlipY_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::FlipY)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::FlipY)", s.nativeThisObject());
     cocos2d::FlipY* cobj = (cocos2d::FlipY*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -18922,7 +18754,7 @@ bool js_register_cocos2dx_FlipY(se::Object* obj)
     __jsb_cocos2d_FlipY_proto = cls->getProto();
     __jsb_cocos2d_FlipY_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.FlipY.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.FlipY.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -18997,7 +18829,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_Place_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Place)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Place)", s.nativeThisObject());
     cocos2d::Place* cobj = (cocos2d::Place*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -19021,7 +18853,7 @@ bool js_register_cocos2dx_Place(se::Object* obj)
     __jsb_cocos2d_Place_proto = cls->getProto();
     __jsb_cocos2d_Place_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Place.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Place.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -19069,7 +18901,7 @@ extern se::Object* __jsb_cocos2d_ActionInstant_proto;
 
 static bool js_cocos2d_CallFunc_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::CallFunc)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::CallFunc)", s.nativeThisObject());
     cocos2d::CallFunc* cobj = (cocos2d::CallFunc*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -19092,7 +18924,7 @@ bool js_register_cocos2dx_CallFunc(se::Object* obj)
     __jsb_cocos2d_CallFunc_proto = cls->getProto();
     __jsb_cocos2d_CallFunc_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc._CallFunc.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc._CallFunc.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -19125,7 +18957,7 @@ extern se::Object* __jsb_cocos2d_CallFunc_proto;
 
 static bool js_cocos2d_CallFuncN_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::CallFuncN)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::CallFuncN)", s.nativeThisObject());
     cocos2d::CallFuncN* cobj = (cocos2d::CallFuncN*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -19147,7 +18979,7 @@ bool js_register_cocos2dx_CallFuncN(se::Object* obj)
     __jsb_cocos2d_CallFuncN_proto = cls->getProto();
     __jsb_cocos2d_CallFuncN_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.CallFunc.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.CallFunc.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -19165,7 +18997,7 @@ static bool js_cocos2dx_ActionManager_getActionByTag(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         const cocos2d::Node* arg1 = nullptr;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_native_ptr(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ActionManager_getActionByTag : Error processing arguments");
         cocos2d::Action* result = cobj->getActionByTag(arg0, arg1);
@@ -19188,7 +19020,7 @@ static bool js_cocos2dx_ActionManager_removeActionByTag(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         cocos2d::Node* arg1 = nullptr;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_native_ptr(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ActionManager_removeActionByTag : Error processing arguments");
         cobj->removeActionByTag(arg0, arg1);
@@ -19209,7 +19041,7 @@ static bool js_cocos2dx_ActionManager_removeActionsByFlags(se::State& s)
     if (argc == 2) {
         unsigned int arg0 = 0;
         cocos2d::Node* arg1 = nullptr;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         ok &= seval_to_native_ptr(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ActionManager_removeActionsByFlags : Error processing arguments");
         cobj->removeActionsByFlags(arg0, arg1);
@@ -19403,7 +19235,7 @@ static bool js_cocos2dx_ActionManager_removeAllActionsByTag(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         cocos2d::Node* arg1 = nullptr;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_native_ptr(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ActionManager_removeAllActionsByTag : Error processing arguments");
         cobj->removeAllActionsByTag(arg0, arg1);
@@ -19456,7 +19288,7 @@ SE_BIND_SUB_CLS_CTOR(js_cocos2dx_ActionManager_ctor, __jsb_cocos2d_ActionManager
 
 static bool js_cocos2d_ActionManager_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ActionManager)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ActionManager)", s.nativeThisObject());
     cocos2d::ActionManager* cobj = (cocos2d::ActionManager*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -19492,7 +19324,7 @@ bool js_register_cocos2dx_ActionManager(se::Object* obj)
     __jsb_cocos2d_ActionManager_proto = cls->getProto();
     __jsb_cocos2d_ActionManager_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ActionManager.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ActionManager.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -19528,9 +19360,9 @@ static bool js_cocos2dx_AtlasNode_initWithTileFile(se::State& s)
         int arg2 = 0;
         int arg3 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_AtlasNode_initWithTileFile : Error processing arguments");
         bool result = cobj->initWithTileFile(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -19666,9 +19498,9 @@ static bool js_cocos2dx_AtlasNode_initWithTexture(se::State& s)
         int arg2 = 0;
         int arg3 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_AtlasNode_initWithTexture : Error processing arguments");
         bool result = cobj->initWithTexture(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -19710,9 +19542,9 @@ static bool js_cocos2dx_AtlasNode_create(se::State& s)
         int arg2 = 0;
         int arg3 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_AtlasNode_create : Error processing arguments");
         auto result = cocos2d::AtlasNode::create(arg0, arg1, arg2, arg3);
         result->retain();
@@ -19742,7 +19574,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_AtlasNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::AtlasNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::AtlasNode)", s.nativeThisObject());
     cocos2d::AtlasNode* cobj = (cocos2d::AtlasNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -19955,7 +19787,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_ClippingNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ClippingNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ClippingNode)", s.nativeThisObject());
     cocos2d::ClippingNode* cobj = (cocos2d::ClippingNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -20027,7 +19859,7 @@ static bool js_cocos2dx_DrawNode_drawPoints(se::State& s)
             std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_Vec2(args[0], &tempData);arg0=tempData.data();
             if (!ok) { ok = true; break; }
             unsigned int arg1 = 0;
-            ok &= seval_to_uint32(args[1], &arg1);
+            ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
             if (!ok) { ok = true; break; }
             float arg2 = 0;
             ok &= seval_to_float(args[2], &arg2);
@@ -20046,7 +19878,7 @@ static bool js_cocos2dx_DrawNode_drawPoints(se::State& s)
             std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_Vec2(args[0], &tempData);arg0=tempData.data();
             if (!ok) { ok = true; break; }
             unsigned int arg1 = 0;
-            ok &= seval_to_uint32(args[1], &arg1);
+            ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cocos2d::Color4F arg2;
             ok &= seval_to_Color4F(args[2], &arg2);
@@ -20130,7 +19962,7 @@ static bool js_cocos2dx_DrawNode_drawSolidCircle(se::State& s)
             ok &= seval_to_float(args[2], &arg2);
             if (!ok) { ok = true; break; }
             unsigned int arg3 = 0;
-            ok &= seval_to_uint32(args[3], &arg3);
+            ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
             if (!ok) { ok = true; break; }
             cocos2d::Color4F arg4;
             ok &= seval_to_Color4F(args[4], &arg4);
@@ -20152,7 +19984,7 @@ static bool js_cocos2dx_DrawNode_drawSolidCircle(se::State& s)
             ok &= seval_to_float(args[2], &arg2);
             if (!ok) { ok = true; break; }
             unsigned int arg3 = 0;
-            ok &= seval_to_uint32(args[3], &arg3);
+            ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
             if (!ok) { ok = true; break; }
             float arg4 = 0;
             ok &= seval_to_float(args[4], &arg4);
@@ -20182,7 +20014,7 @@ static bool js_cocos2dx_DrawNode_setLineWidth(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_setLineWidth : Error processing arguments");
         cobj->setLineWidth(arg0);
         return true;
@@ -20203,7 +20035,7 @@ static bool js_cocos2dx_DrawNode_onDrawGLPoint(se::State& s)
         cocos2d::Mat4 arg0;
         unsigned int arg1 = 0;
         ok &= seval_to_Mat4(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_onDrawGLPoint : Error processing arguments");
         cobj->onDrawGLPoint(arg0, arg1);
         return true;
@@ -20227,7 +20059,7 @@ static bool js_cocos2dx_DrawNode_drawPolygon(se::State& s)
         float arg3 = 0;
         cocos2d::Color4F arg4;
         std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_Vec2(args[0], &tempData);arg0=tempData.data();
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         ok &= seval_to_Color4F(args[2], &arg2);
         ok &= seval_to_float(args[3], &arg3);
         ok &= seval_to_Color4F(args[4], &arg4);
@@ -20275,7 +20107,7 @@ static bool js_cocos2dx_DrawNode_drawCatmullRom(se::State& s)
         unsigned int arg1 = 0;
         cocos2d::Color4F arg2;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         ok &= seval_to_Color4F(args[2], &arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_drawCatmullRom : Error processing arguments");
         cobj->drawCatmullRom(arg0, arg1, arg2);
@@ -20340,7 +20172,7 @@ static bool js_cocos2dx_DrawNode_onDraw(se::State& s)
         cocos2d::Mat4 arg0;
         unsigned int arg1 = 0;
         ok &= seval_to_Mat4(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_onDraw : Error processing arguments");
         cobj->onDraw(arg0, arg1);
         return true;
@@ -20369,7 +20201,7 @@ static bool js_cocos2dx_DrawNode_drawCircle(se::State& s)
             ok &= seval_to_float(args[2], &arg2);
             if (!ok) { ok = true; break; }
             unsigned int arg3 = 0;
-            ok &= seval_to_uint32(args[3], &arg3);
+            ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
             if (!ok) { ok = true; break; }
             bool arg4;
             ok &= seval_to_boolean(args[4], &arg4);
@@ -20393,7 +20225,7 @@ static bool js_cocos2dx_DrawNode_drawCircle(se::State& s)
             ok &= seval_to_float(args[2], &arg2);
             if (!ok) { ok = true; break; }
             unsigned int arg3 = 0;
-            ok &= seval_to_uint32(args[3], &arg3);
+            ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
             if (!ok) { ok = true; break; }
             bool arg4;
             ok &= seval_to_boolean(args[4], &arg4);
@@ -20432,7 +20264,7 @@ static bool js_cocos2dx_DrawNode_drawQuadBezier(se::State& s)
         ok &= seval_to_Vec2(args[0], &arg0);
         ok &= seval_to_Vec2(args[1], &arg1);
         ok &= seval_to_Vec2(args[2], &arg2);
-        ok &= seval_to_uint32(args[3], &arg3);
+        ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
         ok &= seval_to_Color4F(args[4], &arg4);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_drawQuadBezier : Error processing arguments");
         cobj->drawQuadBezier(arg0, arg1, arg2, arg3, arg4);
@@ -20454,7 +20286,7 @@ static bool js_cocos2dx_DrawNode_onDrawGLLine(se::State& s)
         cocos2d::Mat4 arg0;
         unsigned int arg1 = 0;
         ok &= seval_to_Mat4(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_onDrawGLLine : Error processing arguments");
         cobj->onDrawGLLine(arg0, arg1);
         return true;
@@ -20476,7 +20308,7 @@ static bool js_cocos2dx_DrawNode_drawSolidPoly(se::State& s)
         unsigned int arg1 = 0;
         cocos2d::Color4F arg2;
         std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_Vec2(args[0], &tempData);arg0=tempData.data();
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         ok &= seval_to_Color4F(args[2], &arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_drawSolidPoly : Error processing arguments");
         cobj->drawSolidPoly(arg0, arg1, arg2);
@@ -20560,7 +20392,7 @@ static bool js_cocos2dx_DrawNode_drawCardinalSpline(se::State& s)
         cocos2d::Color4F arg3;
         ok &= seval_to_native_ptr(args[0], &arg0);
         ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_uint32(args[2], &arg2);
+        ok &= seval_to_uint32(args[2], (uint32_t*)&arg2);
         ok &= seval_to_Color4F(args[3], &arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_drawCardinalSpline : Error processing arguments");
         cobj->drawCardinalSpline(arg0, arg1, arg2, arg3);
@@ -20653,7 +20485,7 @@ static bool js_cocos2dx_DrawNode_drawCubicBezier(se::State& s)
         ok &= seval_to_Vec2(args[1], &arg1);
         ok &= seval_to_Vec2(args[2], &arg2);
         ok &= seval_to_Vec2(args[3], &arg3);
-        ok &= seval_to_uint32(args[4], &arg4);
+        ok &= seval_to_uint32(args[4], (uint32_t*)&arg4);
         ok &= seval_to_Color4F(args[5], &arg5);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_drawCubicBezier : Error processing arguments");
         cobj->drawCubicBezier(arg0, arg1, arg2, arg3, arg4, arg5);
@@ -20679,7 +20511,7 @@ static bool js_cocos2dx_DrawNode_create(se::State& s)
     }
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_DrawNode_create : Error processing arguments");
         auto result = cocos2d::DrawNode::create(arg0);
         result->retain();
@@ -20718,7 +20550,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_DrawNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::DrawNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::DrawNode)", s.nativeThisObject());
     cocos2d::DrawNode* cobj = (cocos2d::DrawNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -20765,7 +20597,7 @@ bool js_register_cocos2dx_DrawNode(se::Object* obj)
     __jsb_cocos2d_DrawNode_proto = cls->getProto();
     __jsb_cocos2d_DrawNode_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.DrawNode.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.DrawNode.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -20824,7 +20656,7 @@ static bool js_cocos2dx_Label_enableShadow(se::State& s)
         int arg2 = 0;
         ok &= seval_to_Color4B(args[0], &arg0);
         ok &= seval_to_Size(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_enableShadow : Error processing arguments");
         cobj->enableShadow(arg0, arg1, arg2);
         return true;
@@ -20919,7 +20751,7 @@ static bool js_cocos2dx_Label_disableEffect(se::State& s)
     do {
         if (argc == 1) {
             cocos2d::LabelEffect arg0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int8(args[0], (int8_t*)&arg0);
             if (!ok) { ok = true; break; }
             cobj->disableEffect(arg0);
             return true;
@@ -20937,6 +20769,27 @@ static bool js_cocos2dx_Label_disableEffect(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_Label_disableEffect)
+
+static bool js_cocos2dx_Label_setTTFConfig(se::State& s)
+{
+    cocos2d::Label* cobj = (cocos2d::Label*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Label_setTTFConfig : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::TTFConfig arg0;
+        ok &= seval_to_TTFConfig(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_setTTFConfig : Error processing arguments");
+        bool result = cobj->setTTFConfig(arg0);
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_setTTFConfig : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_Label_setTTFConfig)
 
 static bool js_cocos2dx_Label_getTextColor(se::State& s)
 {
@@ -21074,8 +20927,8 @@ static bool js_cocos2dx_Label_getHorizontalAlignment(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->getHorizontalAlignment();
-        ok &= int32_to_seval(result, &s.rval());
+        char result = (char)cobj->getHorizontalAlignment();
+        ok &= int8_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_getHorizontalAlignment : Error processing arguments");
         return true;
     }
@@ -21295,7 +21148,7 @@ static bool js_cocos2dx_Label_initWithTTF(se::State& s)
             ok &= seval_to_std_string(args[1], &arg1);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int8(args[2], (int8_t*)&arg2);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithTTF(arg0, arg1, arg2);
             ok &= boolean_to_seval(result, &s.rval());
@@ -21313,10 +21166,10 @@ static bool js_cocos2dx_Label_initWithTTF(se::State& s)
             ok &= seval_to_std_string(args[1], &arg1);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int8(args[2], (int8_t*)&arg2);
             if (!ok) { ok = true; break; }
             int arg3 = 0;
-            ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+            ok &= seval_to_int32(args[3], (int32_t*)&arg3);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithTTF(arg0, arg1, arg2, arg3);
             ok &= boolean_to_seval(result, &s.rval());
@@ -21379,7 +21232,7 @@ static bool js_cocos2dx_Label_initWithTTF(se::State& s)
             ok &= seval_to_Size(args[3], &arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg4;
-            ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithTTF(arg0, arg1, arg2, arg3, arg4);
             ok &= boolean_to_seval(result, &s.rval());
@@ -21403,10 +21256,10 @@ static bool js_cocos2dx_Label_initWithTTF(se::State& s)
             ok &= seval_to_Size(args[3], &arg3);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg4;
-            ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
             if (!ok) { ok = true; break; }
             cocos2d::TextVAlignment arg5;
-            ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+            ok &= seval_to_int8(args[5], (int8_t*)&arg5);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithTTF(arg0, arg1, arg2, arg3, arg4, arg5);
             ok &= boolean_to_seval(result, &s.rval());
@@ -21467,7 +21320,7 @@ static bool js_cocos2dx_Label_setOverflow(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::Label::Overflow arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int8(args[0], (int8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_setOverflow : Error processing arguments");
         cobj->setOverflow(arg0);
         return true;
@@ -21580,7 +21433,7 @@ static bool js_cocos2dx_Label_enableOutline(se::State& s)
         cocos2d::Color4B arg0;
         int arg1 = 0;
         ok &= seval_to_Color4B(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_enableOutline : Error processing arguments");
         cobj->enableOutline(arg0, arg1);
         return true;
@@ -21658,13 +21511,13 @@ static bool js_cocos2dx_Label_setCharMap(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             int arg2 = 0;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             int arg3 = 0;
-            ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+            ok &= seval_to_int32(args[3], (int32_t*)&arg3);
             if (!ok) { ok = true; break; }
             bool result = cobj->setCharMap(arg0, arg1, arg2, arg3);
             ok &= boolean_to_seval(result, &s.rval());
@@ -21679,13 +21532,13 @@ static bool js_cocos2dx_Label_setCharMap(se::State& s)
             ok &= seval_to_std_string(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             int arg2 = 0;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             int arg3 = 0;
-            ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+            ok &= seval_to_int32(args[3], (int32_t*)&arg3);
             if (!ok) { ok = true; break; }
             bool result = cobj->setCharMap(arg0, arg1, arg2, arg3);
             ok &= boolean_to_seval(result, &s.rval());
@@ -21793,7 +21646,7 @@ static bool js_cocos2dx_Label_setVerticalAlignment(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::TextVAlignment arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int8(args[0], (int8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_setVerticalAlignment : Error processing arguments");
         cobj->setVerticalAlignment(arg0);
         return true;
@@ -21919,7 +21772,7 @@ static bool js_cocos2dx_Label_getLetter(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_getLetter : Error processing arguments");
         cocos2d::Sprite* result = cobj->getLetter(arg0);
         ok &= native_ptr_to_seval<cocos2d::Sprite>((cocos2d::Sprite*)result, &s.rval());
@@ -21995,8 +21848,8 @@ static bool js_cocos2dx_Label_getOverflow(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->getOverflow();
-        ok &= int32_to_seval(result, &s.rval());
+        char result = (char)cobj->getOverflow();
+        ok &= int8_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_getOverflow : Error processing arguments");
         return true;
     }
@@ -22013,8 +21866,8 @@ static bool js_cocos2dx_Label_getVerticalAlignment(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->getVerticalAlignment();
-        ok &= int32_to_seval(result, &s.rval());
+        char result = (char)cobj->getVerticalAlignment();
+        ok &= int8_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_getVerticalAlignment : Error processing arguments");
         return true;
     }
@@ -22087,8 +21940,8 @@ static bool js_cocos2dx_Label_getTextAlignment(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->getTextAlignment();
-        ok &= int32_to_seval(result, &s.rval());
+        char result = (char)cobj->getTextAlignment();
+        ok &= int8_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_getTextAlignment : Error processing arguments");
         return true;
     }
@@ -22124,7 +21977,7 @@ static bool js_cocos2dx_Label_setHorizontalAlignment(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::TextHAlignment arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int8(args[0], (int8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_setHorizontalAlignment : Error processing arguments");
         cobj->setHorizontalAlignment(arg0);
         return true;
@@ -22172,8 +22025,8 @@ static bool js_cocos2dx_Label_getLabelEffectType(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        int result = (int)cobj->getLabelEffectType();
-        ok &= int32_to_seval(result, &s.rval());
+        char result = (char)cobj->getLabelEffectType();
+        ok &= int8_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_getLabelEffectType : Error processing arguments");
         return true;
     }
@@ -22211,10 +22064,10 @@ static bool js_cocos2dx_Label_setAlignment(se::State& s)
     do {
         if (argc == 2) {
             cocos2d::TextHAlignment arg0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int8(args[0], (int8_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::TextVAlignment arg1;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int8(args[1], (int8_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->setAlignment(arg0, arg1);
             return true;
@@ -22224,7 +22077,7 @@ static bool js_cocos2dx_Label_setAlignment(se::State& s)
     do {
         if (argc == 1) {
             cocos2d::TextHAlignment arg0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int8(args[0], (int8_t*)&arg0);
             if (!ok) { ok = true; break; }
             cobj->setAlignment(arg0);
             return true;
@@ -22298,7 +22151,7 @@ static bool js_cocos2dx_Label_createWithBMFont(se::State& s)
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_native_ptr(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int8(args[3], (int8_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithBMFont : Error processing arguments");
         auto result = cocos2d::Label::createWithBMFont(arg0, arg1, arg2, arg3);
         result->retain();
@@ -22316,8 +22169,8 @@ static bool js_cocos2dx_Label_createWithBMFont(se::State& s)
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_native_ptr(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
-        ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+        ok &= seval_to_int8(args[3], (int8_t*)&arg3);
+        ok &= seval_to_int32(args[4], (int32_t*)&arg4);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithBMFont : Error processing arguments");
         auto result = cocos2d::Label::createWithBMFont(arg0, arg1, arg2, arg3, arg4);
         result->retain();
@@ -22336,8 +22189,8 @@ static bool js_cocos2dx_Label_createWithBMFont(se::State& s)
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_native_ptr(args[2], &arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
-        ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+        ok &= seval_to_int8(args[3], (int8_t*)&arg3);
+        ok &= seval_to_int32(args[4], (int32_t*)&arg4);
         ok &= seval_to_Vec2(args[5], &arg5);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithBMFont : Error processing arguments");
         auto result = cocos2d::Label::createWithBMFont(arg0, arg1, arg2, arg3, arg4, arg5);
@@ -22381,13 +22234,13 @@ static bool js_cocos2dx_Label_createWithCharMap(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             int arg2 = 0;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             int arg3 = 0;
-            ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+            ok &= seval_to_int32(args[3], (int32_t*)&arg3);
             if (!ok) { ok = true; break; }
             cocos2d::Label* result = cocos2d::Label::createWithCharMap(arg0, arg1, arg2, arg3);
             ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
@@ -22401,13 +22254,13 @@ static bool js_cocos2dx_Label_createWithCharMap(se::State& s)
             ok &= seval_to_std_string(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             int arg2 = 0;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             int arg3 = 0;
-            ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+            ok &= seval_to_int32(args[3], (int32_t*)&arg3);
             if (!ok) { ok = true; break; }
             cocos2d::Label* result = cocos2d::Label::createWithCharMap(arg0, arg1, arg2, arg3);
             ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
@@ -22478,7 +22331,7 @@ static bool js_cocos2dx_Label_createWithSystemFont(se::State& s)
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
         ok &= seval_to_Size(args[3], &arg3);
-        ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+        ok &= seval_to_int8(args[4], (int8_t*)&arg4);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithSystemFont : Error processing arguments");
         auto result = cocos2d::Label::createWithSystemFont(arg0, arg1, arg2, arg3, arg4);
         result->retain();
@@ -22498,8 +22351,8 @@ static bool js_cocos2dx_Label_createWithSystemFont(se::State& s)
         ok &= seval_to_std_string(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
         ok &= seval_to_Size(args[3], &arg3);
-        ok &= seval_to_int32(args[4], (int32_t *)&arg4);
-        ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+        ok &= seval_to_int8(args[4], (int8_t*)&arg4);
+        ok &= seval_to_int8(args[5], (int8_t*)&arg5);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithSystemFont : Error processing arguments");
         auto result = cocos2d::Label::createWithSystemFont(arg0, arg1, arg2, arg3, arg4, arg5);
         result->retain();
@@ -22512,6 +22365,153 @@ static bool js_cocos2dx_Label_createWithSystemFont(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_Label_createWithSystemFont)
+
+static bool js_cocos2dx_Label_createWithTTF(se::State& s)
+{
+    CC_UNUSED bool ok = true;
+    const auto& args = s.args();
+    size_t argc = args.size();
+    do {
+        if (argc == 2) {
+            cocos2d::TTFConfig arg0;
+            ok &= seval_to_TTFConfig(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    do {
+        if (argc == 3) {
+            cocos2d::TTFConfig arg0;
+            ok &= seval_to_TTFConfig(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            cocos2d::TextHAlignment arg2;
+            ok &= seval_to_int8(args[2], (int8_t*)&arg2);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1, arg2);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    do {
+        if (argc == 4) {
+            cocos2d::TTFConfig arg0;
+            ok &= seval_to_TTFConfig(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            cocos2d::TextHAlignment arg2;
+            ok &= seval_to_int8(args[2], (int8_t*)&arg2);
+            if (!ok) { ok = true; break; }
+            int arg3 = 0;
+            ok &= seval_to_int32(args[3], (int32_t*)&arg3);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1, arg2, arg3);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    do {
+        if (argc == 3) {
+            std::string arg0;
+            ok &= seval_to_std_string(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            float arg2 = 0;
+            ok &= seval_to_float(args[2], &arg2);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1, arg2);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    do {
+        if (argc == 4) {
+            std::string arg0;
+            ok &= seval_to_std_string(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            float arg2 = 0;
+            ok &= seval_to_float(args[2], &arg2);
+            if (!ok) { ok = true; break; }
+            cocos2d::Size arg3;
+            ok &= seval_to_Size(args[3], &arg3);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1, arg2, arg3);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    do {
+        if (argc == 5) {
+            std::string arg0;
+            ok &= seval_to_std_string(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            float arg2 = 0;
+            ok &= seval_to_float(args[2], &arg2);
+            if (!ok) { ok = true; break; }
+            cocos2d::Size arg3;
+            ok &= seval_to_Size(args[3], &arg3);
+            if (!ok) { ok = true; break; }
+            cocos2d::TextHAlignment arg4;
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1, arg2, arg3, arg4);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    do {
+        if (argc == 6) {
+            std::string arg0;
+            ok &= seval_to_std_string(args[0], &arg0);
+            if (!ok) { ok = true; break; }
+            std::string arg1;
+            ok &= seval_to_std_string(args[1], &arg1);
+            if (!ok) { ok = true; break; }
+            float arg2 = 0;
+            ok &= seval_to_float(args[2], &arg2);
+            if (!ok) { ok = true; break; }
+            cocos2d::Size arg3;
+            ok &= seval_to_Size(args[3], &arg3);
+            if (!ok) { ok = true; break; }
+            cocos2d::TextHAlignment arg4;
+            ok &= seval_to_int8(args[4], (int8_t*)&arg4);
+            if (!ok) { ok = true; break; }
+            cocos2d::TextVAlignment arg5;
+            ok &= seval_to_int8(args[5], (int8_t*)&arg5);
+            if (!ok) { ok = true; break; }
+            cocos2d::Label* result = cocos2d::Label::createWithTTF(arg0, arg1, arg2, arg3, arg4, arg5);
+            ok &= native_ptr_to_seval<cocos2d::Label>((cocos2d::Label*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_cocos2dx_Label_createWithTTF : Error processing arguments");
+            return true;
+        }
+    } while (false);
+    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_Label_createWithTTF)
 
 SE_DECLARE_FINALIZE_FUNC(js_cocos2d_Label_finalize)
 
@@ -22538,7 +22538,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_Label_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Label)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Label)", s.nativeThisObject());
     cocos2d::Label* cobj = (cocos2d::Label*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -22559,6 +22559,7 @@ bool js_register_cocos2dx_Label(se::Object* obj)
     cls->defineFunction("getString", _SE(js_cocos2dx_Label_getString));
     cls->defineFunction("getHeight", _SE(js_cocos2dx_Label_getHeight));
     cls->defineFunction("disableEffect", _SE(js_cocos2dx_Label_disableEffect));
+    cls->defineFunction("setTTFConfig", _SE(js_cocos2dx_Label_setTTFConfig));
     cls->defineFunction("getTextColor", _SE(js_cocos2dx_Label_getTextColor));
     cls->defineFunction("getBlendFunc", _SE(js_cocos2dx_Label_getBlendFunc));
     cls->defineFunction("enableWrap", _SE(js_cocos2dx_Label_enableWrap));
@@ -22624,6 +22625,7 @@ bool js_register_cocos2dx_Label(se::Object* obj)
     cls->defineStaticFunction("create", _SE(js_cocos2dx_Label_create));
     cls->defineStaticFunction("createWithCharMap", _SE(js_cocos2dx_Label_createWithCharMap));
     cls->defineStaticFunction("createWithSystemFont", _SE(js_cocos2dx_Label_createWithSystemFont));
+    cls->defineStaticFunction("createWithTTF", _SE(js_cocos2dx_Label_createWithTTF));
     cls->defineFinalizeFunction(_SE(js_cocos2d_Label_finalize));
     cls->install();
     JSBClassType::registerClass<cocos2d::Label>(cls);
@@ -22631,7 +22633,7 @@ bool js_register_cocos2dx_Label(se::Object* obj)
     __jsb_cocos2d_Label_proto = cls->getProto();
     __jsb_cocos2d_Label_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Label.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Label.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -22682,7 +22684,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_LabelTTF_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::LabelTTF)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::LabelTTF)", s.nativeThisObject());
     cocos2d::LabelTTF* cobj = (cocos2d::LabelTTF*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -22705,7 +22707,7 @@ bool js_register_cocos2dx_LabelTTF(se::Object* obj)
     __jsb_cocos2d_LabelTTF_proto = cls->getProto();
     __jsb_cocos2d_LabelTTF_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.LabelTTF.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.LabelTTF.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -22756,7 +22758,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_Layer_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Layer)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Layer)", s.nativeThisObject());
     cocos2d::Layer* cobj = (cocos2d::Layer*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -22779,7 +22781,7 @@ bool js_register_cocos2dx_Layer(se::Object* obj)
     __jsb_cocos2d_Layer_proto = cls->getProto();
     __jsb_cocos2d_Layer_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Layer.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Layer.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -22996,7 +22998,7 @@ extern se::Object* __jsb_cocos2d_Layer_proto;
 
 static bool js_cocos2d_LayerColor_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::LayerColor)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::LayerColor)", s.nativeThisObject());
     cocos2d::LayerColor* cobj = (cocos2d::LayerColor*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -23025,7 +23027,7 @@ bool js_register_cocos2dx_LayerColor(se::Object* obj)
     __jsb_cocos2d_LayerColor_proto = cls->getProto();
     __jsb_cocos2d_LayerColor_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.LayerColor.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.LayerColor.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -23115,7 +23117,7 @@ static bool js_cocos2dx_LayerGradient_setStartOpacity(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         uint8_t arg0;
-        ok &= seval_to_uint8(args[0], &arg0);
+        ok &= seval_to_uint8(args[0], (uint8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_LayerGradient_setStartOpacity : Error processing arguments");
         cobj->setStartOpacity(arg0);
         return true;
@@ -23153,7 +23155,7 @@ static bool js_cocos2dx_LayerGradient_setEndOpacity(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         uint8_t arg0;
-        ok &= seval_to_uint8(args[0], &arg0);
+        ok &= seval_to_uint8(args[0], (uint8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_LayerGradient_setEndOpacity : Error processing arguments");
         cobj->setEndOpacity(arg0);
         return true;
@@ -23374,7 +23376,7 @@ extern se::Object* __jsb_cocos2d_LayerColor_proto;
 
 static bool js_cocos2d_LayerGradient_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::LayerGradient)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::LayerGradient)", s.nativeThisObject());
     cocos2d::LayerGradient* cobj = (cocos2d::LayerGradient*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -23410,7 +23412,7 @@ bool js_register_cocos2dx_LayerGradient(se::Object* obj)
     __jsb_cocos2d_LayerGradient_proto = cls->getProto();
     __jsb_cocos2d_LayerGradient_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.LayerGradient.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.LayerGradient.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -23448,7 +23450,7 @@ static bool js_cocos2dx_LayerMultiplex_switchToAndReleaseMe(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_LayerMultiplex_switchToAndReleaseMe : Error processing arguments");
         cobj->switchToAndReleaseMe(arg0);
         return true;
@@ -23486,7 +23488,7 @@ static bool js_cocos2dx_LayerMultiplex_switchTo(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_LayerMultiplex_switchTo : Error processing arguments");
         cobj->switchTo(arg0);
         return true;
@@ -23521,7 +23523,7 @@ extern se::Object* __jsb_cocos2d_Layer_proto;
 
 static bool js_cocos2d_LayerMultiplex_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::LayerMultiplex)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::LayerMultiplex)", s.nativeThisObject());
     cocos2d::LayerMultiplex* cobj = (cocos2d::LayerMultiplex*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -23547,7 +23549,7 @@ bool js_register_cocos2dx_LayerMultiplex(se::Object* obj)
     __jsb_cocos2d_LayerMultiplex_proto = cls->getProto();
     __jsb_cocos2d_LayerMultiplex_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.LayerMultiplex.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.LayerMultiplex.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -23603,7 +23605,7 @@ static bool js_cocos2dx_MenuItem_initWithCallback(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -23704,7 +23706,7 @@ static bool js_cocos2dx_MenuItem_setCallback(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -23796,7 +23798,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_MenuItem_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItem)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItem)", s.nativeThisObject());
     cocos2d::MenuItem* cobj = (cocos2d::MenuItem*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -23827,7 +23829,7 @@ bool js_register_cocos2dx_MenuItem(se::Object* obj)
     __jsb_cocos2d_MenuItem_proto = cls->getProto();
     __jsb_cocos2d_MenuItem_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItem.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItem.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -23925,7 +23927,7 @@ static bool js_cocos2dx_MenuItemLabel_initWithLabel(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[1]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -24023,7 +24025,7 @@ extern se::Object* __jsb_cocos2d_MenuItem_proto;
 
 static bool js_cocos2d_MenuItemLabel_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItemLabel)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItemLabel)", s.nativeThisObject());
     cocos2d::MenuItemLabel* cobj = (cocos2d::MenuItemLabel*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -24052,7 +24054,7 @@ bool js_register_cocos2dx_MenuItemLabel(se::Object* obj)
     __jsb_cocos2d_MenuItemLabel_proto = cls->getProto();
     __jsb_cocos2d_MenuItemLabel_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItemLabel.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItemLabel.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -24076,15 +24078,15 @@ static bool js_cocos2dx_MenuItemAtlasFont_initWithString(se::State& s)
         std::function<void (cocos2d::Ref *)> arg5;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_std_string(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
-        ok &= seval_to_int8(args[4], &arg4);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
+        ok &= seval_to_int8(args[4], (int8_t*)&arg4);
         do {
             if (args[5].isObject() && args[5].toObject()->isFunction())
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[5]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -24145,7 +24147,7 @@ extern se::Object* __jsb_cocos2d_MenuItemLabel_proto;
 
 static bool js_cocos2d_MenuItemAtlasFont_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItemAtlasFont)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItemAtlasFont)", s.nativeThisObject());
     cocos2d::MenuItemAtlasFont* cobj = (cocos2d::MenuItemAtlasFont*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -24168,7 +24170,7 @@ bool js_register_cocos2dx_MenuItemAtlasFont(se::Object* obj)
     __jsb_cocos2d_MenuItemAtlasFont_proto = cls->getProto();
     __jsb_cocos2d_MenuItemAtlasFont_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItemAtlasFont.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItemAtlasFont.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -24222,7 +24224,7 @@ static bool js_cocos2dx_MenuItemFont_setFontSizeObj(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_MenuItemFont_setFontSizeObj : Error processing arguments");
         cobj->setFontSizeObj(arg0);
         return true;
@@ -24248,7 +24250,7 @@ static bool js_cocos2dx_MenuItemFont_initWithString(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[1]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -24358,7 +24360,7 @@ static bool js_cocos2dx_MenuItemFont_setFontSize(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_MenuItemFont_setFontSize : Error processing arguments");
         cocos2d::MenuItemFont::setFontSize(arg0);
         return true;
@@ -24393,7 +24395,7 @@ extern se::Object* __jsb_cocos2d_MenuItemLabel_proto;
 
 static bool js_cocos2d_MenuItemFont_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItemFont)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItemFont)", s.nativeThisObject());
     cocos2d::MenuItemFont* cobj = (cocos2d::MenuItemFont*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -24424,7 +24426,7 @@ bool js_register_cocos2dx_MenuItemFont(se::Object* obj)
     __jsb_cocos2d_MenuItemFont_proto = cls->getProto();
     __jsb_cocos2d_MenuItemFont_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItemFont.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItemFont.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -24524,7 +24526,7 @@ static bool js_cocos2dx_MenuItemSprite_initWithNormalSprite(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[3]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -24673,7 +24675,7 @@ extern se::Object* __jsb_cocos2d_MenuItem_proto;
 
 static bool js_cocos2d_MenuItemSprite_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItemSprite)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItemSprite)", s.nativeThisObject());
     cocos2d::MenuItemSprite* cobj = (cocos2d::MenuItemSprite*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -24705,7 +24707,7 @@ bool js_register_cocos2dx_MenuItemSprite(se::Object* obj)
     __jsb_cocos2d_MenuItemSprite_proto = cls->getProto();
     __jsb_cocos2d_MenuItemSprite_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItemSprite.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItemSprite.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -24808,7 +24810,7 @@ static bool js_cocos2dx_MenuItemImage_initWithNormalImage(se::State& s)
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[3]);
-                jsThis.toObject()->attachChild(jsFunc.toObject());
+                jsThis.toObject()->attachObject(jsFunc.toObject());
                 auto lambda = [=](cocos2d::Ref* larg0) -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
@@ -24869,7 +24871,7 @@ extern se::Object* __jsb_cocos2d_MenuItemSprite_proto;
 
 static bool js_cocos2d_MenuItemImage_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItemImage)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItemImage)", s.nativeThisObject());
     cocos2d::MenuItemImage* cobj = (cocos2d::MenuItemImage*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -24896,7 +24898,7 @@ bool js_register_cocos2dx_MenuItemImage(se::Object* obj)
     __jsb_cocos2d_MenuItemImage_proto = cls->getProto();
     __jsb_cocos2d_MenuItemImage_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItemImage.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItemImage.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -25038,7 +25040,7 @@ static bool js_cocos2dx_MenuItemToggle_setSelectedIndex(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_MenuItemToggle_setSelectedIndex : Error processing arguments");
         cobj->setSelectedIndex(arg0);
         return true;
@@ -25073,7 +25075,7 @@ extern se::Object* __jsb_cocos2d_MenuItem_proto;
 
 static bool js_cocos2d_MenuItemToggle_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MenuItemToggle)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MenuItemToggle)", s.nativeThisObject());
     cocos2d::MenuItemToggle* cobj = (cocos2d::MenuItemToggle*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -25102,7 +25104,7 @@ bool js_register_cocos2dx_MenuItemToggle(se::Object* obj)
     __jsb_cocos2d_MenuItemToggle_proto = cls->getProto();
     __jsb_cocos2d_MenuItemToggle_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MenuItemToggle.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MenuItemToggle.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -25299,7 +25301,7 @@ extern se::Object* __jsb_cocos2d_Layer_proto;
 
 static bool js_cocos2d_Menu_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Menu)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Menu)", s.nativeThisObject());
     cocos2d::Menu* cobj = (cocos2d::Menu*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -25330,7 +25332,7 @@ bool js_register_cocos2dx_Menu(se::Object* obj)
     __jsb_cocos2d_Menu_proto = cls->getProto();
     __jsb_cocos2d_Menu_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Menu.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Menu.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -25772,7 +25774,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_MotionStreak_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::MotionStreak)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::MotionStreak)", s.nativeThisObject());
     cocos2d::MotionStreak* cobj = (cocos2d::MotionStreak*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -25812,7 +25814,7 @@ bool js_register_cocos2dx_MotionStreak(se::Object* obj)
     __jsb_cocos2d_MotionStreak_proto = cls->getProto();
     __jsb_cocos2d_MotionStreak_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.MotionStreak.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.MotionStreak.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -25850,7 +25852,7 @@ static bool js_cocos2dx_ParticleBatchNode_initWithTexture(se::State& s)
         cocos2d::Texture2D* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_initWithTexture : Error processing arguments");
         bool result = cobj->initWithTexture(arg0, arg1);
         ok &= boolean_to_seval(result, &s.rval());
@@ -25871,7 +25873,7 @@ static bool js_cocos2dx_ParticleBatchNode_disableParticle(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_disableParticle : Error processing arguments");
         cobj->disableParticle(arg0);
         return true;
@@ -25929,7 +25931,7 @@ static bool js_cocos2dx_ParticleBatchNode_initWithFile(se::State& s)
         std::string arg0;
         int arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_initWithFile : Error processing arguments");
         bool result = cobj->initWithFile(arg0, arg1);
         ok &= boolean_to_seval(result, &s.rval());
@@ -26008,7 +26010,7 @@ static bool js_cocos2dx_ParticleBatchNode_insertChild(se::State& s)
         cocos2d::ParticleSystem* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_insertChild : Error processing arguments");
         cobj->insertChild(arg0, arg1);
         return true;
@@ -26028,7 +26030,7 @@ static bool js_cocos2dx_ParticleBatchNode_removeChildAtIndex(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         bool arg1;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_boolean(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_removeChildAtIndex : Error processing arguments");
         cobj->removeChildAtIndex(arg0, arg1);
@@ -26059,7 +26061,7 @@ static bool js_cocos2dx_ParticleBatchNode_create(se::State& s)
         std::string arg0;
         int arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_create : Error processing arguments");
         auto result = cocos2d::ParticleBatchNode::create(arg0, arg1);
         result->retain();
@@ -26093,7 +26095,7 @@ static bool js_cocos2dx_ParticleBatchNode_createWithTexture(se::State& s)
         cocos2d::Texture2D* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleBatchNode_createWithTexture : Error processing arguments");
         auto result = cocos2d::ParticleBatchNode::createWithTexture(arg0, arg1);
         result->retain();
@@ -26132,7 +26134,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_ParticleBatchNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleBatchNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleBatchNode)", s.nativeThisObject());
     cocos2d::ParticleBatchNode* cobj = (cocos2d::ParticleBatchNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -26167,7 +26169,7 @@ bool js_register_cocos2dx_ParticleBatchNode(se::Object* obj)
     __jsb_cocos2d_ParticleBatchNode_proto = cls->getProto();
     __jsb_cocos2d_ParticleBatchNode_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ParticleBatchNode.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ParticleBatchNode.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -26674,7 +26676,7 @@ static bool js_cocos2dx_ParticleSystem_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -26695,7 +26697,7 @@ static bool js_cocos2dx_ParticleSystem_addParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_addParticles : Error processing arguments");
         cobj->addParticles(arg0);
         return true;
@@ -26802,7 +26804,7 @@ static bool js_cocos2dx_ParticleSystem_setPositionType(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::ParticleSystem::PositionType arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_setPositionType : Error processing arguments");
         cobj->setPositionType(arg0);
         return true;
@@ -26873,7 +26875,7 @@ static bool js_cocos2dx_ParticleSystem_setTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_setTotalParticles : Error processing arguments");
         cobj->setTotalParticles(arg0);
         return true;
@@ -26981,7 +26983,7 @@ static bool js_cocos2dx_ParticleSystem_setAtlasIndex(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_setAtlasIndex : Error processing arguments");
         cobj->setAtlasIndex(arg0);
         return true;
@@ -27185,7 +27187,7 @@ static bool js_cocos2dx_ParticleSystem_setEmitterMode(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         cocos2d::ParticleSystem::Mode arg0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_setEmitterMode : Error processing arguments");
         cobj->setEmitterMode(arg0);
         return true;
@@ -28119,7 +28121,7 @@ static bool js_cocos2dx_ParticleSystem_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystem_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleSystem::createWithTotalParticles(arg0);
         result->retain();
@@ -28158,7 +28160,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_ParticleSystem_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleSystem)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleSystem)", s.nativeThisObject());
     cocos2d::ParticleSystem* cobj = (cocos2d::ParticleSystem*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -28286,7 +28288,7 @@ bool js_register_cocos2dx_ParticleSystem(se::Object* obj)
     __jsb_cocos2d_ParticleSystem_proto = cls->getProto();
     __jsb_cocos2d_ParticleSystem_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc._ParticleSystem.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc._ParticleSystem.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -28400,7 +28402,7 @@ static bool js_cocos2dx_ParticleSystemQuad_createWithTotalParticles(se::State& s
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSystemQuad_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleSystemQuad::createWithTotalParticles(arg0);
         result->retain();
@@ -28430,7 +28432,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystem_proto;
 
 static bool js_cocos2d_ParticleSystemQuad_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleSystemQuad)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleSystemQuad)", s.nativeThisObject());
     cocos2d::ParticleSystemQuad* cobj = (cocos2d::ParticleSystemQuad*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -28488,7 +28490,7 @@ static bool js_cocos2dx_ParticleFire_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleFire_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleFire::createWithTotalParticles(arg0);
         result->retain();
@@ -28518,7 +28520,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleFire_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleFire)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleFire)", s.nativeThisObject());
     cocos2d::ParticleFire* cobj = (cocos2d::ParticleFire*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -28575,7 +28577,7 @@ static bool js_cocos2dx_ParticleFireworks_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleFireworks_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -28612,7 +28614,7 @@ static bool js_cocos2dx_ParticleFireworks_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleFireworks_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleFireworks::createWithTotalParticles(arg0);
         result->retain();
@@ -28642,7 +28644,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleFireworks_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleFireworks)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleFireworks)", s.nativeThisObject());
     cocos2d::ParticleFireworks* cobj = (cocos2d::ParticleFireworks*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -28701,7 +28703,7 @@ static bool js_cocos2dx_ParticleSun_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSun_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -28738,7 +28740,7 @@ static bool js_cocos2dx_ParticleSun_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSun_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleSun::createWithTotalParticles(arg0);
         result->retain();
@@ -28768,7 +28770,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleSun_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleSun)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleSun)", s.nativeThisObject());
     cocos2d::ParticleSun* cobj = (cocos2d::ParticleSun*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -28827,7 +28829,7 @@ static bool js_cocos2dx_ParticleGalaxy_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleGalaxy_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -28864,7 +28866,7 @@ static bool js_cocos2dx_ParticleGalaxy_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleGalaxy_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleGalaxy::createWithTotalParticles(arg0);
         result->retain();
@@ -28894,7 +28896,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleGalaxy_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleGalaxy)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleGalaxy)", s.nativeThisObject());
     cocos2d::ParticleGalaxy* cobj = (cocos2d::ParticleGalaxy*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -28953,7 +28955,7 @@ static bool js_cocos2dx_ParticleFlower_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleFlower_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -28990,7 +28992,7 @@ static bool js_cocos2dx_ParticleFlower_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleFlower_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleFlower::createWithTotalParticles(arg0);
         result->retain();
@@ -29020,7 +29022,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleFlower_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleFlower)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleFlower)", s.nativeThisObject());
     cocos2d::ParticleFlower* cobj = (cocos2d::ParticleFlower*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29079,7 +29081,7 @@ static bool js_cocos2dx_ParticleMeteor_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleMeteor_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -29116,7 +29118,7 @@ static bool js_cocos2dx_ParticleMeteor_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleMeteor_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleMeteor::createWithTotalParticles(arg0);
         result->retain();
@@ -29146,7 +29148,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleMeteor_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleMeteor)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleMeteor)", s.nativeThisObject());
     cocos2d::ParticleMeteor* cobj = (cocos2d::ParticleMeteor*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29205,7 +29207,7 @@ static bool js_cocos2dx_ParticleSpiral_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSpiral_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -29242,7 +29244,7 @@ static bool js_cocos2dx_ParticleSpiral_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSpiral_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleSpiral::createWithTotalParticles(arg0);
         result->retain();
@@ -29272,7 +29274,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleSpiral_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleSpiral)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleSpiral)", s.nativeThisObject());
     cocos2d::ParticleSpiral* cobj = (cocos2d::ParticleSpiral*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29331,7 +29333,7 @@ static bool js_cocos2dx_ParticleExplosion_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleExplosion_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -29368,7 +29370,7 @@ static bool js_cocos2dx_ParticleExplosion_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleExplosion_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleExplosion::createWithTotalParticles(arg0);
         result->retain();
@@ -29398,7 +29400,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleExplosion_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleExplosion)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleExplosion)", s.nativeThisObject());
     cocos2d::ParticleExplosion* cobj = (cocos2d::ParticleExplosion*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29457,7 +29459,7 @@ static bool js_cocos2dx_ParticleSmoke_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSmoke_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -29494,7 +29496,7 @@ static bool js_cocos2dx_ParticleSmoke_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSmoke_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleSmoke::createWithTotalParticles(arg0);
         result->retain();
@@ -29524,7 +29526,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleSmoke_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleSmoke)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleSmoke)", s.nativeThisObject());
     cocos2d::ParticleSmoke* cobj = (cocos2d::ParticleSmoke*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29583,7 +29585,7 @@ static bool js_cocos2dx_ParticleSnow_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSnow_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -29620,7 +29622,7 @@ static bool js_cocos2dx_ParticleSnow_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleSnow_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleSnow::createWithTotalParticles(arg0);
         result->retain();
@@ -29650,7 +29652,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleSnow_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleSnow)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleSnow)", s.nativeThisObject());
     cocos2d::ParticleSnow* cobj = (cocos2d::ParticleSnow*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29709,7 +29711,7 @@ static bool js_cocos2dx_ParticleRain_initWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleRain_initWithTotalParticles : Error processing arguments");
         bool result = cobj->initWithTotalParticles(arg0);
         ok &= boolean_to_seval(result, &s.rval());
@@ -29746,7 +29748,7 @@ static bool js_cocos2dx_ParticleRain_createWithTotalParticles(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParticleRain_createWithTotalParticles : Error processing arguments");
         auto result = cocos2d::ParticleRain::createWithTotalParticles(arg0);
         result->retain();
@@ -29776,7 +29778,7 @@ extern se::Object* __jsb_cocos2d_ParticleSystemQuad_proto;
 
 static bool js_cocos2d_ParticleRain_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParticleRain)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParticleRain)", s.nativeThisObject());
     cocos2d::ParticleRain* cobj = (cocos2d::ParticleRain*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -29821,7 +29823,7 @@ static bool js_cocos2dx_ProtectedNode_addProtectedChild(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cobj->addProtectedChild(arg0, arg1);
             return true;
@@ -29844,10 +29846,10 @@ static bool js_cocos2dx_ProtectedNode_addProtectedChild(se::State& s)
             ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             int arg2 = 0;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             cobj->addProtectedChild(arg0, arg1, arg2);
             return true;
@@ -29883,7 +29885,7 @@ static bool js_cocos2dx_ProtectedNode_removeProtectedChildByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ProtectedNode_removeProtectedChildByTag : Error processing arguments");
         cobj->removeProtectedChildByTag(arg0);
         return true;
@@ -29891,7 +29893,7 @@ static bool js_cocos2dx_ProtectedNode_removeProtectedChildByTag(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         bool arg1;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_boolean(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ProtectedNode_removeProtectedChildByTag : Error processing arguments");
         cobj->removeProtectedChildByTag(arg0, arg1);
@@ -29913,7 +29915,7 @@ static bool js_cocos2dx_ProtectedNode_reorderProtectedChild(se::State& s)
         cocos2d::Node* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ProtectedNode_reorderProtectedChild : Error processing arguments");
         cobj->reorderProtectedChild(arg0, arg1);
         return true;
@@ -29981,7 +29983,7 @@ static bool js_cocos2dx_ProtectedNode_getProtectedChildByTag(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ProtectedNode_getProtectedChildByTag : Error processing arguments");
         cocos2d::Node* result = cobj->getProtectedChildByTag(arg0);
         ok &= native_ptr_to_seval<cocos2d::Node>((cocos2d::Node*)result, &s.rval());
@@ -30070,7 +30072,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_ProtectedNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ProtectedNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ProtectedNode)", s.nativeThisObject());
     cocos2d::ProtectedNode* cobj = (cocos2d::ProtectedNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -30875,7 +30877,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_Sprite_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::Sprite)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::Sprite)", s.nativeThisObject());
     cocos2d::Sprite* cobj = (cocos2d::Sprite*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -30931,7 +30933,7 @@ bool js_register_cocos2dx_Sprite(se::Object* obj)
     __jsb_cocos2d_Sprite_proto = cls->getProto();
     __jsb_cocos2d_Sprite_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.Sprite.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.Sprite.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -30971,7 +30973,7 @@ static bool js_cocos2dx_RenderTexture_clearStencil(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_RenderTexture_clearStencil : Error processing arguments");
         cobj->clearStencil(arg0);
         return true;
@@ -31041,7 +31043,7 @@ static bool js_cocos2dx_RenderTexture_setClearStencil(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_RenderTexture_setClearStencil : Error processing arguments");
         cobj->setClearStencil(arg0);
         return true;
@@ -31134,7 +31136,7 @@ static bool js_cocos2dx_RenderTexture_setClearFlags(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_RenderTexture_setClearFlags : Error processing arguments");
         cobj->setClearFlags(arg0);
         return true;
@@ -31263,7 +31265,7 @@ static bool js_cocos2dx_RenderTexture_beginWithClear(se::State& s)
             ok &= seval_to_float(args[4], &arg4);
             if (!ok) { ok = true; break; }
             int arg5 = 0;
-            ok &= seval_to_int32(args[5], (int32_t *)&arg5);
+            ok &= seval_to_int32(args[5], (int32_t*)&arg5);
             if (!ok) { ok = true; break; }
             cobj->beginWithClear(arg0, arg1, arg2, arg3, arg4, arg5);
             return true;
@@ -31411,16 +31413,16 @@ static bool js_cocos2dx_RenderTexture_initWithWidthAndHeight(se::State& s)
     do {
         if (argc == 4) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cocos2d::Texture2D::PixelFormat arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             unsigned int arg3 = 0;
-            ok &= seval_to_uint32(args[3], &arg3);
+            ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithWidthAndHeight(arg0, arg1, arg2, arg3);
             ok &= boolean_to_seval(result, &s.rval());
@@ -31432,13 +31434,13 @@ static bool js_cocos2dx_RenderTexture_initWithWidthAndHeight(se::State& s)
     do {
         if (argc == 3) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cocos2d::Texture2D::PixelFormat arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             bool result = cobj->initWithWidthAndHeight(arg0, arg1, arg2);
             ok &= boolean_to_seval(result, &s.rval());
@@ -31460,13 +31462,13 @@ static bool js_cocos2dx_RenderTexture_create(se::State& s)
     do {
         if (argc == 3) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cocos2d::Texture2D::PixelFormat arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             cocos2d::RenderTexture* result = cocos2d::RenderTexture::create(arg0, arg1, arg2);
             ok &= native_ptr_to_seval<cocos2d::RenderTexture>((cocos2d::RenderTexture*)result, &s.rval());
@@ -31477,16 +31479,16 @@ static bool js_cocos2dx_RenderTexture_create(se::State& s)
     do {
         if (argc == 4) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cocos2d::Texture2D::PixelFormat arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int32(args[2], (int32_t*)&arg2);
             if (!ok) { ok = true; break; }
             unsigned int arg3 = 0;
-            ok &= seval_to_uint32(args[3], &arg3);
+            ok &= seval_to_uint32(args[3], (uint32_t*)&arg3);
             if (!ok) { ok = true; break; }
             cocos2d::RenderTexture* result = cocos2d::RenderTexture::create(arg0, arg1, arg2, arg3);
             ok &= native_ptr_to_seval<cocos2d::RenderTexture>((cocos2d::RenderTexture*)result, &s.rval());
@@ -31497,10 +31499,10 @@ static bool js_cocos2dx_RenderTexture_create(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             int arg1 = 0;
-            ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+            ok &= seval_to_int32(args[1], (int32_t*)&arg1);
             if (!ok) { ok = true; break; }
             cocos2d::RenderTexture* result = cocos2d::RenderTexture::create(arg0, arg1);
             ok &= native_ptr_to_seval<cocos2d::RenderTexture>((cocos2d::RenderTexture*)result, &s.rval());
@@ -31538,7 +31540,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_RenderTexture_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::RenderTexture)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::RenderTexture)", s.nativeThisObject());
     cocos2d::RenderTexture* cobj = (cocos2d::RenderTexture*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -31583,7 +31585,7 @@ bool js_register_cocos2dx_RenderTexture(se::Object* obj)
     __jsb_cocos2d_RenderTexture_proto = cls->getProto();
     __jsb_cocos2d_RenderTexture_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.RenderTexture.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.RenderTexture.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -31620,7 +31622,7 @@ static bool js_cocos2dx_GLProgram_bindAttribLocation(se::State& s)
         std::string arg0;
         unsigned int arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_uint32(args[1], &arg1);
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_bindAttribLocation : Error processing arguments");
         cobj->bindAttribLocation(arg0, arg1);
         return true;
@@ -31760,7 +31762,7 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith1f(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         float arg1 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_float(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_setUniformLocationWith1f : Error processing arguments");
         cobj->setUniformLocationWith1f(arg0, arg1);
@@ -31828,7 +31830,7 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith3f(se::State& s)
         float arg1 = 0;
         float arg2 = 0;
         float arg3 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_float(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
         ok &= seval_to_float(args[3], &arg3);
@@ -31882,10 +31884,10 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith3i(se::State& s)
         int arg1 = 0;
         int arg2 = 0;
         int arg3 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_setUniformLocationWith3i : Error processing arguments");
         cobj->setUniformLocationWith3i(arg0, arg1, arg2, arg3);
         return true;
@@ -31908,7 +31910,7 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith4f(se::State& s)
         float arg2 = 0;
         float arg3 = 0;
         float arg4 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_float(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
         ok &= seval_to_float(args[3], &arg3);
@@ -32023,7 +32025,7 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith2f(se::State& s)
         int arg0 = 0;
         float arg1 = 0;
         float arg2 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         ok &= seval_to_float(args[1], &arg1);
         ok &= seval_to_float(args[2], &arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_setUniformLocationWith2f : Error processing arguments");
@@ -32048,11 +32050,11 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith4i(se::State& s)
         int arg2 = 0;
         int arg3 = 0;
         int arg4 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
-        ok &= seval_to_int32(args[4], (int32_t *)&arg4);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
+        ok &= seval_to_int32(args[4], (int32_t*)&arg4);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_setUniformLocationWith4i : Error processing arguments");
         cobj->setUniformLocationWith4i(arg0, arg1, arg2, arg3, arg4);
         return true;
@@ -32072,8 +32074,8 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith1i(se::State& s)
     if (argc == 2) {
         int arg0 = 0;
         int arg1 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_setUniformLocationWith1i : Error processing arguments");
         cobj->setUniformLocationWith1i(arg0, arg1);
         return true;
@@ -32094,9 +32096,9 @@ static bool js_cocos2dx_GLProgram_setUniformLocationWith2i(se::State& s)
         int arg0 = 0;
         int arg1 = 0;
         int arg2 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_GLProgram_setUniformLocationWith2i : Error processing arguments");
         cobj->setUniformLocationWith2i(arg0, arg1, arg2);
         return true;
@@ -32212,7 +32214,7 @@ SE_BIND_SUB_CLS_CTOR(js_cocos2dx_GLProgram_ctor, __jsb_cocos2d_GLProgram_class, 
 
 static bool js_cocos2d_GLProgram_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::GLProgram)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::GLProgram)", s.nativeThisObject());
     cocos2d::GLProgram* cobj = (cocos2d::GLProgram*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -32258,7 +32260,7 @@ bool js_register_cocos2dx_GLProgram(se::Object* obj)
     __jsb_cocos2d_GLProgram_proto = cls->getProto();
     __jsb_cocos2d_GLProgram_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.GLProgram.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.GLProgram.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -32399,7 +32401,7 @@ SE_BIND_CTOR(js_cocos2dx_GLProgramCache_constructor, __jsb_cocos2d_GLProgramCach
 
 static bool js_cocos2d_GLProgramCache_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::GLProgramCache)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::GLProgramCache)", s.nativeThisObject());
     cocos2d::GLProgramCache* cobj = (cocos2d::GLProgramCache*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -32793,7 +32795,7 @@ SE_BIND_CTOR(js_cocos2dx_TextureCache_constructor, __jsb_cocos2d_TextureCache_cl
 
 static bool js_cocos2d_TextureCache_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TextureCache)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TextureCache)", s.nativeThisObject());
     cocos2d::TextureCache* cobj = (cocos2d::TextureCache*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -33149,8 +33151,8 @@ static bool js_cocos2dx_SpriteBatchNode_addSpriteWithoutQuad(se::State& s)
         int arg1 = 0;
         int arg2 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_SpriteBatchNode_addSpriteWithoutQuad : Error processing arguments");
         cocos2d::SpriteBatchNode* result = cobj->addSpriteWithoutQuad(arg0, arg1, arg2);
         ok &= native_ptr_to_seval<cocos2d::SpriteBatchNode>((cocos2d::SpriteBatchNode*)result, &s.rval());
@@ -33263,7 +33265,7 @@ static bool js_cocos2dx_SpriteBatchNode_atlasIndexForChild(se::State& s)
         cocos2d::Sprite* arg0 = nullptr;
         int arg1 = 0;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_SpriteBatchNode_atlasIndexForChild : Error processing arguments");
         ssize_t result = cobj->atlasIndexForChild(arg0, arg1);
         ok &= ssize_to_seval(result, &s.rval());
@@ -33595,7 +33597,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_SpriteBatchNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::SpriteBatchNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::SpriteBatchNode)", s.nativeThisObject());
     cocos2d::SpriteBatchNode* cobj = (cocos2d::SpriteBatchNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -33637,7 +33639,7 @@ bool js_register_cocos2dx_SpriteBatchNode(se::Object* obj)
     __jsb_cocos2d_SpriteBatchNode_proto = cls->getProto();
     __jsb_cocos2d_SpriteBatchNode_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.SpriteBatchNode.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.SpriteBatchNode.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -34015,7 +34017,7 @@ static bool js_cocos2dx_TextFieldTTF_setCursorChar(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int8_t arg0;
-        ok &= seval_to_int8(args[0], &arg0);
+        ok &= seval_to_int8(args[0], (int8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TextFieldTTF_setCursorChar : Error processing arguments");
         cobj->setCursorChar(arg0);
         return true;
@@ -34115,7 +34117,7 @@ static bool js_cocos2dx_TextFieldTTF_initWithPlaceHolder(se::State& s)
             ok &= seval_to_Size(args[1], &arg1);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int8(args[2], (int8_t*)&arg2);
             if (!ok) { ok = true; break; }
             std::string arg3;
             ok &= seval_to_std_string(args[3], &arg3);
@@ -34383,7 +34385,7 @@ static bool js_cocos2dx_TextFieldTTF_textFieldWithPlaceHolder(se::State& s)
             ok &= seval_to_Size(args[1], &arg1);
             if (!ok) { ok = true; break; }
             cocos2d::TextHAlignment arg2;
-            ok &= seval_to_int32(args[2], (int32_t *)&arg2);
+            ok &= seval_to_int8(args[2], (int8_t*)&arg2);
             if (!ok) { ok = true; break; }
             std::string arg3;
             ok &= seval_to_std_string(args[3], &arg3);
@@ -34427,7 +34429,7 @@ extern se::Object* __jsb_cocos2d_Label_proto;
 
 static bool js_cocos2d_TextFieldTTF_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TextFieldTTF)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TextFieldTTF)", s.nativeThisObject());
     cocos2d::TextFieldTTF* cobj = (cocos2d::TextFieldTTF*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -34467,7 +34469,7 @@ bool js_register_cocos2dx_TextFieldTTF(se::Object* obj)
     __jsb_cocos2d_TextFieldTTF_proto = cls->getProto();
     __jsb_cocos2d_TextFieldTTF_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TextFieldTTF.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TextFieldTTF.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -34488,7 +34490,7 @@ static bool js_cocos2dx_ParallaxNode_addChild(se::State& s)
         cocos2d::Vec2 arg2;
         cocos2d::Vec2 arg3;
         ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_int32(args[1], (int32_t *)&arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         ok &= seval_to_Vec2(args[2], &arg2);
         ok &= seval_to_Vec2(args[3], &arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_ParallaxNode_addChild : Error processing arguments");
@@ -34562,7 +34564,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_ParallaxNode_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::ParallaxNode)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ParallaxNode)", s.nativeThisObject());
     cocos2d::ParallaxNode* cobj = (cocos2d::ParallaxNode*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -34587,7 +34589,7 @@ bool js_register_cocos2dx_ParallaxNode(se::Object* obj)
     __jsb_cocos2d_ParallaxNode_proto = cls->getProto();
     __jsb_cocos2d_ParallaxNode_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.ParallaxNode.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.ParallaxNode.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -34860,7 +34862,7 @@ SE_BIND_CTOR(js_cocos2dx_TMXObject_constructor, __jsb_cocos2d_TMXObject_class, j
 
 static bool js_cocos2d_TMXObject_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXObject)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXObject)", s.nativeThisObject());
     cocos2d::TMXObject* cobj = (cocos2d::TMXObject*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -34924,7 +34926,7 @@ extern se::Object* __jsb_cocos2d_Sprite_proto;
 
 static bool js_cocos2d_TMXObjectImage_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXObjectImage)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXObjectImage)", s.nativeThisObject());
     cocos2d::TMXObjectImage* cobj = (cocos2d::TMXObjectImage*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -34977,7 +34979,7 @@ extern se::Object* __jsb_cocos2d_DrawNode_proto;
 
 static bool js_cocos2d_TMXObjectShape_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXObjectShape)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXObjectShape)", s.nativeThisObject());
     cocos2d::TMXObjectShape* cobj = (cocos2d::TMXObjectShape*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -35211,7 +35213,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_TMXObjectGroup_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXObjectGroup)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXObjectGroup)", s.nativeThisObject());
     cocos2d::TMXObjectGroup* cobj = (cocos2d::TMXObjectGroup*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -35300,7 +35302,7 @@ SE_BIND_CTOR(js_cocos2dx_TMXLayerInfo_constructor, __jsb_cocos2d_TMXLayerInfo_cl
 
 static bool js_cocos2d_TMXLayerInfo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXLayerInfo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXLayerInfo)", s.nativeThisObject());
     cocos2d::TMXLayerInfo* cobj = (cocos2d::TMXLayerInfo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -35382,7 +35384,7 @@ SE_BIND_CTOR(js_cocos2dx_TMXObjectGroupInfo_constructor, __jsb_cocos2d_TMXObject
 
 static bool js_cocos2d_TMXObjectGroupInfo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXObjectGroupInfo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXObjectGroupInfo)", s.nativeThisObject());
     cocos2d::TMXObjectGroupInfo* cobj = (cocos2d::TMXObjectGroupInfo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -35421,7 +35423,7 @@ static bool js_cocos2dx_TMXTilesetInfo_getRectForGID(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned int arg0 = 0;
-        ok &= seval_to_uint32(args[0], &arg0);
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXTilesetInfo_getRectForGID : Error processing arguments");
         cocos2d::Rect result = cobj->getRectForGID(arg0);
         ok &= Rect_to_seval(result, &s.rval());
@@ -35448,7 +35450,7 @@ SE_BIND_CTOR(js_cocos2dx_TMXTilesetInfo_constructor, __jsb_cocos2d_TMXTilesetInf
 
 static bool js_cocos2d_TMXTilesetInfo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXTilesetInfo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXTilesetInfo)", s.nativeThisObject());
     cocos2d::TMXTilesetInfo* cobj = (cocos2d::TMXTilesetInfo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -35757,7 +35759,7 @@ static bool js_cocos2dx_TMXMapInfo_setHexSideLength(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setHexSideLength : Error processing arguments");
         cobj->setHexSideLength(arg0);
         return true;
@@ -35824,7 +35826,7 @@ static bool js_cocos2dx_TMXMapInfo_setParentElement(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setParentElement : Error processing arguments");
         cobj->setParentElement(arg0);
         return true;
@@ -35866,7 +35868,7 @@ static bool js_cocos2dx_TMXMapInfo_setParentGID(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setParentGID : Error processing arguments");
         cobj->setParentGID(arg0);
         return true;
@@ -36042,7 +36044,7 @@ static bool js_cocos2dx_TMXMapInfo_setStaggerIndex(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setStaggerIndex : Error processing arguments");
         cobj->setStaggerIndex(arg0);
         return true;
@@ -36099,7 +36101,7 @@ static bool js_cocos2dx_TMXMapInfo_setOrientation(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setOrientation : Error processing arguments");
         cobj->setOrientation(arg0);
         return true;
@@ -36193,7 +36195,7 @@ static bool js_cocos2dx_TMXMapInfo_setStaggerAxis(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setStaggerAxis : Error processing arguments");
         cobj->setStaggerAxis(arg0);
         return true;
@@ -36297,7 +36299,7 @@ static bool js_cocos2dx_TMXMapInfo_setLayerAttribs(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXMapInfo_setLayerAttribs : Error processing arguments");
         cobj->setLayerAttribs(arg0);
         return true;
@@ -36375,7 +36377,7 @@ SE_BIND_SUB_CLS_CTOR(js_cocos2dx_TMXMapInfo_ctor, __jsb_cocos2d_TMXMapInfo_class
 
 static bool js_cocos2d_TMXMapInfo_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXMapInfo)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXMapInfo)", s.nativeThisObject());
     cocos2d::TMXMapInfo* cobj = (cocos2d::TMXMapInfo*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -36440,7 +36442,7 @@ bool js_register_cocos2dx_TMXMapInfo(se::Object* obj)
     __jsb_cocos2d_TMXMapInfo_proto = cls->getProto();
     __jsb_cocos2d_TMXMapInfo_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TMXMapInfo.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TMXMapInfo.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -36510,7 +36512,7 @@ static bool js_cocos2dx_TMXLayer_setLayerOrientation(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXLayer_setLayerOrientation : Error processing arguments");
         cobj->setLayerOrientation(arg0);
         return true;
@@ -36529,7 +36531,7 @@ static bool js_cocos2dx_TMXLayer_setTileOpacity(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         uint8_t arg0;
-        ok &= seval_to_uint8(args[0], &arg0);
+        ok &= seval_to_uint8(args[0], (uint8_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXLayer_setTileOpacity : Error processing arguments");
         cobj->setTileOpacity(arg0);
         return true;
@@ -36716,7 +36718,7 @@ static bool js_cocos2dx_TMXLayer_setTileGID(se::State& s)
     do {
         if (argc == 3) {
             unsigned int arg0 = 0;
-            ok &= seval_to_uint32(args[0], &arg0);
+            ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg1;
             ok &= seval_to_Vec2(args[1], &arg1);
@@ -36732,7 +36734,7 @@ static bool js_cocos2dx_TMXLayer_setTileGID(se::State& s)
     do {
         if (argc == 2) {
             unsigned int arg0 = 0;
-            ok &= seval_to_uint32(args[0], &arg0);
+            ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg1;
             ok &= seval_to_Vec2(args[1], &arg1);
@@ -36961,7 +36963,7 @@ extern se::Object* __jsb_cocos2d_SpriteBatchNode_proto;
 
 static bool js_cocos2d_TMXLayer_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXLayer)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXLayer)", s.nativeThisObject());
     cocos2d::TMXLayer* cobj = (cocos2d::TMXLayer*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -37006,7 +37008,7 @@ bool js_register_cocos2dx_TMXLayer(se::Object* obj)
     __jsb_cocos2d_TMXLayer_proto = cls->getProto();
     __jsb_cocos2d_TMXLayer_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TMXLayer.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TMXLayer.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -37237,7 +37239,7 @@ static bool js_cocos2dx_TMXTiledMap_getPropertiesForGID(se::State& s)
     do {
         if (argc == 2) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Value** arg1 = nullptr;
             ok &= seval_to_native_ptr(args[1], &arg1);
@@ -37252,7 +37254,7 @@ static bool js_cocos2dx_TMXTiledMap_getPropertiesForGID(se::State& s)
     do {
         if (argc == 1) {
             int arg0 = 0;
-            ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+            ok &= seval_to_int32(args[0], (int32_t*)&arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Value result = cobj->getPropertiesForGID(arg0);
             ok &= ccvalue_to_seval(result, &s.rval());
@@ -37352,7 +37354,7 @@ static bool js_cocos2dx_TMXTiledMap_setMapOrientation(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 1) {
         int arg0 = 0;
-        ok &= seval_to_int32(args[0], (int32_t *)&arg0);
+        ok &= seval_to_int32(args[0], (int32_t*)&arg0);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TMXTiledMap_setMapOrientation : Error processing arguments");
         cobj->setMapOrientation(arg0);
         return true;
@@ -37431,7 +37433,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_TMXTiledMap_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TMXTiledMap)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TMXTiledMap)", s.nativeThisObject());
     cocos2d::TMXTiledMap* cobj = (cocos2d::TMXTiledMap*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -37472,7 +37474,7 @@ bool js_register_cocos2dx_TMXTiledMap(se::Object* obj)
     __jsb_cocos2d_TMXTiledMap_proto = cls->getProto();
     __jsb_cocos2d_TMXTiledMap_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TMXTiledMap.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TMXTiledMap.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -37494,8 +37496,8 @@ static bool js_cocos2dx_TileMapAtlas_initWithTileFile(se::State& s)
         int arg3 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_std_string(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TileMapAtlas_initWithTileFile : Error processing arguments");
         bool result = cobj->initWithTileFile(arg0, arg1, arg2, arg3);
         ok &= boolean_to_seval(result, &s.rval());
@@ -37576,8 +37578,8 @@ static bool js_cocos2dx_TileMapAtlas_create(se::State& s)
         int arg3 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_std_string(args[1], &arg1);
-        ok &= seval_to_int32(args[2], (int32_t *)&arg2);
-        ok &= seval_to_int32(args[3], (int32_t *)&arg3);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
+        ok &= seval_to_int32(args[3], (int32_t*)&arg3);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_TileMapAtlas_create : Error processing arguments");
         auto result = cocos2d::TileMapAtlas::create(arg0, arg1, arg2, arg3);
         result->retain();
@@ -37616,7 +37618,7 @@ extern se::Object* __jsb_cocos2d_AtlasNode_proto;
 
 static bool js_cocos2d_TileMapAtlas_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::TileMapAtlas)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::TileMapAtlas)", s.nativeThisObject());
     cocos2d::TileMapAtlas* cobj = (cocos2d::TileMapAtlas*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -37643,7 +37645,7 @@ bool js_register_cocos2dx_TileMapAtlas(se::Object* obj)
     __jsb_cocos2d_TileMapAtlas_proto = cls->getProto();
     __jsb_cocos2d_TileMapAtlas_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.TileMapAtlas.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.TileMapAtlas.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -37676,7 +37678,7 @@ extern se::Object* __jsb_cocos2d_Action_proto;
 
 static bool js_cocos2d_BaseJSAction_finalize(se::State& s)
 {
-    cocos2d::log("jsbindings: finalizing JS object %p (cocos2d::BaseJSAction)", s.nativeThisObject());
+    CCLOG("jsbindings: finalizing JS object %p (cocos2d::BaseJSAction)", s.nativeThisObject());
     cocos2d::BaseJSAction* cobj = (cocos2d::BaseJSAction*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -37698,7 +37700,7 @@ bool js_register_cocos2dx_BaseJSAction(se::Object* obj)
     __jsb_cocos2d_BaseJSAction_proto = cls->getProto();
     __jsb_cocos2d_BaseJSAction_class = cls;
 
-    se::ScriptEngine::getInstance()->executeScriptBuffer("(function () { cc.BaseJSAction.extend = cc.Class.extend; })()");
+    se::ScriptEngine::getInstance()->evalString("(function () { cc.BaseJSAction.extend = cc.Class.extend; })()");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
