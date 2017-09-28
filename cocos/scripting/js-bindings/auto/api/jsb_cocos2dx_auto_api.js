@@ -6809,6 +6809,40 @@ JumpTo : function (
 };
 
 /**
+ * @class JumpRoateTo
+ */
+cc.JumpRoateTo = {
+
+/**
+ * @method create
+ * @param {float} arg0
+ * @param {vec2_object} arg1
+ * @param {float} arg2
+ * @param {int} arg3
+ * @return {cc.JumpRoateTo}
+ */
+create : function (
+float, 
+vec2, 
+float, 
+int 
+)
+{
+    return cc.JumpRoateTo;
+},
+
+/**
+ * @method JumpRoateTo
+ * @constructor
+ */
+JumpRoateTo : function (
+)
+{
+},
+
+};
+
+/**
  * @class BezierBy
  */
 cc.BezierBy = {

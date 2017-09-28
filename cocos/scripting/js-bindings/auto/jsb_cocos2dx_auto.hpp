@@ -992,6 +992,16 @@ bool js_cocos2dx_JumpTo_initWithDuration(JSContext *cx, uint32_t argc, JS::Value
 bool js_cocos2dx_JumpTo_create(JSContext *cx, uint32_t argc, JS::Value *vp);
 bool js_cocos2dx_JumpTo_JumpTo(JSContext *cx, uint32_t argc, JS::Value *vp);
 
+extern JSClass  *jsb_cocos2d_JumpRoateTo_class;
+extern JS::PersistentRootedObject *jsb_cocos2d_JumpRoateTo_prototype;
+
+bool js_cocos2dx_JumpRoateTo_constructor(JSContext *cx, uint32_t argc, JS::Value *vp);
+void js_cocos2dx_JumpRoateTo_finalize(JSContext *cx, JSObject *obj);
+void js_register_cocos2dx_JumpRoateTo(JSContext *cx, JS::HandleObject global);
+void register_all_cocos2dx(JSContext* cx, JS::HandleObject obj);
+bool js_cocos2dx_JumpRoateTo_create(JSContext *cx, uint32_t argc, JS::Value *vp);
+bool js_cocos2dx_JumpRoateTo_JumpRoateTo(JSContext *cx, uint32_t argc, JS::Value *vp);
+
 extern JSClass  *jsb_cocos2d_BezierBy_class;
 extern JS::PersistentRootedObject *jsb_cocos2d_BezierBy_prototype;
 
