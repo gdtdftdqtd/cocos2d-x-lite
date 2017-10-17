@@ -1,6 +1,7 @@
 #include "scripting/js-bindings/auto/jsb_cocos2dx_audioengine_auto.hpp"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
+#include "scripting/js-bindings/manual/jsb_global.h"
 #include "audio/include/AudioEngine.h"
 
 se::Object* __jsb_cocos2d_experimental_AudioProfile_proto = nullptr;
@@ -106,7 +107,7 @@ SE_BIND_CTOR(js_cocos2dx_audioengine_AudioProfile_constructor, __jsb_cocos2d_exp
 
 static bool js_cocos2d_experimental_AudioProfile_finalize(se::State& s)
 {
-    CCLOG("jsbindings: finalizing JS object %p (cocos2d::experimental::AudioProfile)", s.nativeThisObject());
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::experimental::AudioProfile)", s.nativeThisObject());
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
     if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
     {

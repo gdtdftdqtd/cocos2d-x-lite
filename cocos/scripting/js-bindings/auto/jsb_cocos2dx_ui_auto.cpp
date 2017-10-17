@@ -1,5 +1,6 @@
 #include "scripting/js-bindings/auto/jsb_cocos2dx_ui_auto.hpp"
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
+#include "scripting/js-bindings/manual/jsb_global.h"
 #include "ui/CocosGUI.h"
 
 se::Object* __jsb_cocos2d_ui_Widget_proto = nullptr;
@@ -1337,7 +1338,7 @@ extern se::Object* __jsb_cocos2d_ProtectedNode_proto;
 
 static bool js_cocos2d_ui_Widget_finalize(se::State& s)
 {
-    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ui::Widget)", s.nativeThisObject());
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::ui::Widget)", s.nativeThisObject());
     cocos2d::ui::Widget* cobj = (cocos2d::ui::Widget*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -1424,7 +1425,7 @@ bool js_register_cocos2dx_ui_Widget(se::Object* obj)
     __jsb_cocos2d_ui_Widget_proto = cls->getProto();
     __jsb_cocos2d_ui_Widget_class = cls;
 
-    se::ScriptEngine::getInstance()->evalString("(function () { ccui.Widget.extend = cc.Class.extend; })()");
+    jsb_set_extend_property("ccui", "Widget");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -2629,7 +2630,7 @@ extern se::Object* __jsb_cocos2d_Node_proto;
 
 static bool js_cocos2d_ui_Scale9Sprite_finalize(se::State& s)
 {
-    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ui::Scale9Sprite)", s.nativeThisObject());
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::ui::Scale9Sprite)", s.nativeThisObject());
     cocos2d::ui::Scale9Sprite* cobj = (cocos2d::ui::Scale9Sprite*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -2690,7 +2691,7 @@ bool js_register_cocos2dx_ui_Scale9Sprite(se::Object* obj)
     __jsb_cocos2d_ui_Scale9Sprite_proto = cls->getProto();
     __jsb_cocos2d_ui_Scale9Sprite_class = cls;
 
-    se::ScriptEngine::getInstance()->evalString("(function () { ccui.Scale9Sprite.extend = cc.Class.extend; })()");
+    jsb_set_extend_property("ccui", "Scale9Sprite");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -3243,7 +3244,7 @@ extern se::Object* __jsb_cocos2d_ui_Widget_proto;
 
 static bool js_cocos2d_ui_EditBox_finalize(se::State& s)
 {
-    CCLOG("jsbindings: finalizing JS object %p (cocos2d::ui::EditBox)", s.nativeThisObject());
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::ui::EditBox)", s.nativeThisObject());
     cocos2d::ui::EditBox* cobj = (cocos2d::ui::EditBox*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
@@ -3285,7 +3286,7 @@ bool js_register_cocos2dx_ui_EditBox(se::Object* obj)
     __jsb_cocos2d_ui_EditBox_proto = cls->getProto();
     __jsb_cocos2d_ui_EditBox_class = cls;
 
-    se::ScriptEngine::getInstance()->evalString("(function () { ccui.EditBox.extend = cc.Class.extend; })()");
+    jsb_set_extend_property("ccui", "EditBox");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }

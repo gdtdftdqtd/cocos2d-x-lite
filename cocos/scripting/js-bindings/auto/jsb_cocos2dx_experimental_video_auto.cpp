@@ -1,6 +1,7 @@
 #include "scripting/js-bindings/auto/jsb_cocos2dx_experimental_video_auto.hpp"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
+#include "scripting/js-bindings/manual/jsb_global.h"
 #include "ui/UIVideoPlayer.h"
 
 se::Object* __jsb_cocos2d_experimental_ui_VideoPlayer_proto = nullptr;
@@ -359,7 +360,7 @@ extern se::Object* __jsb_cocos2d_ui_Widget_proto;
 
 static bool js_cocos2d_experimental_ui_VideoPlayer_finalize(se::State& s)
 {
-    CCLOG("jsbindings: finalizing JS object %p (cocos2d::experimental::ui::VideoPlayer)", s.nativeThisObject());
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::experimental::ui::VideoPlayer)", s.nativeThisObject());
     cocos2d::experimental::ui::VideoPlayer* cobj = (cocos2d::experimental::ui::VideoPlayer*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();

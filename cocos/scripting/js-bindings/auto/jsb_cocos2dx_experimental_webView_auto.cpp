@@ -1,6 +1,7 @@
 #include "scripting/js-bindings/auto/jsb_cocos2dx_experimental_webView_auto.hpp"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
+#include "scripting/js-bindings/manual/jsb_global.h"
 #include "ui/UIWebView.h"
 
 se::Object* __jsb_cocos2d_experimental_ui_WebView_proto = nullptr;
@@ -575,7 +576,7 @@ extern se::Object* __jsb_cocos2d_ui_Widget_proto;
 
 static bool js_cocos2d_experimental_ui_WebView_finalize(se::State& s)
 {
-    CCLOG("jsbindings: finalizing JS object %p (cocos2d::experimental::ui::WebView)", s.nativeThisObject());
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::experimental::ui::WebView)", s.nativeThisObject());
     cocos2d::experimental::ui::WebView* cobj = (cocos2d::experimental::ui::WebView*)s.nativeThisObject();
     if (cobj->getReferenceCount() == 1)
         cobj->autorelease();
