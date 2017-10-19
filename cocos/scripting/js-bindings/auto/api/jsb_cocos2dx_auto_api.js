@@ -17187,9 +17187,11 @@ vec2
  * @method removeTilesAway
  * @param {vec2_object} arg0
  * @param {int} arg1
+ * @param {int} arg2
  */
 removeTilesAway : function (
 vec2, 
+int, 
 int 
 )
 {
@@ -17361,9 +17363,11 @@ tmxtileflags_
  * @method showTilesBeyond
  * @param {vec2_object} arg0
  * @param {int} arg1
+ * @param {int} arg2
  */
 showTilesBeyond : function (
 vec2, 
+int, 
 int 
 )
 {

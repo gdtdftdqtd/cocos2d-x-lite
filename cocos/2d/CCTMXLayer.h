@@ -307,12 +307,12 @@ public:
      *
      * @param tileCoordinate The tile Coordinate.
      */
-    void showTilesBeyond(const Vec2& tileCoordinate, int distance);
+    void showTilesBeyond(const Vec2& tileCoordinate, int w, int h=0);
     /** removeTilesAway a tile at given tile coordinate.
      *
      * @param tileCoordinate The tile Coordinate.
      */
-    void removeTilesAway(const Vec2& tileCoordinate, int distance);
+    void removeTilesAway(const Vec2& tileCoordinate, int w, int h=0);
     
     void removeBigMapTileAt(const Vec2& pos);
     

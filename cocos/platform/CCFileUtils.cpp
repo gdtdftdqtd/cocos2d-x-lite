@@ -752,7 +752,6 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
             ssize_t size = 0;
             
             unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
-            CCLOG("ccc filename=%s,size=%ld",filename.c_str(),size);
             if (buff && size > 0) {
                 buffer->resize(size);
                 memcpy(buffer->buffer(), buff, size);

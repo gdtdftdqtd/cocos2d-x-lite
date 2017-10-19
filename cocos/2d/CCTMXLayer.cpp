@@ -865,15 +865,18 @@ uint32_t TMXLayer::getBigMapTileGIDAt(const Vec2& pos, TMXTileFlags* flags/* = n
     return (tile & kTMXFlippedMask);
 }
 
-void TMXLayer::showTilesBeyond(const Vec2& tileCoordinate, int distance)
+void TMXLayer::showTilesBeyond(const Vec2& tileCoordinate, int w, int h)
 {
     if (!getIsBigMap()) {
         return;
     }
-    int _minX = tileCoordinate.x - distance;
-    int _maxX = tileCoordinate.x + distance;
-    int _minY = tileCoordinate.y - distance;
-    int _maxY = tileCoordinate.y + distance;
+    if (h == 0) {
+        h = w;
+    }
+    int _minX = tileCoordinate.x - w;
+    int _maxX = tileCoordinate.x + w;
+    int _minY = tileCoordinate.y - h;
+    int _maxY = tileCoordinate.y + h;
     
     _minX = _minX < 0 ? 0 : _minX;
     _maxX = _maxX > _layerSize.width - 1 ? _layerSize.width - 1 : _maxX;
@@ -891,10 +894,10 @@ void TMXLayer::showTilesBeyond(const Vec2& tileCoordinate, int distance)
             }
         }
     }
-    this->removeTilesAway(tileCoordinate, distance);
+    this->removeTilesAway(tileCoordinate, w, h);
 }
 
-void TMXLayer::removeTilesAway(const Vec2& tileCoordinate, int distance)
+void TMXLayer::removeTilesAway(const Vec2& tileCoordinate, int w, int h)
 {
     std::map<long, Vec2> _needRemoveMap;
     for(auto it = _bigMapTiles.begin(); it != _bigMapTiles.end(); ++it)
@@ -902,7 +905,7 @@ void TMXLayer::removeTilesAway(const Vec2& tileCoordinate, int distance)
         intptr_t tileIndex = it->first;
         intptr_t _x = tileIndex % int(_layerSize.width);
         intptr_t _y = (tileIndex - _x) / int(_layerSize.width);
-        if (std::abs(_x - tileCoordinate.x) > distance || std::abs(_y - tileCoordinate.y) > distance) {
+        if (std::abs(_x - tileCoordinate.x) > w || std::abs(_y - tileCoordinate.y) > h) {
             _needRemoveMap[tileIndex] = Vec2(_x, _y);
         }
     }

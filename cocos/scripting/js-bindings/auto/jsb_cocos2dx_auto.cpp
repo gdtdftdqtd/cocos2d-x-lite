@@ -48803,6 +48803,18 @@ bool js_cocos2dx_TMXLayer_removeTilesAway(JSContext *cx, uint32_t argc, JS::Valu
         args.rval().setUndefined();
         return true;
     }
+    if (argc == 3) {
+        cocos2d::Vec2 arg0;
+        int arg1 = 0;
+        int arg2 = 0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        ok &= jsval_to_int32(cx, args.get(1), (int32_t *)&arg1);
+        ok &= jsval_to_int32(cx, args.get(2), (int32_t *)&arg2);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_removeTilesAway : Error processing arguments");
+        cobj->removeTilesAway(arg0, arg1, arg2);
+        args.rval().setUndefined();
+        return true;
+    }
 
     JS_ReportErrorUTF8(cx, "js_cocos2dx_TMXLayer_removeTilesAway : wrong number of arguments: %d, was expecting %d", argc, 2);
     return false;
@@ -49191,6 +49203,18 @@ bool js_cocos2dx_TMXLayer_showTilesBeyond(JSContext *cx, uint32_t argc, JS::Valu
         ok &= jsval_to_int32(cx, args.get(1), (int32_t *)&arg1);
         JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_showTilesBeyond : Error processing arguments");
         cobj->showTilesBeyond(arg0, arg1);
+        args.rval().setUndefined();
+        return true;
+    }
+    if (argc == 3) {
+        cocos2d::Vec2 arg0;
+        int arg1 = 0;
+        int arg2 = 0;
+        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
+        ok &= jsval_to_int32(cx, args.get(1), (int32_t *)&arg1);
+        ok &= jsval_to_int32(cx, args.get(2), (int32_t *)&arg2);
+        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_TMXLayer_showTilesBeyond : Error processing arguments");
+        cobj->showTilesBeyond(arg0, arg1, arg2);
         args.rval().setUndefined();
         return true;
     }
