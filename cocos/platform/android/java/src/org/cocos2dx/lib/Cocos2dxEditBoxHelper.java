@@ -234,7 +234,6 @@ public class Cocos2dxEditBoxHelper {
                 if (editBox != null) {
                     mEditBoxArray.remove(index);
                     mFrameLayout.removeView(editBox);
-                    Log.e(TAG, "remove EditBox");
                 }
             }
         });
@@ -342,7 +341,7 @@ public class Cocos2dxEditBoxHelper {
                 if (editBox != null) {
                     editBox.setChangedTextProgrammatically(true);
                     editBox.setText(text);
-                    int position = text.length();
+                    int position = editBox.getText().length();
                     editBox.setSelection(position);
                 }
             }

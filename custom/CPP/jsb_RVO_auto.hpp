@@ -1,61 +1,56 @@
+#pragma once
 #include "base/ccConfig.h"
-#ifndef __RVO_h__
-#define __RVO_h__
 
-#include "jsapi.h"
-#include "jsfriendapi.h"
+#include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 
-extern JSClass  *jsb_CocosRVO_class;
-extern JS::PersistentRootedObject *jsb_CocosRVO_prototype;
+extern se::Object* __jsb_CocosRVO_proto;
+extern se::Class* __jsb_CocosRVO_class;
 
-bool js_RVO_CocosRVO_constructor(JSContext *cx, uint32_t argc, JS::Value *vp);
-void js_RVO_CocosRVO_finalize(JSContext *cx, JSObject *obj);
-void js_register_RVO_CocosRVO(JSContext *cx, JS::HandleObject global);
-void register_all_RVO(JSContext* cx, JS::HandleObject obj);
-bool js_RVO_CocosRVO_setAgentVelocity(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentRadius(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentPrefVelocity(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setTimeStep(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getNextObstacleVertexNo(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentDefaults(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_updateVisualization(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getNumObstacleVertices(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentTimeHorizon(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getTimeStep(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_doStep(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentMaxNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentTimeHorizon(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_addObstacle(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentNumAgentNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentRadius(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentVelocity(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentsNextPos(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_removeAgent(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentNumORCALines(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_reachedGoal(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentNeighborDist(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentMaxSpeed(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentPrefVelocity(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setPreferredVelocities(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentMaxNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getNumAgents(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentMaxSpeed(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentTimeHorizonObst(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_addAgent(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentObstacleNeighbor(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getGlobalTime(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getObstacleVertex(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentAgentNeighbor(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentPosition(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentTimeHorizonObst(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentNumObstacleNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_queryVisibility(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentPosition(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_processObstacles(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getPrevObstacleVertexNo(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_release(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_setAgentNeighborDist(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_getAgentORCALine(JSContext *cx, uint32_t argc, JS::Value *vp);
-bool js_RVO_CocosRVO_create(JSContext *cx, uint32_t argc, JS::Value *vp);
+bool js_register_CocosRVO(se::Object* obj);
+bool register_all_RVO(se::Object* obj);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentVelocity);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentRadius);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentPrefVelocity);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setTimeStep);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getNextObstacleVertexNo);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentDefaults);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_updateVisualization);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getNumObstacleVertices);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentTimeHorizon);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getTimeStep);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_doStep);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentMaxNeighbors);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentTimeHorizon);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_addObstacle);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentNumAgentNeighbors);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentRadius);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentVelocity);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentsNextPos);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_removeAgent);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentNumORCALines);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_reachedGoal);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentNeighborDist);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentMaxSpeed);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentPrefVelocity);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setPreferredVelocities);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentMaxNeighbors);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getNumAgents);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentMaxSpeed);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentTimeHorizonObst);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_addAgent);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentObstacleNeighbor);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getGlobalTime);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getObstacleVertex);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentAgentNeighbor);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentPosition);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentTimeHorizonObst);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentNumObstacleNeighbors);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_queryVisibility);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentPosition);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_processObstacles);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getPrevObstacleVertexNo);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_release);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_setAgentNeighborDist);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_getAgentORCALine);
+SE_DECLARE_FUNC(js_RVO_CocosRVO_create);
 
-#endif // __RVO_h__

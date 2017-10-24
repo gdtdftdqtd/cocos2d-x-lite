@@ -39,13 +39,13 @@ using namespace cocos2d;
 #pragma mark Application lifecycle
 
 // cocos2d application instance
-static AppDelegate *s_sharedApplication = nullptr;
+static AppDelegate* s_sharedApplication = nullptr;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
     if (s_sharedApplication == nullptr)
     {
-        s_sharedApplication = new AppDelegate();
+        s_sharedApplication = new (std::nothrow) AppDelegate();
     }
     cocos2d::Application *app = cocos2d::Application::getInstance();
 
@@ -131,7 +131,7 @@ static AppDelegate *s_sharedApplication = nullptr;
       Called when the application is about to terminate.
       See also applicationDidEnterBackground:.
     */
-    if (s_sharedApplication)
+    if (s_sharedApplication != nullptr)
     {
         delete s_sharedApplication;
         s_sharedApplication = nullptr;

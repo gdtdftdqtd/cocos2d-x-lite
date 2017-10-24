@@ -1,127 +1,121 @@
 #include "jsb_RVO_auto.hpp"
-#include "scripting/js-bindings/manual/cocos2d_specifics.hpp"
+#include "scripting/js-bindings/manual/jsb_conversions.hpp"
+#include "scripting/js-bindings/manual/jsb_global.h"
 #include "RVO_For_Cocos.h"
 
-JSClass  *jsb_CocosRVO_class;
-JS::PersistentRootedObject *jsb_CocosRVO_prototype;
+se::Object* __jsb_CocosRVO_proto = nullptr;
+se::Class* __jsb_CocosRVO_class = nullptr;
 
-bool js_RVO_CocosRVO_setAgentVelocity(JSContext *cx, uint32_t argc, JS::Value *vp)
+static bool js_RVO_CocosRVO_setAgentVelocity(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentVelocity : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentVelocity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         cocos2d::Vec2 arg1;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_vector2(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentVelocity : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_Vec2(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentVelocity : Error processing arguments");
         cobj->setAgentVelocity(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentVelocity : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentRadius(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentVelocity)
+
+static bool js_RVO_CocosRVO_setAgentRadius(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentRadius : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentRadius : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         float arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_float(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentRadius : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentRadius : Error processing arguments");
         cobj->setAgentRadius(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentRadius : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentPrefVelocity(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentRadius)
+
+static bool js_RVO_CocosRVO_setAgentPrefVelocity(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentPrefVelocity : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentPrefVelocity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         cocos2d::Vec2 arg1;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_vector2(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentPrefVelocity : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_Vec2(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentPrefVelocity : Error processing arguments");
         cobj->setAgentPrefVelocity(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentPrefVelocity : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_setTimeStep(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentPrefVelocity)
+
+static bool js_RVO_CocosRVO_setTimeStep(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setTimeStep : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setTimeStep : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         float arg0 = 0;
-        ok &= jsval_to_float(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setTimeStep : Error processing arguments");
+        ok &= seval_to_float(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setTimeStep : Error processing arguments");
         cobj->setTimeStep(arg0);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setTimeStep : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getNextObstacleVertexNo(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setTimeStep)
+
+static bool js_RVO_CocosRVO_getNextObstacleVertexNo(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getNextObstacleVertexNo : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getNextObstacleVertexNo : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getNextObstacleVertexNo : Error processing arguments");
-        unsigned long ret = cobj->getNextObstacleVertexNo(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getNextObstacleVertexNo : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getNextObstacleVertexNo : Error processing arguments");
+        unsigned long result = cobj->getNextObstacleVertexNo(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getNextObstacleVertexNo : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getNextObstacleVertexNo : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentDefaults(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getNextObstacleVertexNo)
+
+static bool js_RVO_CocosRVO_setAgentDefaults(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentDefaults : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentDefaults : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 7) {
         float arg0 = 0;
         unsigned long arg1 = 0;
@@ -130,1087 +124,977 @@ bool js_RVO_CocosRVO_setAgentDefaults(JSContext *cx, uint32_t argc, JS::Value *v
         float arg4 = 0;
         float arg5 = 0;
         cocos2d::Vec2 arg6;
-        ok &= jsval_to_float(cx, args.get(0), &arg0);
-        ok &= jsval_to_ulong(cx, args.get(1), &arg1);
-        ok &= jsval_to_float(cx, args.get(2), &arg2);
-        ok &= jsval_to_float(cx, args.get(3), &arg3);
-        ok &= jsval_to_float(cx, args.get(4), &arg4);
-        ok &= jsval_to_float(cx, args.get(5), &arg5);
-        ok &= jsval_to_vector2(cx, args.get(6), &arg6);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentDefaults : Error processing arguments");
+        ok &= seval_to_float(args[0], &arg0);
+        ok &= seval_to_ulong(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        ok &= seval_to_float(args[5], &arg5);
+        ok &= seval_to_Vec2(args[6], &arg6);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentDefaults : Error processing arguments");
         cobj->setAgentDefaults(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentDefaults : wrong number of arguments: %d, was expecting %d", argc, 7);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 7);
     return false;
 }
-bool js_RVO_CocosRVO_updateVisualization(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentDefaults)
+
+static bool js_RVO_CocosRVO_updateVisualization(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_updateVisualization : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_updateVisualization : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
     if (argc == 0) {
         cobj->updateVisualization();
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_updateVisualization : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getNumObstacleVertices(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_updateVisualization)
+
+static bool js_RVO_CocosRVO_getNumObstacleVertices(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getNumObstacleVertices : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getNumObstacleVertices : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 0) {
-        unsigned long ret = cobj->getNumObstacleVertices();
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getNumObstacleVertices : error parsing return value");
-        args.rval().set(jsret);
+        unsigned long result = cobj->getNumObstacleVertices();
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getNumObstacleVertices : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getNumObstacleVertices : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentTimeHorizon(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getNumObstacleVertices)
+
+static bool js_RVO_CocosRVO_getAgentTimeHorizon(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentTimeHorizon : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentTimeHorizon : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentTimeHorizon : Error processing arguments");
-        float ret = cobj->getAgentTimeHorizon(arg0);
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentTimeHorizon : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentTimeHorizon : Error processing arguments");
+        float result = cobj->getAgentTimeHorizon(arg0);
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentTimeHorizon : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentTimeHorizon : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getTimeStep(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentTimeHorizon)
+
+static bool js_RVO_CocosRVO_getTimeStep(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getTimeStep : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getTimeStep : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 0) {
-        float ret = cobj->getTimeStep();
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getTimeStep : error parsing return value");
-        args.rval().set(jsret);
+        float result = cobj->getTimeStep();
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getTimeStep : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getTimeStep : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_doStep(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getTimeStep)
+
+static bool js_RVO_CocosRVO_doStep(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_doStep : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_doStep : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
     if (argc == 0) {
         cobj->doStep();
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_doStep : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentMaxNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_doStep)
+
+static bool js_RVO_CocosRVO_getAgentMaxNeighbors(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentMaxNeighbors : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentMaxNeighbors : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentMaxNeighbors : Error processing arguments");
-        unsigned long ret = cobj->getAgentMaxNeighbors(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentMaxNeighbors : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentMaxNeighbors : Error processing arguments");
+        unsigned long result = cobj->getAgentMaxNeighbors(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentMaxNeighbors : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentMaxNeighbors : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentTimeHorizon(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentMaxNeighbors)
+
+static bool js_RVO_CocosRVO_setAgentTimeHorizon(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentTimeHorizon : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentTimeHorizon : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         float arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_float(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentTimeHorizon : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentTimeHorizon : Error processing arguments");
         cobj->setAgentTimeHorizon(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentTimeHorizon : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_addObstacle(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentTimeHorizon)
+
+static bool js_RVO_CocosRVO_addObstacle(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_addObstacle : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_addObstacle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
-        std::vector<cocos2d::Vec2> arg0;
-        ok &= jsval_to_std_vector_vector2(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_addObstacle : Error processing arguments");
-        unsigned long ret = cobj->addObstacle(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_addObstacle : error parsing return value");
-        args.rval().set(jsret);
+        std::vector<cocos2d::Vec2, std::allocator<cocos2d::Vec2> > arg0;
+        std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_cocos_Vec2(args[0], &tempData);arg0=tempData;
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_addObstacle : Error processing arguments");
+        unsigned long result = cobj->addObstacle(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_addObstacle : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_addObstacle : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentNumAgentNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_addObstacle)
+
+static bool js_RVO_CocosRVO_getAgentNumAgentNeighbors(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : Error processing arguments");
-        unsigned long ret = cobj->getAgentNumAgentNeighbors(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : Error processing arguments");
+        unsigned long result = cobj->getAgentNumAgentNeighbors(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentNumAgentNeighbors : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentRadius(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentNumAgentNeighbors)
+
+static bool js_RVO_CocosRVO_getAgentRadius(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentRadius : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentRadius : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentRadius : Error processing arguments");
-        float ret = cobj->getAgentRadius(arg0);
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentRadius : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentRadius : Error processing arguments");
+        float result = cobj->getAgentRadius(arg0);
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentRadius : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentRadius : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentVelocity(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentRadius)
+
+static bool js_RVO_CocosRVO_getAgentVelocity(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentVelocity : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentVelocity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentVelocity : Error processing arguments");
-        cocos2d::Vec2 ret = cobj->getAgentVelocity(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= vector2_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentVelocity : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentVelocity : Error processing arguments");
+        cocos2d::Vec2 result = cobj->getAgentVelocity(arg0);
+        ok &= Vec2_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentVelocity : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentVelocity : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentsNextPos(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentVelocity)
+
+static bool js_RVO_CocosRVO_setAgentsNextPos(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentsNextPos : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentsNextPos : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
-        std::vector<cocos2d::Vec2> arg0;
-        ok &= jsval_to_std_vector_vector2(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentsNextPos : Error processing arguments");
-        unsigned long ret = cobj->setAgentsNextPos(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentsNextPos : error parsing return value");
-        args.rval().set(jsret);
+        std::vector<cocos2d::Vec2, std::allocator<cocos2d::Vec2> > arg0;
+        std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_cocos_Vec2(args[0], &tempData);arg0=tempData;
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentsNextPos : Error processing arguments");
+        unsigned long result = cobj->setAgentsNextPos(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentsNextPos : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentsNextPos : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_removeAgent(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentsNextPos)
+
+static bool js_RVO_CocosRVO_removeAgent(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_removeAgent : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_removeAgent : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_removeAgent : Error processing arguments");
-        bool ret = cobj->removeAgent(arg0);
-        JS::RootedValue jsret(cx);
-        jsret = JS::BooleanValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_removeAgent : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_removeAgent : Error processing arguments");
+        bool result = cobj->removeAgent(arg0);
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_removeAgent : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_removeAgent : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentNumORCALines(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_removeAgent)
+
+static bool js_RVO_CocosRVO_getAgentNumORCALines(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentNumORCALines : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentNumORCALines : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNumORCALines : Error processing arguments");
-        unsigned long ret = cobj->getAgentNumORCALines(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNumORCALines : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNumORCALines : Error processing arguments");
+        unsigned long result = cobj->getAgentNumORCALines(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNumORCALines : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentNumORCALines : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_reachedGoal(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentNumORCALines)
+
+static bool js_RVO_CocosRVO_reachedGoal(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_reachedGoal : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_reachedGoal : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 0) {
-        std::vector<int> ret = cobj->reachedGoal();
-        JS::RootedValue jsret(cx);
-        ok &= std_vector_int_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_reachedGoal : error parsing return value");
-        args.rval().set(jsret);
+        std::vector<int> result = cobj->reachedGoal();
+        ok &= std_vector_int_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_reachedGoal : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_reachedGoal : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentNeighborDist(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_reachedGoal)
+
+static bool js_RVO_CocosRVO_getAgentNeighborDist(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentNeighborDist : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentNeighborDist : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNeighborDist : Error processing arguments");
-        float ret = cobj->getAgentNeighborDist(arg0);
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNeighborDist : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNeighborDist : Error processing arguments");
+        float result = cobj->getAgentNeighborDist(arg0);
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNeighborDist : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentNeighborDist : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentMaxSpeed(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentNeighborDist)
+
+static bool js_RVO_CocosRVO_setAgentMaxSpeed(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentMaxSpeed : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentMaxSpeed : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         float arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_float(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentMaxSpeed : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentMaxSpeed : Error processing arguments");
         cobj->setAgentMaxSpeed(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentMaxSpeed : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentPrefVelocity(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentMaxSpeed)
+
+static bool js_RVO_CocosRVO_getAgentPrefVelocity(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentPrefVelocity : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentPrefVelocity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentPrefVelocity : Error processing arguments");
-        cocos2d::Vec2 ret = cobj->getAgentPrefVelocity(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= vector2_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentPrefVelocity : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentPrefVelocity : Error processing arguments");
+        cocos2d::Vec2 result = cobj->getAgentPrefVelocity(arg0);
+        ok &= Vec2_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentPrefVelocity : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentPrefVelocity : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_setPreferredVelocities(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentPrefVelocity)
+
+static bool js_RVO_CocosRVO_setPreferredVelocities(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setPreferredVelocities : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setPreferredVelocities : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
     if (argc == 0) {
         cobj->setPreferredVelocities();
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setPreferredVelocities : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentMaxNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setPreferredVelocities)
+
+static bool js_RVO_CocosRVO_setAgentMaxNeighbors(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentMaxNeighbors : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentMaxNeighbors : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         unsigned long arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_ulong(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentMaxNeighbors : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_ulong(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentMaxNeighbors : Error processing arguments");
         cobj->setAgentMaxNeighbors(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentMaxNeighbors : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_getNumAgents(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentMaxNeighbors)
+
+static bool js_RVO_CocosRVO_getNumAgents(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getNumAgents : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getNumAgents : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 0) {
-        unsigned long ret = cobj->getNumAgents();
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getNumAgents : error parsing return value");
-        args.rval().set(jsret);
+        unsigned long result = cobj->getNumAgents();
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getNumAgents : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getNumAgents : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentMaxSpeed(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getNumAgents)
+
+static bool js_RVO_CocosRVO_getAgentMaxSpeed(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentMaxSpeed : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentMaxSpeed : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentMaxSpeed : Error processing arguments");
-        float ret = cobj->getAgentMaxSpeed(arg0);
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentMaxSpeed : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentMaxSpeed : Error processing arguments");
+        float result = cobj->getAgentMaxSpeed(arg0);
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentMaxSpeed : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentMaxSpeed : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentTimeHorizonObst(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentMaxSpeed)
+
+static bool js_RVO_CocosRVO_setAgentTimeHorizonObst(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentTimeHorizonObst : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentTimeHorizonObst : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         float arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_float(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentTimeHorizonObst : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentTimeHorizonObst : Error processing arguments");
         cobj->setAgentTimeHorizonObst(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentTimeHorizonObst : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_addAgent(JSContext *cx, uint32_t argc, JS::Value *vp)
-{
-    bool ok = true;
-    CocosRVO* cobj = nullptr;
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentTimeHorizonObst)
 
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    JS::RootedObject obj(cx);
-    obj.set(args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    cobj = (CocosRVO *)(proxy ? proxy->ptr : nullptr);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_addAgent : Invalid Native Object");
+static bool js_RVO_CocosRVO_addAgent(se::State& s)
+{
+    CC_UNUSED bool ok = true;
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2( cobj, false, "js_RVO_CocosRVO_addAgent : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
     do {
-        ok = true;
         if (argc == 9) {
             cocos2d::Node* arg0 = nullptr;
-            do {
-                if (args.get(0).isNull()) { arg0 = nullptr; break; }
-                if (!args.get(0).isObject()) { ok = false; break; }
-                js_proxy_t *jsProxy;
-                JS::RootedObject tmpObj(cx, args.get(0).toObjectOrNull());
-                jsProxy = jsb_get_js_proxy(cx, tmpObj);
-                arg0 = (cocos2d::Node*)(jsProxy ? jsProxy->ptr : NULL);
-                JSB_PRECONDITION2( arg0, cx, false, "Invalid Native Object");
-            } while (0);
+            ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg1;
-            ok &= jsval_to_vector2(cx, args.get(1), &arg1);
+            ok &= seval_to_Vec2(args[1], &arg1);
             if (!ok) { ok = true; break; }
             float arg2 = 0;
-            ok &= jsval_to_float(cx, args.get(2), &arg2);
+            ok &= seval_to_float(args[2], &arg2);
             if (!ok) { ok = true; break; }
             unsigned long arg3 = 0;
-            ok &= jsval_to_ulong(cx, args.get(3), &arg3);
+            ok &= seval_to_ulong(args[3], &arg3);
             if (!ok) { ok = true; break; }
             float arg4 = 0;
-            ok &= jsval_to_float(cx, args.get(4), &arg4);
+            ok &= seval_to_float(args[4], &arg4);
             if (!ok) { ok = true; break; }
             float arg5 = 0;
-            ok &= jsval_to_float(cx, args.get(5), &arg5);
+            ok &= seval_to_float(args[5], &arg5);
             if (!ok) { ok = true; break; }
             float arg6 = 0;
-            ok &= jsval_to_float(cx, args.get(6), &arg6);
+            ok &= seval_to_float(args[6], &arg6);
             if (!ok) { ok = true; break; }
             float arg7 = 0;
-            ok &= jsval_to_float(cx, args.get(7), &arg7);
+            ok &= seval_to_float(args[7], &arg7);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg8;
-            ok &= jsval_to_vector2(cx, args.get(8), &arg8);
+            ok &= seval_to_Vec2(args[8], &arg8);
             if (!ok) { ok = true; break; }
-            unsigned long ret = cobj->addAgent(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-            JS::RootedValue jsret(cx, JS::NullHandleValue);
-            ok &= ulong_to_jsval(cx, ret, &jsret);
-            JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_addAgent : error parsing return value");
-            args.rval().set(jsret);
+            unsigned long result = cobj->addAgent(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            ok &= ulong_to_seval(result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_addAgent : Error processing arguments");
             return true;
         }
-    } while(0);
+    } while(false);
 
     do {
-        ok = true;
         if (argc == 2) {
             cocos2d::Node* arg0 = nullptr;
-            do {
-                if (args.get(0).isNull()) { arg0 = nullptr; break; }
-                if (!args.get(0).isObject()) { ok = false; break; }
-                js_proxy_t *jsProxy;
-                JS::RootedObject tmpObj(cx, args.get(0).toObjectOrNull());
-                jsProxy = jsb_get_js_proxy(cx, tmpObj);
-                arg0 = (cocos2d::Node*)(jsProxy ? jsProxy->ptr : NULL);
-                JSB_PRECONDITION2( arg0, cx, false, "Invalid Native Object");
-            } while (0);
+            ok &= seval_to_native_ptr(args[0], &arg0);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg1;
-            ok &= jsval_to_vector2(cx, args.get(1), &arg1);
+            ok &= seval_to_Vec2(args[1], &arg1);
             if (!ok) { ok = true; break; }
-            unsigned long ret = cobj->addAgent(arg0, arg1);
-            JS::RootedValue jsret(cx, JS::NullHandleValue);
-            ok &= ulong_to_jsval(cx, ret, &jsret);
-            JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_addAgent : error parsing return value");
-            args.rval().set(jsret);
+            unsigned long result = cobj->addAgent(arg0, arg1);
+            ok &= ulong_to_seval(result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_addAgent : Error processing arguments");
             return true;
         }
-    } while(0);
+    } while(false);
 
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_addAgent : arguments error");
+    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentObstacleNeighbor(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_addAgent)
+
+static bool js_RVO_CocosRVO_getAgentObstacleNeighbor(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentObstacleNeighbor : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentObstacleNeighbor : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         unsigned long arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_ulong(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentObstacleNeighbor : Error processing arguments");
-        unsigned long ret = cobj->getAgentObstacleNeighbor(arg0, arg1);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentObstacleNeighbor : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_ulong(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentObstacleNeighbor : Error processing arguments");
+        unsigned long result = cobj->getAgentObstacleNeighbor(arg0, arg1);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentObstacleNeighbor : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentObstacleNeighbor : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_getGlobalTime(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentObstacleNeighbor)
+
+static bool js_RVO_CocosRVO_getGlobalTime(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getGlobalTime : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getGlobalTime : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 0) {
-        float ret = cobj->getGlobalTime();
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getGlobalTime : error parsing return value");
-        args.rval().set(jsret);
+        float result = cobj->getGlobalTime();
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getGlobalTime : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getGlobalTime : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getObstacleVertex(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getGlobalTime)
+
+static bool js_RVO_CocosRVO_getObstacleVertex(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getObstacleVertex : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getObstacleVertex : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getObstacleVertex : Error processing arguments");
-        cocos2d::Vec2 ret = cobj->getObstacleVertex(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= vector2_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getObstacleVertex : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getObstacleVertex : Error processing arguments");
+        cocos2d::Vec2 result = cobj->getObstacleVertex(arg0);
+        ok &= Vec2_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getObstacleVertex : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getObstacleVertex : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentAgentNeighbor(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getObstacleVertex)
+
+static bool js_RVO_CocosRVO_getAgentAgentNeighbor(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentAgentNeighbor : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentAgentNeighbor : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         unsigned long arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_ulong(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentAgentNeighbor : Error processing arguments");
-        unsigned long ret = cobj->getAgentAgentNeighbor(arg0, arg1);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentAgentNeighbor : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_ulong(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentAgentNeighbor : Error processing arguments");
+        unsigned long result = cobj->getAgentAgentNeighbor(arg0, arg1);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentAgentNeighbor : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentAgentNeighbor : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentPosition(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentAgentNeighbor)
+
+static bool js_RVO_CocosRVO_setAgentPosition(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentPosition : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentPosition : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         cocos2d::Vec2 arg1;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_vector2(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentPosition : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_Vec2(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentPosition : Error processing arguments");
         cobj->setAgentPosition(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentPosition : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentTimeHorizonObst(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentPosition)
+
+static bool js_RVO_CocosRVO_getAgentTimeHorizonObst(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentTimeHorizonObst : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentTimeHorizonObst : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentTimeHorizonObst : Error processing arguments");
-        float ret = cobj->getAgentTimeHorizonObst(arg0);
-        JS::RootedValue jsret(cx);
-        jsret = JS::NumberValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentTimeHorizonObst : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentTimeHorizonObst : Error processing arguments");
+        float result = cobj->getAgentTimeHorizonObst(arg0);
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentTimeHorizonObst : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentTimeHorizonObst : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentNumObstacleNeighbors(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentTimeHorizonObst)
+
+static bool js_RVO_CocosRVO_getAgentNumObstacleNeighbors(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : Error processing arguments");
-        unsigned long ret = cobj->getAgentNumObstacleNeighbors(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : Error processing arguments");
+        unsigned long result = cobj->getAgentNumObstacleNeighbors(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentNumObstacleNeighbors : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_queryVisibility(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentNumObstacleNeighbors)
+
+static bool js_RVO_CocosRVO_queryVisibility(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_queryVisibility : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_queryVisibility : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         cocos2d::Vec2 arg0;
         cocos2d::Vec2 arg1;
-        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
-        ok &= jsval_to_vector2(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_queryVisibility : Error processing arguments");
-        bool ret = cobj->queryVisibility(arg0, arg1);
-        JS::RootedValue jsret(cx);
-        jsret = JS::BooleanValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_queryVisibility : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_Vec2(args[0], &arg0);
+        ok &= seval_to_Vec2(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_queryVisibility : Error processing arguments");
+        bool result = cobj->queryVisibility(arg0, arg1);
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_queryVisibility : Error processing arguments");
         return true;
     }
     if (argc == 3) {
         cocos2d::Vec2 arg0;
         cocos2d::Vec2 arg1;
         float arg2 = 0;
-        ok &= jsval_to_vector2(cx, args.get(0), &arg0);
-        ok &= jsval_to_vector2(cx, args.get(1), &arg1);
-        ok &= jsval_to_float(cx, args.get(2), &arg2);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_queryVisibility : Error processing arguments");
-        bool ret = cobj->queryVisibility(arg0, arg1, arg2);
-        JS::RootedValue jsret(cx);
-        jsret = JS::BooleanValue(ret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_queryVisibility : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_Vec2(args[0], &arg0);
+        ok &= seval_to_Vec2(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_queryVisibility : Error processing arguments");
+        bool result = cobj->queryVisibility(arg0, arg1, arg2);
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_queryVisibility : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_queryVisibility : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentPosition(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_queryVisibility)
+
+static bool js_RVO_CocosRVO_getAgentPosition(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentPosition : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentPosition : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentPosition : Error processing arguments");
-        cocos2d::Vec2 ret = cobj->getAgentPosition(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= vector2_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentPosition : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentPosition : Error processing arguments");
+        cocos2d::Vec2 result = cobj->getAgentPosition(arg0);
+        ok &= Vec2_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentPosition : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentPosition : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_processObstacles(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentPosition)
+
+static bool js_RVO_CocosRVO_processObstacles(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_processObstacles : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_processObstacles : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
     if (argc == 0) {
         cobj->processObstacles();
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_processObstacles : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_getPrevObstacleVertexNo(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_processObstacles)
+
+static bool js_RVO_CocosRVO_getPrevObstacleVertexNo(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getPrevObstacleVertexNo : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getPrevObstacleVertexNo : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 1) {
         unsigned long arg0 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getPrevObstacleVertexNo : Error processing arguments");
-        unsigned long ret = cobj->getPrevObstacleVertexNo(arg0);
-        JS::RootedValue jsret(cx);
-        ok &= ulong_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getPrevObstacleVertexNo : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getPrevObstacleVertexNo : Error processing arguments");
+        unsigned long result = cobj->getPrevObstacleVertexNo(arg0);
+        ok &= ulong_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getPrevObstacleVertexNo : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getPrevObstacleVertexNo : wrong number of arguments: %d, was expecting %d", argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-bool js_RVO_CocosRVO_release(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getPrevObstacleVertexNo)
+
+static bool js_RVO_CocosRVO_release(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_release : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_release : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
     if (argc == 0) {
         cobj->release();
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_release : wrong number of arguments: %d, was expecting %d", argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-bool js_RVO_CocosRVO_setAgentNeighborDist(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_release)
+
+static bool js_RVO_CocosRVO_setAgentNeighborDist(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_setAgentNeighborDist : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_setAgentNeighborDist : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         float arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_float(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_setAgentNeighborDist : Error processing arguments");
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_setAgentNeighborDist : Error processing arguments");
         cobj->setAgentNeighborDist(arg0, arg1);
-        args.rval().setUndefined();
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_setAgentNeighborDist : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_getAgentORCALine(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_setAgentNeighborDist)
+
+static bool js_RVO_CocosRVO_getAgentORCALine(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true; CC_UNUSED_PARAM(ok);
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(cx, obj);
-    CocosRVO* cobj = (CocosRVO *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_RVO_CocosRVO_getAgentORCALine : Invalid Native Object");
+    CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_RVO_CocosRVO_getAgentORCALine : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 2) {
         unsigned long arg0 = 0;
         unsigned long arg1 = 0;
-        ok &= jsval_to_ulong(cx, args.get(0), &arg0);
-        ok &= jsval_to_ulong(cx, args.get(1), &arg1);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentORCALine : Error processing arguments");
-        std::vector<cocos2d::Vec2> ret = cobj->getAgentORCALine(arg0, arg1);
-        JS::RootedValue jsret(cx);
-        std_vector_vector2_to_jsval(cx, ret, &jsret);
-        JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_getAgentORCALine : error parsing return value");
-        args.rval().set(jsret);
+        ok &= seval_to_ulong(args[0], &arg0);
+        ok &= seval_to_ulong(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentORCALine : Error processing arguments");
+        std::vector<cocos2d::Vec2, std::allocator<cocos2d::Vec2> > result = cobj->getAgentORCALine(arg0, arg1);
+        ok &= std_vector_Vec2_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_getAgentORCALine : Error processing arguments");
         return true;
     }
-
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_getAgentORCALine : wrong number of arguments: %d, was expecting %d", argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-bool js_RVO_CocosRVO_create(JSContext *cx, uint32_t argc, JS::Value *vp)
+SE_BIND_FUNC(js_RVO_CocosRVO_getAgentORCALine)
+
+static bool js_RVO_CocosRVO_create(se::State& s)
 {
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    
+    CC_UNUSED bool ok = true;
+    const auto& args = s.args();
+    size_t argc = args.size();
     do {
-        bool ok = true; CC_UNUSED_PARAM(ok);
         if (argc == 8) {
             float arg0 = 0;
-            ok &= jsval_to_float(cx, args.get(0), &arg0);
+            ok &= seval_to_float(args[0], &arg0);
             if (!ok) { ok = true; break; }
             float arg1 = 0;
-            ok &= jsval_to_float(cx, args.get(1), &arg1);
+            ok &= seval_to_float(args[1], &arg1);
             if (!ok) { ok = true; break; }
             unsigned long arg2 = 0;
-            ok &= jsval_to_ulong(cx, args.get(2), &arg2);
+            ok &= seval_to_ulong(args[2], &arg2);
             if (!ok) { ok = true; break; }
             float arg3 = 0;
-            ok &= jsval_to_float(cx, args.get(3), &arg3);
+            ok &= seval_to_float(args[3], &arg3);
             if (!ok) { ok = true; break; }
             float arg4 = 0;
-            ok &= jsval_to_float(cx, args.get(4), &arg4);
+            ok &= seval_to_float(args[4], &arg4);
             if (!ok) { ok = true; break; }
             float arg5 = 0;
-            ok &= jsval_to_float(cx, args.get(5), &arg5);
+            ok &= seval_to_float(args[5], &arg5);
             if (!ok) { ok = true; break; }
             float arg6 = 0;
-            ok &= jsval_to_float(cx, args.get(6), &arg6);
+            ok &= seval_to_float(args[6], &arg6);
             if (!ok) { ok = true; break; }
             cocos2d::Vec2 arg7;
-            ok &= jsval_to_vector2(cx, args.get(7), &arg7);
+            ok &= seval_to_Vec2(args[7], &arg7);
             if (!ok) { ok = true; break; }
-            CocosRVO* ret = CocosRVO::create(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-            JS::RootedValue jsret(cx, JS::NullHandleValue);
-            if (ret) {
-                JS::RootedObject jsretObj(cx);
-                js_get_or_create_jsobject<CocosRVO>(cx, (CocosRVO*)ret, &jsretObj);
-                jsret = JS::ObjectOrNullValue(jsretObj);
-            } else {
-                jsret = JS::NullHandleValue;
-            };
-            JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_create : error parsing return value");
-            args.rval().set(jsret);
+            CocosRVO* result = CocosRVO::create(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+            ok &= native_ptr_to_seval<CocosRVO>((CocosRVO*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_create : Error processing arguments");
             return true;
         }
-    } while (0);
-    
+    } while (false);
     do {
-        bool ok = true; CC_UNUSED_PARAM(ok);
         if (argc == 0) {
-            CocosRVO* ret = CocosRVO::create();
-            JS::RootedValue jsret(cx, JS::NullHandleValue);
-            if (ret) {
-                JS::RootedObject jsretObj(cx);
-                js_get_or_create_jsobject<CocosRVO>(cx, (CocosRVO*)ret, &jsretObj);
-                jsret = JS::ObjectOrNullValue(jsretObj);
-            } else {
-                jsret = JS::NullHandleValue;
-            };
-            JSB_PRECONDITION2(ok, cx, false, "js_RVO_CocosRVO_create : error parsing return value");
-            args.rval().set(jsret);
+            CocosRVO* result = CocosRVO::create();
+            ok &= native_ptr_to_seval<CocosRVO>((CocosRVO*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_RVO_CocosRVO_create : Error processing arguments");
             return true;
         }
-    } while (0);
-    JS_ReportErrorUTF8(cx, "js_RVO_CocosRVO_create : wrong number of arguments");
+    } while (false);
+    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
     return false;
 }
+SE_BIND_FUNC(js_RVO_CocosRVO_create)
 
-void js_register_RVO_CocosRVO(JSContext *cx, JS::HandleObject global) {
-    static const JSClassOps CocosRVO_classOps = {
-        nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr,
-        nullptr,
-        nullptr, nullptr, nullptr, nullptr
-    };
-    static JSClass CocosRVO_class = {
-        "CocosRVO",
-        JSCLASS_HAS_PRIVATE,
-        &CocosRVO_classOps
-    };
-    jsb_CocosRVO_class = &CocosRVO_class;
 
-    static JSFunctionSpec funcs[] = {
-        JS_FN("setAgentVelocity", js_RVO_CocosRVO_setAgentVelocity, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentRadius", js_RVO_CocosRVO_setAgentRadius, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentPrefVelocity", js_RVO_CocosRVO_setAgentPrefVelocity, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setTimeStep", js_RVO_CocosRVO_setTimeStep, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getNextObstacleVertexNo", js_RVO_CocosRVO_getNextObstacleVertexNo, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentDefaults", js_RVO_CocosRVO_setAgentDefaults, 7, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("updateVisualization", js_RVO_CocosRVO_updateVisualization, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getNumObstacleVertices", js_RVO_CocosRVO_getNumObstacleVertices, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentTimeHorizon", js_RVO_CocosRVO_getAgentTimeHorizon, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getTimeStep", js_RVO_CocosRVO_getTimeStep, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("doStep", js_RVO_CocosRVO_doStep, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentMaxNeighbors", js_RVO_CocosRVO_getAgentMaxNeighbors, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentTimeHorizon", js_RVO_CocosRVO_setAgentTimeHorizon, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("addObstacle", js_RVO_CocosRVO_addObstacle, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentNumAgentNeighbors", js_RVO_CocosRVO_getAgentNumAgentNeighbors, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentRadius", js_RVO_CocosRVO_getAgentRadius, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentVelocity", js_RVO_CocosRVO_getAgentVelocity, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentsNextPos", js_RVO_CocosRVO_setAgentsNextPos, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("removeAgent", js_RVO_CocosRVO_removeAgent, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentNumORCALines", js_RVO_CocosRVO_getAgentNumORCALines, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("reachedGoal", js_RVO_CocosRVO_reachedGoal, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentNeighborDist", js_RVO_CocosRVO_getAgentNeighborDist, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentMaxSpeed", js_RVO_CocosRVO_setAgentMaxSpeed, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentPrefVelocity", js_RVO_CocosRVO_getAgentPrefVelocity, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setPreferredVelocities", js_RVO_CocosRVO_setPreferredVelocities, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentMaxNeighbors", js_RVO_CocosRVO_setAgentMaxNeighbors, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getNumAgents", js_RVO_CocosRVO_getNumAgents, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentMaxSpeed", js_RVO_CocosRVO_getAgentMaxSpeed, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentTimeHorizonObst", js_RVO_CocosRVO_setAgentTimeHorizonObst, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("addAgent", js_RVO_CocosRVO_addAgent, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentObstacleNeighbor", js_RVO_CocosRVO_getAgentObstacleNeighbor, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getGlobalTime", js_RVO_CocosRVO_getGlobalTime, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getObstacleVertex", js_RVO_CocosRVO_getObstacleVertex, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentAgentNeighbor", js_RVO_CocosRVO_getAgentAgentNeighbor, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentPosition", js_RVO_CocosRVO_setAgentPosition, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentTimeHorizonObst", js_RVO_CocosRVO_getAgentTimeHorizonObst, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentNumObstacleNeighbors", js_RVO_CocosRVO_getAgentNumObstacleNeighbors, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("queryVisibility", js_RVO_CocosRVO_queryVisibility, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentPosition", js_RVO_CocosRVO_getAgentPosition, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("processObstacles", js_RVO_CocosRVO_processObstacles, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getPrevObstacleVertexNo", js_RVO_CocosRVO_getPrevObstacleVertexNo, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("release", js_RVO_CocosRVO_release, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("setAgentNeighborDist", js_RVO_CocosRVO_setAgentNeighborDist, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("getAgentORCALine", js_RVO_CocosRVO_getAgentORCALine, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FS_END
-    };
 
-    static JSFunctionSpec st_funcs[] = {
-        JS_FN("create", js_RVO_CocosRVO_create, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FS_END
-    };
+static bool js_CocosRVO_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (CocosRVO)", s.nativeThisObject());
+    auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
+    if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
+    {
+        se::NonRefNativePtrCreatedByCtorMap::erase(iter);
+        CocosRVO* cobj = (CocosRVO*)s.nativeThisObject();
+        delete cobj;
+    }
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_CocosRVO_finalize)
 
-    JS::RootedObject parent_proto(cx, nullptr);
-    JS::RootedObject proto(cx, JS_InitClass(
-        cx, global,
-        parent_proto,
-        jsb_CocosRVO_class,
-        dummy_constructor<CocosRVO>, 0,
-        nullptr,
-        funcs,
-        nullptr,
-        st_funcs));
+bool js_register_RVO_CocosRVO(se::Object* obj)
+{
+    auto cls = se::Class::create("CocosRVO", obj, nullptr, nullptr);
 
-    // add the proto and JSClass to the type->js info hash table
-    js_type_class_t *typeClass = jsb_register_class<CocosRVO>(cx, jsb_CocosRVO_class, proto);
-    jsb_CocosRVO_prototype = typeClass->proto;
-    JS::RootedValue className(cx);
-    std_string_to_jsval(cx, "CocosRVO", &className);
-    JS_SetProperty(cx, proto, "_className", className);
-    JS_SetProperty(cx, proto, "__nativeObj", JS::TrueHandleValue);
-    JS_SetProperty(cx, proto, "__is_ref", JS::FalseHandleValue);
+    cls->defineFunction("setAgentVelocity", _SE(js_RVO_CocosRVO_setAgentVelocity));
+    cls->defineFunction("setAgentRadius", _SE(js_RVO_CocosRVO_setAgentRadius));
+    cls->defineFunction("setAgentPrefVelocity", _SE(js_RVO_CocosRVO_setAgentPrefVelocity));
+    cls->defineFunction("setTimeStep", _SE(js_RVO_CocosRVO_setTimeStep));
+    cls->defineFunction("getNextObstacleVertexNo", _SE(js_RVO_CocosRVO_getNextObstacleVertexNo));
+    cls->defineFunction("setAgentDefaults", _SE(js_RVO_CocosRVO_setAgentDefaults));
+    cls->defineFunction("updateVisualization", _SE(js_RVO_CocosRVO_updateVisualization));
+    cls->defineFunction("getNumObstacleVertices", _SE(js_RVO_CocosRVO_getNumObstacleVertices));
+    cls->defineFunction("getAgentTimeHorizon", _SE(js_RVO_CocosRVO_getAgentTimeHorizon));
+    cls->defineFunction("getTimeStep", _SE(js_RVO_CocosRVO_getTimeStep));
+    cls->defineFunction("doStep", _SE(js_RVO_CocosRVO_doStep));
+    cls->defineFunction("getAgentMaxNeighbors", _SE(js_RVO_CocosRVO_getAgentMaxNeighbors));
+    cls->defineFunction("setAgentTimeHorizon", _SE(js_RVO_CocosRVO_setAgentTimeHorizon));
+    cls->defineFunction("addObstacle", _SE(js_RVO_CocosRVO_addObstacle));
+    cls->defineFunction("getAgentNumAgentNeighbors", _SE(js_RVO_CocosRVO_getAgentNumAgentNeighbors));
+    cls->defineFunction("getAgentRadius", _SE(js_RVO_CocosRVO_getAgentRadius));
+    cls->defineFunction("getAgentVelocity", _SE(js_RVO_CocosRVO_getAgentVelocity));
+    cls->defineFunction("setAgentsNextPos", _SE(js_RVO_CocosRVO_setAgentsNextPos));
+    cls->defineFunction("removeAgent", _SE(js_RVO_CocosRVO_removeAgent));
+    cls->defineFunction("getAgentNumORCALines", _SE(js_RVO_CocosRVO_getAgentNumORCALines));
+    cls->defineFunction("reachedGoal", _SE(js_RVO_CocosRVO_reachedGoal));
+    cls->defineFunction("getAgentNeighborDist", _SE(js_RVO_CocosRVO_getAgentNeighborDist));
+    cls->defineFunction("setAgentMaxSpeed", _SE(js_RVO_CocosRVO_setAgentMaxSpeed));
+    cls->defineFunction("getAgentPrefVelocity", _SE(js_RVO_CocosRVO_getAgentPrefVelocity));
+    cls->defineFunction("setPreferredVelocities", _SE(js_RVO_CocosRVO_setPreferredVelocities));
+    cls->defineFunction("setAgentMaxNeighbors", _SE(js_RVO_CocosRVO_setAgentMaxNeighbors));
+    cls->defineFunction("getNumAgents", _SE(js_RVO_CocosRVO_getNumAgents));
+    cls->defineFunction("getAgentMaxSpeed", _SE(js_RVO_CocosRVO_getAgentMaxSpeed));
+    cls->defineFunction("setAgentTimeHorizonObst", _SE(js_RVO_CocosRVO_setAgentTimeHorizonObst));
+    cls->defineFunction("addAgent", _SE(js_RVO_CocosRVO_addAgent));
+    cls->defineFunction("getAgentObstacleNeighbor", _SE(js_RVO_CocosRVO_getAgentObstacleNeighbor));
+    cls->defineFunction("getGlobalTime", _SE(js_RVO_CocosRVO_getGlobalTime));
+    cls->defineFunction("getObstacleVertex", _SE(js_RVO_CocosRVO_getObstacleVertex));
+    cls->defineFunction("getAgentAgentNeighbor", _SE(js_RVO_CocosRVO_getAgentAgentNeighbor));
+    cls->defineFunction("setAgentPosition", _SE(js_RVO_CocosRVO_setAgentPosition));
+    cls->defineFunction("getAgentTimeHorizonObst", _SE(js_RVO_CocosRVO_getAgentTimeHorizonObst));
+    cls->defineFunction("getAgentNumObstacleNeighbors", _SE(js_RVO_CocosRVO_getAgentNumObstacleNeighbors));
+    cls->defineFunction("queryVisibility", _SE(js_RVO_CocosRVO_queryVisibility));
+    cls->defineFunction("getAgentPosition", _SE(js_RVO_CocosRVO_getAgentPosition));
+    cls->defineFunction("processObstacles", _SE(js_RVO_CocosRVO_processObstacles));
+    cls->defineFunction("getPrevObstacleVertexNo", _SE(js_RVO_CocosRVO_getPrevObstacleVertexNo));
+    cls->defineFunction("release", _SE(js_RVO_CocosRVO_release));
+    cls->defineFunction("setAgentNeighborDist", _SE(js_RVO_CocosRVO_setAgentNeighborDist));
+    cls->defineFunction("getAgentORCALine", _SE(js_RVO_CocosRVO_getAgentORCALine));
+    cls->defineStaticFunction("create", _SE(js_RVO_CocosRVO_create));
+    cls->defineFinalizeFunction(_SE(js_CocosRVO_finalize));
+    cls->install();
+    JSBClassType::registerClass<CocosRVO>(cls);
+
+    __jsb_CocosRVO_proto = cls->getProto();
+    __jsb_CocosRVO_class = cls;
+
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
 }
 
-void register_all_RVO(JSContext* cx, JS::HandleObject obj) {
+bool register_all_RVO(se::Object* obj)
+{
     // Get the ns
-    JS::RootedObject ns(cx);
-    get_or_create_js_obj(cx, obj, "RVO", &ns);
+    se::Value nsVal;
+    if (!obj->getProperty("RVO", &nsVal))
+    {
+        se::HandleObject jsobj(se::Object::createPlainObject());
+        nsVal.setObject(jsobj);
+        obj->setProperty("RVO", nsVal);
+    }
+    se::Object* ns = nsVal.toObject();
 
-    js_register_RVO_CocosRVO(cx, ns);
+    js_register_RVO_CocosRVO(ns);
+    return true;
 }
 

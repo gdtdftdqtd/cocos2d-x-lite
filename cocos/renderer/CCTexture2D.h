@@ -196,11 +196,7 @@ public:
      * @js ctor
      */
     Texture2D();
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~Texture2D();
+
     /**
      Get texture name, dimensions and coordinates message by a string.
      * @js NA
@@ -404,6 +400,20 @@ public:
     static const PixelFormatInfoMap& getPixelFormatInfoMap();
 
 private:
+    // noncopyable
+    Texture2D(const Texture2D&) = delete;
+    Texture2D& operator=(const Texture2D&) = delete;
+
+    // nonmoveable
+    Texture2D(Texture2D&&) = delete;
+    Texture2D& operator=(Texture2D&&) = delete;
+
+    /**
+     * @js NA
+     * @lua NA
+     */
+    virtual ~Texture2D();
+
     /**
     * A struct for storing 9-patch image capInsets.
     */

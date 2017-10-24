@@ -55,16 +55,6 @@ texture2d
 },
 
 /**
- * @method getStringForFormat
- * @return {char}
- */
-getStringForFormat : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method initWithImage
 * @param {cc.Image|cc.Image} image
 * @param {cc.Texture2D::PixelFormat} pixelformat
@@ -123,28 +113,6 @@ getPixelsHigh : function (
  * @return {unsigned int}
  */
 getAlphaTextureName : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method getBitsPerPixelForFormat
-* @param {cc.Texture2D::PixelFormat} pixelformat
-* @return {unsigned int|unsigned int}
-*/
-getBitsPerPixelForFormat : function(
-pixelformat 
-)
-{
-    return 0;
-},
-
-/**
- * @method getName
- * @return {unsigned int}
- */
-getName : function (
 )
 {
     return 0;
@@ -589,6 +557,16 @@ getEventCode : function (
 },
 
 /**
+ * @method setTouches
+ * @param {Array} arg0
+ */
+setTouches : function (
+array 
+)
+{
+},
+
+/**
  * @method setEventCode
  * @param {cc.EventTouch::EventCode} arg0
  */
@@ -596,6 +574,16 @@ setEventCode : function (
 eventcode 
 )
 {
+},
+
+/**
+ * @method getTouches
+ * @return {Array}
+ */
+getTouches : function (
+)
+{
+    return new Array();
 },
 
 /**
@@ -866,13 +854,23 @@ markTransformUpdated : function (
 },
 
 /**
- * @method setOnExitCallback
- * @param {function} arg0
+ * @method pause
  */
-setOnExitCallback : function (
-func 
+pause : function (
 )
 {
+},
+
+/**
+ * @method convertToWorldSpaceAR
+ * @param {vec2_object} arg0
+ * @return {vec2_object}
+ */
+convertToWorldSpaceAR : function (
+vec2 
+)
+{
+    return cc.Vec2;
 },
 
 /**
@@ -898,16 +896,6 @@ str
 },
 
 /**
- * @method updateDisplayedOpacity
- * @param {unsigned char} arg0
- */
-updateDisplayedOpacity : function (
-char 
-)
-{
-},
-
-/**
  * @method init
  * @return {bool}
  */
@@ -915,6 +903,16 @@ init : function (
 )
 {
     return false;
+},
+
+/**
+ * @method getBeforeVisitCallback
+ * @return {function}
+ */
+getBeforeVisitCallback : function (
+)
+{
+    return std::function<void (cocos2d::Renderer )>;
 },
 
 /**
@@ -975,16 +973,6 @@ getColor : function (
 )
 {
     return cc.Color3B;
-},
-
-/**
- * @method setonEnterTransitionDidFinishCallback
- * @param {function} arg0
- */
-setonEnterTransitionDidFinishCallback : function (
-func 
-)
-{
 },
 
 /**
@@ -1060,6 +1048,18 @@ bool
 },
 
 /**
+ * @method convertToWorldSpace
+ * @param {vec2_object} arg0
+ * @return {vec2_object}
+ */
+convertToWorldSpace : function (
+vec2 
+)
+{
+    return cc.Vec2;
+},
+
+/**
  * @method getScene
  * @return {cc.Scene}
  */
@@ -1100,16 +1100,6 @@ glprogramstate
 },
 
 /**
- * @method setOnEnterCallback
- * @param {function} arg0
- */
-setOnEnterCallback : function (
-func 
-)
-{
-},
-
-/**
  * @method stopActionsByFlags
  * @param {unsigned int} arg0
  */
@@ -1125,16 +1115,6 @@ int
  */
 setNormalizedPosition : function (
 vec2 
-)
-{
-},
-
-/**
- * @method setonExitTransitionDidStartCallback
- * @param {function} arg0
- */
-setonExitTransitionDidStartCallback : function (
-func 
 )
 {
 },
@@ -1222,6 +1202,14 @@ getName : function (
 },
 
 /**
+ * @method resume
+ */
+resume : function (
+)
+{
+},
+
+/**
  * @method getNodeToParentAffineTransform
 * @param {cc.Node} node
 * @return {cc.AffineTransform|cc.AffineTransform}
@@ -1231,6 +1219,16 @@ node
 )
 {
     return cc.AffineTransform;
+},
+
+/**
+ * @method getAfterVisitCallback
+ * @return {function}
+ */
+getAfterVisitCallback : function (
+)
+{
+    return std::function<void (cocos2d::Renderer )>;
 },
 
 /**
@@ -1271,6 +1269,16 @@ int
  */
 setSkewY : function (
 float 
+)
+{
+},
+
+/**
+ * @method setColor
+ * @param {color3b_object} arg0
+ */
+setColor : function (
+color3b 
 )
 {
 },
@@ -1323,14 +1331,6 @@ getNumberOfRunningActions : function (
 )
 {
     return 0;
-},
-
-/**
- * @method updateTransform
- */
-updateTransform : function (
-)
-{
 },
 
 /**
@@ -1390,15 +1390,17 @@ component
 },
 
 /**
- * @method runAction
- * @param {cc.Action} arg0
- * @return {cc.Action}
- */
-runAction : function (
-action 
+ * @method visit
+* @param {cc.Renderer} renderer
+* @param {mat4_object} mat4
+* @param {unsigned int} int
+*/
+visit : function(
+renderer,
+mat4,
+int 
 )
 {
-    return cc.Action;
 },
 
 /**
@@ -1432,17 +1434,15 @@ getAnchorPointInPoints : function (
 },
 
 /**
- * @method visit
-* @param {cc.Renderer} renderer
-* @param {mat4_object} mat4
-* @param {unsigned int} int
-*/
-visit : function(
-renderer,
-mat4,
-int 
+ * @method runAction
+ * @param {cc.Action} arg0
+ * @return {cc.Action}
+ */
+runAction : function (
+action 
 )
 {
+    return cc.Action;
 },
 
 /**
@@ -1513,18 +1513,6 @@ getSkewY : function (
 )
 {
     return 0;
-},
-
-/**
- * @method isScheduled
- * @param {String} arg0
- * @return {bool}
- */
-isScheduled : function (
-str 
-)
-{
-    return false;
 },
 
 /**
@@ -1712,16 +1700,6 @@ getPositionX : function (
 removeChildByTag : function (
 int, 
 bool 
-)
-{
-},
-
-/**
- * @method updateDisplayedColor
- * @param {color3b_object} arg0
- */
-updateDisplayedColor : function (
-color3b 
 )
 {
 },
@@ -1981,16 +1959,6 @@ touch
 },
 
 /**
- * @method update
- * @param {float} arg0
- */
-update : function (
-float 
-)
-{
-},
-
-/**
  * @method sortAllChildren
  */
 sortAllChildren : function (
@@ -2026,14 +1994,6 @@ getOpacity : function (
 )
 {
     return 0;
-},
-
-/**
- * @method updateOrderOfArrival
- */
-updateOrderOfArrival : function (
-)
-{
 },
 
 /**
@@ -2524,16 +2484,6 @@ isScissorEnabled : function (
  * @method pollEvents
  */
 pollEvents : function (
-)
-{
-},
-
-/**
- * @method setGLContextAttrs
- * @param {GLContextAttrs} arg0
- */
-setGLContextAttrs : function (
-glcontextattrs 
 )
 {
 },
@@ -3261,16 +3211,6 @@ int
 },
 
 /**
- * @method performFunctionInCocosThread
- * @param {function} arg0
- */
-performFunctionInCocosThread : function (
-func 
-)
-{
-},
-
-/**
  * @method removeAllFunctionsToBePerformedInCocosThread
  */
 removeAllFunctionsToBePerformedInCocosThread : function (
@@ -3596,375 +3536,6 @@ getInstance : function (
 };
 
 /**
- * @class Properties
- */
-cc.Properties = {
-
-/**
- * @method getVariable
- * @param {char} arg0
- * @param {char} arg1
- * @return {char}
- */
-getVariable : function (
-char, 
-char 
-)
-{
-    return 0;
-},
-
-/**
- * @method getString
- * @param {char} arg0
- * @param {char} arg1
- * @return {char}
- */
-getString : function (
-char, 
-char 
-)
-{
-    return 0;
-},
-
-/**
- * @method getLong
- * @param {char} arg0
- * @return {long}
- */
-getLong : function (
-char 
-)
-{
-    return 0;
-},
-
-/**
- * @method getNamespace
-* @param {char} char
-* @param {bool} bool
-* @param {bool} bool
-* @return {char|cc.Properties}
-*/
-getNamespace : function(
-char,
-bool,
-bool 
-)
-{
-    return cc.Properties;
-},
-
-/**
- * @method getPath
- * @param {char} arg0
- * @param {String} arg1
- * @return {bool}
- */
-getPath : function (
-char, 
-str 
-)
-{
-    return false;
-},
-
-/**
- * @method getMat4
- * @param {char} arg0
- * @param {mat4_object} arg1
- * @return {bool}
- */
-getMat4 : function (
-char, 
-mat4 
-)
-{
-    return false;
-},
-
-/**
- * @method exists
- * @param {char} arg0
- * @return {bool}
- */
-exists : function (
-char 
-)
-{
-    return false;
-},
-
-/**
- * @method setString
- * @param {char} arg0
- * @param {char} arg1
- * @return {bool}
- */
-setString : function (
-char, 
-char 
-)
-{
-    return false;
-},
-
-/**
- * @method getId
- * @return {char}
- */
-getId : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method rewind
- */
-rewind : function (
-)
-{
-},
-
-/**
- * @method setVariable
- * @param {char} arg0
- * @param {char} arg1
- */
-setVariable : function (
-char, 
-char 
-)
-{
-},
-
-/**
- * @method getBool
- * @param {char} arg0
- * @param {bool} arg1
- * @return {bool}
- */
-getBool : function (
-char, 
-bool 
-)
-{
-    return false;
-},
-
-/**
- * @method getColor
-* @param {char|char} char
-* @param {vec4_object|vec3_object} vec4
-* @return {bool|bool}
-*/
-getColor : function(
-char,
-vec3 
-)
-{
-    return false;
-},
-
-/**
- * @method getType
- * @param {char} arg0
- * @return {cc.Properties::Type}
- */
-getType : function (
-char 
-)
-{
-    return 0;
-},
-
-/**
- * @method getNextNamespace
- * @return {cc.Properties}
- */
-getNextNamespace : function (
-)
-{
-    return cc.Properties;
-},
-
-/**
- * @method getInt
- * @param {char} arg0
- * @return {int}
- */
-getInt : function (
-char 
-)
-{
-    return 0;
-},
-
-/**
- * @method getVec3
- * @param {char} arg0
- * @param {vec3_object} arg1
- * @return {bool}
- */
-getVec3 : function (
-char, 
-vec3 
-)
-{
-    return false;
-},
-
-/**
- * @method getVec2
- * @param {char} arg0
- * @param {vec2_object} arg1
- * @return {bool}
- */
-getVec2 : function (
-char, 
-vec2 
-)
-{
-    return false;
-},
-
-/**
- * @method getVec4
- * @param {char} arg0
- * @param {vec4_object} arg1
- * @return {bool}
- */
-getVec4 : function (
-char, 
-vec4 
-)
-{
-    return false;
-},
-
-/**
- * @method getNextProperty
- * @return {char}
- */
-getNextProperty : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method getFloat
- * @param {char} arg0
- * @return {float}
- */
-getFloat : function (
-char 
-)
-{
-    return 0;
-},
-
-/**
- * @method getQuaternionFromAxisAngle
- * @param {char} arg0
- * @param {cc.Quaternion} arg1
- * @return {bool}
- */
-getQuaternionFromAxisAngle : function (
-char, 
-quaternion 
-)
-{
-    return false;
-},
-
-/**
- * @method parseColor
-* @param {char|char} char
-* @param {vec4_object|vec3_object} vec4
-* @return {bool|bool}
-*/
-parseColor : function(
-char,
-vec3 
-)
-{
-    return false;
-},
-
-/**
- * @method parseVec3
- * @param {char} arg0
- * @param {vec3_object} arg1
- * @return {bool}
- */
-parseVec3 : function (
-char, 
-vec3 
-)
-{
-    return false;
-},
-
-/**
- * @method parseAxisAngle
- * @param {char} arg0
- * @param {cc.Quaternion} arg1
- * @return {bool}
- */
-parseAxisAngle : function (
-char, 
-quaternion 
-)
-{
-    return false;
-},
-
-/**
- * @method parseVec2
- * @param {char} arg0
- * @param {vec2_object} arg1
- * @return {bool}
- */
-parseVec2 : function (
-char, 
-vec2 
-)
-{
-    return false;
-},
-
-/**
- * @method createNonRefCounted
- * @param {String} arg0
- * @return {cc.Properties}
- */
-createNonRefCounted : function (
-str 
-)
-{
-    return cc.Properties;
-},
-
-/**
- * @method parseVec4
- * @param {char} arg0
- * @param {vec4_object} arg1
- * @return {bool}
- */
-parseVec4 : function (
-char, 
-vec4 
-)
-{
-    return false;
-},
-
-};
-
-/**
  * @class FileUtils
  */
 cc.FileUtils = {
@@ -4025,6 +3596,18 @@ str
 )
 {
     return false;
+},
+
+/**
+ * @method getDataFromFile
+ * @param {String} arg0
+ * @return {cc.Data}
+ */
+getDataFromFile : function (
+str 
+)
+{
+    return cc.Data;
 },
 
 /**
@@ -4291,6 +3874,20 @@ str
 )
 {
     return ;
+},
+
+/**
+ * @method writeDataToFile
+ * @param {cc.Data} arg0
+ * @param {String} arg1
+ * @return {bool}
+ */
+writeDataToFile : function (
+data, 
+str 
+)
+{
+    return false;
 },
 
 /**
@@ -4625,6 +4222,20 @@ eventlistener,
 node 
 )
 {
+},
+
+/**
+ * @method addCustomEventListener
+ * @param {String} arg0
+ * @param {function} arg1
+ * @return {cc.EventListenerCustom}
+ */
+addCustomEventListener : function (
+str, 
+func 
+)
+{
+    return cc.EventListenerCustom;
 },
 
 /**
@@ -5185,16 +4796,6 @@ getOriginalTarget : function (
  * @method stop
  */
 stop : function (
-)
-{
-},
-
-/**
- * @method update
- * @param {float} arg0
- */
-update : function (
-float 
 )
 {
 },
@@ -7352,16 +6953,6 @@ TargetedAction : function (
 cc.CardinalSplineTo = {
 
 /**
- * @method getPoints
- * @return {point_object}
- */
-getPoints : function (
-)
-{
-    return cc.PointArray;
-},
-
-/**
  * @method updatePosition
  * @param {vec2_object} arg0
  */
@@ -9039,16 +8630,6 @@ blendfunc
 },
 
 /**
- * @method getTextureAtlas
- * @return {cc.TextureAtlas}
- */
-getTextureAtlas : function (
-)
-{
-    return cc.TextureAtlas;
-},
-
-/**
  * @method getBlendFunc
  * @return {cc.BlendFunc}
  */
@@ -9697,6 +9278,18 @@ float
 },
 
 /**
+ * @method setTTFConfig
+ * @param {cc._ttfConfig} arg0
+ * @return {bool}
+ */
+setTTFConfig : function (
+_ttfconfig 
+)
+{
+    return false;
+},
+
+/**
  * @method getTextColor
  * @return {color4b_object}
  */
@@ -10113,6 +9706,16 @@ getShadowColor : function (
 },
 
 /**
+ * @method getTTFConfig
+ * @return {cc._ttfConfig}
+ */
+getTTFConfig : function (
+)
+{
+    return cc._ttfConfig;
+},
+
+/**
  * @method enableItalics
  */
 enableItalics : function (
@@ -10384,6 +9987,28 @@ str,
 float, 
 size, 
 texthalignment, 
+textvalignment 
+)
+{
+    return cc.Label;
+},
+
+/**
+ * @method createWithTTF
+* @param {cc._ttfConfig|String} _ttfconfig
+* @param {String|String} str
+* @param {cc.TextHAlignment|float} texthalignment
+* @param {int|size_object} int
+* @param {cc.TextHAlignment} texthalignment
+* @param {cc.TextVAlignment} textvalignment
+* @return {cc.Label|cc.Label}
+*/
+createWithTTF : function(
+str,
+str,
+float,
+size,
+texthalignment,
 textvalignment 
 )
 {
@@ -11341,6 +10966,16 @@ menuitem
 },
 
 /**
+ * @method getSubItems
+* @return {Array|Array}
+*/
+getSubItems : function(
+)
+{
+    return new Array();
+},
+
+/**
  * @method getSelectedIndex
  * @return {unsigned int}
  */
@@ -11437,6 +11072,14 @@ isEnabled : function (
 },
 
 /**
+ * @method alignItemsHorizontally
+ */
+alignItemsHorizontally : function (
+)
+{
+},
+
+/**
  * @method alignItemsHorizontallyWithPadding
  * @param {float} arg0
  */
@@ -11457,9 +11100,21 @@ float
 },
 
 /**
- * @method alignItemsHorizontally
+ * @method alignItemsInRowsWithArray
+ * @param {Array} arg0
  */
-alignItemsHorizontally : function (
+alignItemsInRowsWithArray : function (
+array 
+)
+{
+},
+
+/**
+ * @method alignItemsInColumnsWithArray
+ * @param {Array} arg0
+ */
+alignItemsInColumnsWithArray : function (
+array 
 )
 {
 },
@@ -11783,16 +11438,6 @@ bool
 },
 
 /**
- * @method getTextureAtlas
- * @return {cc.TextureAtlas}
- */
-getTextureAtlas : function (
-)
-{
-    return cc.TextureAtlas;
-},
-
-/**
  * @method getBlendFunc
  * @return {cc.BlendFunc}
  */
@@ -11866,67 +11511,9 @@ ParticleBatchNode : function (
 };
 
 /**
- * @class ParticleData
- */
-cc.ParticleData = {
-
-/**
- * @method release
- */
-release : function (
-)
-{
-},
-
-/**
- * @method getMaxCount
- * @return {unsigned int}
- */
-getMaxCount : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method init
- * @param {int} arg0
- * @return {bool}
- */
-init : function (
-int 
-)
-{
-    return false;
-},
-
-/**
- * @method copyParticle
- * @param {int} arg0
- * @param {int} arg1
- */
-copyParticle : function (
-int, 
-int 
-)
-{
-},
-
-/**
- * @method ParticleData
- * @constructor
- */
-ParticleData : function (
-)
-{
-},
-
-};
-
-/**
  * @class ParticleSystem
  */
-cc.ParticleSystem = {
+cc._ParticleSystem = {
 
 /**
  * @method getStartSizeVar
@@ -14896,351 +14483,6 @@ GLProgramCache : function (
 };
 
 /**
- * @class RenderState
- */
-cc.RenderState = {
-
-/**
- * @method setTexture
- * @param {cc.Texture2D} arg0
- */
-setTexture : function (
-texture2d 
-)
-{
-},
-
-/**
- * @method getTopmost
- * @param {cc.RenderState} arg0
- * @return {cc.RenderState}
- */
-getTopmost : function (
-renderstate 
-)
-{
-    return cc.RenderState;
-},
-
-/**
- * @method getTexture
- * @return {cc.Texture2D}
- */
-getTexture : function (
-)
-{
-    return cc.Texture2D;
-},
-
-/**
- * @method bind
- * @param {cc.Pass} arg0
- */
-bind : function (
-pass 
-)
-{
-},
-
-/**
- * @method getName
- * @return {String}
- */
-getName : function (
-)
-{
-    return ;
-},
-
-/**
- * @method getStateBlock
- * @return {cc.RenderState::StateBlock}
- */
-getStateBlock : function (
-)
-{
-    return cc.RenderState::StateBlock;
-},
-
-/**
- * @method setParent
- * @param {cc.RenderState} arg0
- */
-setParent : function (
-renderstate 
-)
-{
-},
-
-/**
- * @method initialize
- */
-initialize : function (
-)
-{
-},
-
-/**
- * @method finalize
- */
-finalize : function (
-)
-{
-},
-
-};
-
-/**
- * @class Pass
- */
-cc.Pass = {
-
-/**
- * @method unbind
- */
-unbind : function (
-)
-{
-},
-
-/**
- * @method bind
-* @param {mat4_object|mat4_object} mat4
-* @param {bool} bool
-*/
-bind : function(
-mat4,
-bool 
-)
-{
-},
-
-/**
- * @method clone
- * @return {cc.Pass}
- */
-clone : function (
-)
-{
-    return cc.Pass;
-},
-
-/**
- * @method getGLProgramState
- * @return {cc.GLProgramState}
- */
-getGLProgramState : function (
-)
-{
-    return cc.GLProgramState;
-},
-
-/**
- * @method getVertexAttributeBinding
- * @return {cc.VertexAttribBinding}
- */
-getVertexAttributeBinding : function (
-)
-{
-    return cc.VertexAttribBinding;
-},
-
-/**
- * @method getHash
- * @return {unsigned int}
- */
-getHash : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method setVertexAttribBinding
- * @param {cc.VertexAttribBinding} arg0
- */
-setVertexAttribBinding : function (
-vertexattribbinding 
-)
-{
-},
-
-/**
- * @method create
- * @param {cc.Technique} arg0
- * @return {cc.Pass}
- */
-create : function (
-technique 
-)
-{
-    return cc.Pass;
-},
-
-/**
- * @method createWithGLProgramState
- * @param {cc.Technique} arg0
- * @param {cc.GLProgramState} arg1
- * @return {cc.Pass}
- */
-createWithGLProgramState : function (
-technique, 
-glprogramstate 
-)
-{
-    return cc.Pass;
-},
-
-};
-
-/**
- * @class Material
- */
-cc.Material = {
-
-/**
- * @method clone
- * @return {cc.Material}
- */
-clone : function (
-)
-{
-    return cc.Material;
-},
-
-/**
- * @method getTechniqueCount
- * @return {int}
- */
-getTechniqueCount : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method setName
- * @param {String} arg0
- */
-setName : function (
-str 
-)
-{
-},
-
-/**
- * @method getTechniqueByIndex
- * @param {int} arg0
- * @return {cc.Technique}
- */
-getTechniqueByIndex : function (
-int 
-)
-{
-    return cc.Technique;
-},
-
-/**
- * @method getName
- * @return {String}
- */
-getName : function (
-)
-{
-    return ;
-},
-
-/**
- * @method getTechniques
- * @return {Array}
- */
-getTechniques : function (
-)
-{
-    return new Array();
-},
-
-/**
- * @method setTechnique
- * @param {String} arg0
- */
-setTechnique : function (
-str 
-)
-{
-},
-
-/**
- * @method getTechniqueByName
- * @param {String} arg0
- * @return {cc.Technique}
- */
-getTechniqueByName : function (
-str 
-)
-{
-    return cc.Technique;
-},
-
-/**
- * @method addTechnique
- * @param {cc.Technique} arg0
- */
-addTechnique : function (
-technique 
-)
-{
-},
-
-/**
- * @method getTechnique
- * @return {cc.Technique}
- */
-getTechnique : function (
-)
-{
-    return cc.Technique;
-},
-
-/**
- * @method createWithFilename
- * @param {String} arg0
- * @return {cc.Material}
- */
-createWithFilename : function (
-str 
-)
-{
-    return cc.Material;
-},
-
-/**
- * @method createWithGLStateProgram
- * @param {cc.GLProgramState} arg0
- * @return {cc.Material}
- */
-createWithGLStateProgram : function (
-glprogramstate 
-)
-{
-    return cc.Material;
-},
-
-/**
- * @method createWithProperties
- * @param {cc.Properties} arg0
- * @return {cc.Material}
- */
-createWithProperties : function (
-properties 
-)
-{
-    return cc.Material;
-},
-
-};
-
-/**
  * @class TextureCache
  */
 cc.TextureCache = {
@@ -15716,16 +14958,6 @@ getTexture : function (
 increaseAtlasCapacity : function (
 )
 {
-},
-
-/**
- * @method getTextureAtlas
- * @return {cc.TextureAtlas}
- */
-getTextureAtlas : function (
-)
-{
-    return cc.TextureAtlas;
 },
 
 /**
