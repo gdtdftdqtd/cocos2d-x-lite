@@ -283,6 +283,17 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
         }
     }
 
+    return getContentsBuffer(relativePath, buffer);
+}
+
+FileUtils::Status FileUtilsAndroid::getContentsBuffer(const std::string& filename, ResizableBuffer* buffer)
+{
+    if (filename.empty())
+        return FileUtils::Status::NotExists;
+
+    string fullPath = fullPathForFilename(filename);
+    string relativePath = removeAssetsPath(fullPath);
+
     if (nullptr == assetmanager) {
         LOGD("... FileUtilsAndroid::assetmanager is nullptr");
         return FileUtils::Status::NotInitialized;
@@ -402,42 +413,24 @@ FileUtils::Status FileUtilsAndroid::getReverseSuffixContents(const std::string& 
     {
         std::string suffix = getFileExtension(filename);
         if (suffix == ".jpg" || suffix == ".png"){
-            if (nullptr == assetmanager) {
-                LOGD("... FileUtilsAndroid::assetmanager is nullptr");
-                return FileUtils::Status::NotInitialized;
+            if (Status::OK == getContentsBuffer(relativePath, buffer)){
+                for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
+                    unsigned char * content = (unsigned char *)buffer->buffer();
+                    content[i] ^= encrypt_keys[i];
+                }
+                return Status::OK;
             }
-            AAsset* asset = AAssetManager_open(assetmanager, relativePath.data(), AASSET_MODE_UNKNOWN);
-            if (nullptr == asset) {
-                LOGD("asset is nullptr");
-                return FileUtils::Status::OpenFailed;
-            }
-
-            auto size = AAsset_getLength(asset);
-            buffer->resize(size);
-
-            int readsize = AAsset_read(asset, buffer->buffer(), size);
-            AAsset_close(asset);
-
-            if (readsize < size) {
-                if (readsize >= 0)
-                    buffer->resize(readsize);
-                return FileUtils::Status::ReadFailed;
-            }
-
-            for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
-                unsigned char * content = (unsigned char *)buffer->buffer();
-                content[i] ^= encrypt_keys[i];
-            }
-            return Status::OK;
-        }
-
-        if (!copyFileToSearchPathFromAssets(relativePath))
-        {
             return FileUtils::Status::NotExists;
         }
-        return FileUtils::getReverseSuffixContents(getWritableUpdatePath()+filename, buffer);
+        else if (suffix == ".js" || suffix == ".jsc") {
+            if (!copyFileToSearchPathFromAssets(relativePath))
+            {
+                return FileUtils::Status::NotExists;
+            }
+            return FileUtils::getReverseSuffixContents(getWritableUpdatePath()+filename, buffer);
+        }
     }
-    return FileUtils::Status::NotExists;
+    return getContentsBuffer(relativePath, buffer);
 }
 
 std::string FileUtilsAndroid::removeAssetsPath(const std::string &filename) const

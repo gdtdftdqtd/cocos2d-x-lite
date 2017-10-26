@@ -70,6 +70,11 @@ void jsb_init_file_operation_delegate()
 
 #if SCRIPT_ENGINE_TYPE != SCRIPT_ENGINE_SM
             std::string byteCodePath = removeFileExt(path) + BYTE_CODE_FILE_EXT;
+            std::string tempFilename = FileUtils::getInstance()->getReverseSuffixFilename(byteCodePath);
+            if (FileUtils::getInstance()->isReverseSuffixFileExist(tempFilename)) {
+                std::string ret = FileUtils::getInstance()->getStringFromFile(byteCodePath);
+                return ret;
+            }
             if (FileUtils::getInstance()->isFileExist(byteCodePath)) {
                 Data fileData = FileUtils::getInstance()->getDataFromFile(byteCodePath);
 

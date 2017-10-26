@@ -652,16 +652,24 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
     if (state == Status::OK) {
         return Status::OK;
     }
+
+    return getContentsBuffer(filename, buffer);
+}
+
+FileUtils::Status FileUtils::getContentsBuffer(const std::string& filename, ResizableBuffer* buffer)
+{
+    if (filename.empty())
+        return Status::NotExists;
     auto fs = FileUtils::getInstance();
     std::string fullPath;
     fullPath = fs->fullPathForFilename(filename);
     if (fullPath.empty())
         return Status::NotExists;
-
+    
     FILE *fp = fopen(fs->getSuitableFOpen(fullPath).c_str(), "rb");
     if (!fp)
         return Status::OpenFailed;
-
+    
 #if defined(_MSC_VER)
     auto descriptor = _fileno(fp);
 #else
@@ -673,16 +681,16 @@ FileUtils::Status FileUtils::getContents(const std::string& filename, ResizableB
         return Status::ReadFailed;
     }
     size_t size = statBuf.st_size;
-
+    
     buffer->resize(size);
     size_t readsize = fread(buffer->buffer(), 1, size, fp);
     fclose(fp);
-
+    
     if (readsize < size) {
         buffer->resize(readsize);
         return Status::ReadFailed;
     }
-
+    
     return Status::OK;
 }
 
@@ -690,8 +698,8 @@ std::string FileUtils::getReverseSuffixFilePassword(const std::string& filePath)
 {
     std::string baseFileName = basename(filePath);
     std::string suffix = getFileExtension(baseFileName);
-    std::string password = "CHL^" + baseFileName.substr(0,3) + suffix + "^CHL";
-    password = password + "_" + md5::getStringMd5(password);
+    std::string password = "@Chl^" + baseFileName.substr(0,3) + suffix + "^@CQXY2017";
+    password = password + "#" + md5::getStringMd5(password).substr(1,8);
     return password;
 }
 
@@ -707,38 +715,15 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
         fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
         if (!fullPath.empty())
         {
-            auto fs = FileUtils::getInstance();
-            FILE *fp = fopen(fs->getSuitableFOpen(fullPath).c_str(), "rb");
-            if (!fp)
-                return Status::OpenFailed;
-            
-#if defined(_MSC_VER)
-            auto descriptor = _fileno(fp);
-#else
-            auto descriptor = fileno(fp);
-#endif
-            struct stat statBuf;
-            if (fstat(descriptor, &statBuf) == -1) {
-                fclose(fp);
-                return Status::ReadFailed;
+            if (Status::OK == getContentsBuffer(filename, buffer)) {
+                for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
+                    unsigned char * content = (unsigned char *)buffer->buffer();
+                    content[i] ^= encrypt_keys[i];
+                }
+                
+                return Status::OK;
             }
-            size_t size = statBuf.st_size;
-            
-            buffer->resize(size);
-            size_t readsize = fread(buffer->buffer(), 1, size, fp);
-            fclose(fp);
-            
-            if (readsize < size) {
-                buffer->resize(readsize);
-                return Status::ReadFailed;
-            }
-            
-            for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
-                unsigned char * content = (unsigned char *)buffer->buffer();
-                content[i] ^= encrypt_keys[i];
-            }
-            
-            return Status::OK;
+            return Status::NotExists;
         }
     }
     else if (suffix == ".js" || suffix == ".jsc") {
@@ -759,23 +744,8 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
             }
         }
     }
-    else{
-        std::string fullPath;
-        std::string tempFilename = getReverseSuffixFilename(filename);
-        fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
-        if (!fullPath.empty())
-        {
-            std::string baseFileName = basename(filename);
-            ssize_t size = 0;
-            unsigned char* buff = getFileDataFromZip(fullPath, baseFileName, &size);
-            if (buff && size > 0) {
-                buffer->resize(size);
-                memcpy(buffer->buffer(), buff, size);
-                return Status::OK;
-            }
-        }
-    }
-    return Status::NotExists;
+    
+    return getContentsBuffer(filename, buffer);
 }
 
 unsigned char* FileUtils::getFileData(const std::string& filename, const char* mode, ssize_t *size)
@@ -1042,7 +1012,7 @@ std::string FileUtils::fullPathForFilenameByReverseSuffix(const std::string &fil
     
     if (isAbsolutePath(filename))
     {
-        if (isFileExist(filename)) {
+        if (isReverseSuffixFileExist(filename)) {
             return filename;
         }
     }
@@ -1256,6 +1226,22 @@ bool FileUtils::isFileExist(const std::string& filename) const
     else
     {
         std::string fullpath = fullPathForFilename(filename);
+        if (fullpath.empty())
+            return false;
+        else
+            return true;
+    }
+}
+
+bool FileUtils::isReverseSuffixFileExist(const std::string& filename) const
+{
+    if (isAbsolutePath(filename))
+    {
+        return isFileExistInternal(filename);
+    }
+    else
+    {
+        std::string fullpath = fullPathForFilenameByReverseSuffix(filename);
         if (fullpath.empty())
             return false;
         else

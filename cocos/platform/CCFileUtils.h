@@ -244,6 +244,8 @@ public:
         return getContents(filename, &buf);
     }
     virtual Status getContents(const std::string& filename, ResizableBuffer* buffer);
+    
+    virtual Status getContentsBuffer(const std::string& filename, ResizableBuffer* buffer);
 
     /**
      *  Gets resource file data
@@ -553,6 +555,7 @@ public:
      *  @return True if the file exists, false if not.
      */
     virtual bool isFileExist(const std::string& filename) const;
+    virtual bool isReverseSuffixFileExist(const std::string& filename) const;
 
     /**
     *  Gets filename extension is a suffix (separated from the base filename by a dot) in lower case.
