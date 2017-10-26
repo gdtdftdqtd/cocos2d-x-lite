@@ -8762,6 +8762,18 @@ getAlphaThreshold : function (
 },
 
 /**
+ * @method init
+* @param {cc.Node} node
+* @return {bool|bool}
+*/
+init : function(
+node 
+)
+{
+    return false;
+},
+
+/**
  * @method getStencil
  * @return {cc.Node}
  */
@@ -10130,7 +10142,7 @@ float
 * @param {color4b_object|color4b_object} color4b
 * @param {float} float
 * @param {float} float
-* @return {bool|bool}
+* @return {bool|bool|bool}
 */
 initWithColor : function(
 color4b,
@@ -15465,15 +15477,15 @@ cc.ParallaxNode = {
 
 /**
  * @method addChild
- * @param {cc.Node} arg0
- * @param {int} arg1
- * @param {vec2_object} arg2
- * @param {vec2_object} arg3
- */
-addChild : function (
-node, 
-int, 
-vec2, 
+* @param {cc.Node|cc.Node|cc.Node} node
+* @param {int|int|int} int
+* @param {vec2_object|int|String} vec2
+* @param {vec2_object} vec2
+*/
+addChild : function(
+node,
+int,
+vec2,
 vec2 
 )
 {
