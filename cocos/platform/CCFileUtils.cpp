@@ -708,44 +708,40 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
     if (filename.empty()){
         return Status::NotExists;
     }
-    std::string suffix = getFileExtension(filename);
-    if (suffix == ".jpg" || suffix == ".png") {
-        std::string fullPath;
-        std::string tempFilename = getReverseSuffixFilename(filename);
-        fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
-        if (!fullPath.empty())
-        {
-            if (Status::OK == getContentsBuffer(filename, buffer)) {
+    std::string fullPath;
+    std::string tempFilename = getReverseSuffixFilename(filename);
+    fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
+    if (!fullPath.empty())
+    {
+        std::string suffix = getFileExtension(filename);
+        if (suffix == ".jpg" || suffix == ".png") {
+            if (Status::OK == getContentsBuffer(fullPath, buffer)) {
                 for (int i=0; i<sizeof(encrypt_keys)/sizeof(unsigned char); ++i) {
                     unsigned char * content = (unsigned char *)buffer->buffer();
                     content[i] ^= encrypt_keys[i];
                 }
-                
+
                 return Status::OK;
             }
             return Status::NotExists;
         }
-    }
-    else if (suffix == ".js" || suffix == ".jsc") {
-        std::string fullPath;
-        std::string tempFilename = getReverseSuffixFilename(filename);
-        fullPath = fullPathForFilenameByReverseSuffix(tempFilename);
-        if (!fullPath.empty())
-        {
+        else if (suffix == ".js" || suffix == ".jsc") {
             std::string baseFileName = basename(filename);
             std::string password = getReverseSuffixFilePassword(filename);
             ssize_t size = 0;
-            
+
             unsigned char* buff = getFileDataFromZipByPassword(fullPath, baseFileName, &size, password);
             if (buff && size > 0) {
                 buffer->resize(size);
                 memcpy(buffer->buffer(), buff, size);
                 return Status::OK;
             }
+            return Status::NotExists;
         }
+        return getContentsBuffer(fullPath, buffer);
     }
     
-    return getContentsBuffer(filename, buffer);
+    return Status::NotExists;
 }
 
 unsigned char* FileUtils::getFileData(const std::string& filename, const char* mode, ssize_t *size)

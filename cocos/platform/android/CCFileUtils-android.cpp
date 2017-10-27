@@ -262,7 +262,7 @@ FileUtils::Status FileUtilsAndroid::getContents(const std::string& filename, Res
         if (state == FileUtils::Status::OK) {
             return FileUtils::Status::OK;
         }
-        return FileUtils::getContents(fullPath, buffer);
+        return FileUtils::getContentsBuffer(fullPath, buffer);
     }
 
     string relativePath = removeAssetsPath(fullPath);
@@ -292,6 +292,10 @@ FileUtils::Status FileUtilsAndroid::getContentsBuffer(const std::string& filenam
         return FileUtils::Status::NotExists;
 
     string fullPath = fullPathForFilename(filename);
+    if (fullPath[0] == '/'){
+        return FileUtils::getContentsBuffer(fullPath, buffer);
+    }
+
     string relativePath = removeAssetsPath(fullPath);
 
     if (nullptr == assetmanager) {
@@ -418,7 +422,7 @@ FileUtils::Status FileUtilsAndroid::getReverseSuffixContents(const std::string& 
                     unsigned char * content = (unsigned char *)buffer->buffer();
                     content[i] ^= encrypt_keys[i];
                 }
-                return Status::OK;
+                return FileUtils::Status::OK;
             }
             return FileUtils::Status::NotExists;
         }
@@ -429,8 +433,9 @@ FileUtils::Status FileUtilsAndroid::getReverseSuffixContents(const std::string& 
             }
             return FileUtils::getReverseSuffixContents(getWritableUpdatePath()+filename, buffer);
         }
+        return getContentsBuffer(relativePath, buffer);
     }
-    return getContentsBuffer(relativePath, buffer);
+    return FileUtils::Status::NotExists;
 }
 
 std::string FileUtilsAndroid::removeAssetsPath(const std::string &filename) const
