@@ -13,6 +13,9 @@ gulp.task('make-cocos2d-x', gulpSequence('gen-cocos2d-x', 'upload-cocos2d-x'));
 gulp.task('make-prebuilt', gulpSequence('gen-libs', 'collect-prebuilt-mk', 'archive-prebuilt-mk', 'archive-prebuilt', 'upload-prebuilt', 'upload-prebuilt-mk'));
 gulp.task('make-simulator', gulpSequence('gen-simulator', 'update-simulator-config', 'update-simulator-dll', 'archive-simulator', 'upload-simulator'));
 
+gulp.task('publish-source', gulpSequence('init', 'make-cocos2d-x'));
+gulp.task('publish-prebuilt', gulpSequence('init', 'make-simulator', 'make-prebuilt'));
+
 function execSync(cmd, workPath) {
     var execOptions = {
         cwd: workPath,
@@ -24,17 +27,13 @@ function execSync(cmd, workPath) {
 function downloadSimulatorDLL(callback) {
     var Download = require('download');
     var destPath = Path.join('simulator', 'win32');
-    new Download({
-            mode: '755',
-            extract: true,
-            strip: 0
-        })
-        .get('http://192.168.52.109/TestBuilds/Fireball/simulator/dlls/dll.zip')
-        .dest(destPath)
-        .run(function(err, files) {
-            if (err) throw err;
-            else callback();
-        });
+    Download('http://192.168.52.109/TestBuilds/Fireball/simulator/dlls/dll.zip', destPath, {
+        mode: '755',
+        extract: true,
+        strip: 0
+    }).then(function(res) {
+        callback();
+    }).catch(callback);
 }
 
 function upload2Ftp(localPath, ftpPath, config, cb) {
@@ -94,6 +93,7 @@ function getCurrentBranch() {
 gulp.task('init', function(cb) {
     execSync('python download-deps.py', '.');
     execSync('git submodule update --init', '.');
+    execSync('python download-bin.py', './tools/cocos2d-console');
     cb();
 });
 
