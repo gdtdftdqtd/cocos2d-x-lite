@@ -581,6 +581,8 @@ var _initSys = function () {
     })();
 
     sys.os = __getOS();
+    
+    sys.ios_simulator = __getISIOSSimulator();
 
     sys.browserType = null; //null in jsb
 

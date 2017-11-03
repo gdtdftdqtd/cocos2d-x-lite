@@ -711,6 +711,30 @@ static bool JSBCore_os(se::State& s)
 }
 SE_BIND_FUNC(JSBCore_os)
 
+static bool JSBCore_isIOSSimulator(se::State& s)
+{
+    if (s.args().size() != 0)
+    {
+        SE_REPORT_ERROR("Invalid number of arguments in __getISIOSSimulator");
+        return false;
+    }
+    
+    se::Value os;
+    
+    // osx, ios, android, windows, linux, etc..
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    #if TARGET_IPHONE_SIMULATOR
+        os.setBoolean(true);
+    #else
+        os.setBoolean(false);
+    #endif
+#endif
+    
+    s.rval() = os;
+    return true;
+}
+SE_BIND_FUNC(JSBCore_isIOSSimulator)
+
 static bool JSB_cleanScript(se::State& s)
 {
     assert(false); //FIXME:
@@ -804,6 +828,7 @@ bool jsb_register_global_variables(se::Object* global)
 
     global->defineFunction("__getPlatform", _SE(JSBCore_platform));
     global->defineFunction("__getOS", _SE(JSBCore_os));
+    global->defineFunction("__getISIOSSimulator", _SE(JSBCore_isIOSSimulator));
     global->defineFunction("__getVersion", _SE(JSBCore_version));
     global->defineFunction("__restartVM", _SE(JSB_core_restartVM));
     global->defineFunction("__cleanScript", _SE(JSB_cleanScript));
