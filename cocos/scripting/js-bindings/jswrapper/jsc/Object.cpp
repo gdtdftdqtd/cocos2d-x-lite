@@ -1,3 +1,26 @@
+/****************************************************************************
+ Copyright (c) 2017 Chukong Technologies Inc.
+
+ http://www.cocos2d-x.org
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
 #include "Object.hpp"
 
 #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
@@ -15,6 +38,20 @@ namespace se {
 #if SE_DEBUG > 0
         uint32_t __id = 0;
 #endif
+
+        bool isInstanceOfConstructor(JSContextRef ctx, JSValueRef value, const char* ctorName)
+        {
+            if (ctorName == nullptr)
+                return false;
+            Object* global = ScriptEngine::getInstance()->getGlobalObject();
+            Value ctorVal;
+            bool ret = false;
+            if (global->getProperty(ctorName, &ctorVal), ctorVal.isObject())
+            {
+                ret = JSValueIsInstanceOfConstructor(ctx, value, ctorVal.toObject()->_getJSObject(), nullptr);
+            }
+            return ret;
+        }
     }
 
     Object::Object()
@@ -268,7 +305,7 @@ namespace se {
 
             if (_rootCount > 0)
             {
-    //            LOGD("Object::_cleanup, (%p) rootCount: %u\n", this, _rootCount);
+    //            SE_LOGD("Object::_cleanup, (%p) rootCount: %u\n", this, _rootCount);
                 // Don't unprotect if it's in cleanup, otherwise, it will trigger crash.
                 if (!se->isInCleanup() && !se->isGarbageCollecting())
                     JSValueUnprotect(__cx, _obj);
@@ -278,7 +315,7 @@ namespace se {
         }
         else
         {
-            LOGD("Object::_cleanup, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
+            SE_LOGD("Object::_cleanup, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
         }
 
         _isCleanup = true;
@@ -518,25 +555,10 @@ namespace se {
             return ret;
         }
 #endif
-        Value func;
-        bool ok = ScriptEngine::getInstance()->getGlobalObject()->getProperty("__jsc_isTypedArray", &func);
-        if (ok && func.isObject() && func.toObject()->isFunction())
-        {
-            ValueArray args;
-            args.push_back(Value((Object*)this));
-
-            Value rval;
-            ok = func.toObject()->call(args, nullptr, &rval);
-            if (ok && rval.isBoolean())
-            {
-                bool ret = rval.toBoolean();
-                if (ret)
-                    _type = Type::TYPED_ARRAY;
-                return ret;
-            }
-        }
-
-        return false;
+        bool ret = isInstanceOfConstructor(__cx, _obj, "__jscTypedArrayConstructor");
+        if (ret)
+            _type = Type::TYPED_ARRAY;
+        return ret;
     }
 
     bool Object::getTypedArrayData(uint8_t** ptr, size_t* length) const
@@ -627,7 +649,19 @@ namespace se {
 
     bool Object::isArray() const
     {
-        return JSValueIsArray(__cx, _obj);
+        if (_type == Type::ARRAY)
+            return true;
+
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101100 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+        if (isSupportArrayTestAPI())
+        {
+            return JSValueIsArray(__cx, _obj);
+        }
+#endif
+        bool ret = isInstanceOfConstructor(__cx, _obj, "Array");
+          if (ret)
+            _type = Type::ARRAY;
+        return ret;
     }
 
     bool Object::isArrayBuffer() const
@@ -653,25 +687,10 @@ namespace se {
         }
 #endif
 
-        Value func;
-        bool ok = ScriptEngine::getInstance()->getGlobalObject()->getProperty("__jsc_isArrayBuffer", &func);
-        if (ok && func.isObject() && func.toObject()->isFunction())
-        {
-            ValueArray args;
-            args.push_back(Value((Object*)this));
-
-            Value rval;
-            ok = func.toObject()->call(args, nullptr, &rval);
-            if (ok && rval.isBoolean())
-            {
-                bool ret = rval.toBoolean();
-                if (ret)
-                    _type = Type::ARRAY_BUFFER;
-                return ret;
-            }
-        }
-
-        return false;
+        bool ret = isInstanceOfConstructor(__cx, _obj, "ArrayBuffer");
+        if (ret)
+            _type = Type::ARRAY_BUFFER;
+        return ret;
     }
 
     bool Object::getArrayBufferData(uint8_t** ptr, size_t* length) const
@@ -834,7 +853,7 @@ namespace se {
                 }
                 else
                 {
-                    LOGD("Object::unroot, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
+                    SE_LOGD("Object::unroot, ScriptEngine was initialized again, ignore cleanup work, oldVMId: %u, newVMId: %u\n", _currentVMId, se->getVMId());
                 }
             }
         }

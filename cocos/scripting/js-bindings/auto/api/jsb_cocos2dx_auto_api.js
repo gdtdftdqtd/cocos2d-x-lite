@@ -119,6 +119,16 @@ getAlphaTextureName : function (
 },
 
 /**
+ * @method getName
+ * @return {unsigned int}
+ */
+getName : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method initWithString
 * @param {String|String} str
 * @param {cc.FontDefinition|String} fontdefinition
@@ -809,14 +819,6 @@ getChildren : function(
 )
 {
     return new Array();
-},
-
-/**
- * @method markTransformUpdated
- */
-markTransformUpdated : function (
-)
-{
 },
 
 /**
@@ -2015,6 +2017,14 @@ isCascadeColorEnabled : function (
 },
 
 /**
+ * @method markCullingDirty
+ */
+markCullingDirty : function (
+)
+{
+},
+
+/**
  * @method stopAction
  * @param {cc.Action} arg0
  */
@@ -2530,6 +2540,16 @@ getDeltaTime : function (
 },
 
 /**
+ * @method isCullingEnabled
+ * @return {bool}
+ */
+isCullingEnabled : function (
+)
+{
+    return false;
+},
+
+/**
  * @method setGLDefaultValues
  */
 setGLDefaultValues : function (
@@ -2573,6 +2593,16 @@ popToRootScene : function (
 loadMatrix : function (
 matrix_stack_type, 
 mat4 
+)
+{
+},
+
+/**
+ * @method setCullingEnabled
+ * @param {bool} arg0
+ */
+setCullingEnabled : function (
+bool 
 )
 {
 },
@@ -2695,10 +2725,12 @@ vec2
 
 /**
  * @method pushMatrix
- * @param {cc.MATRIX_STACK_TYPE} arg0
- */
-pushMatrix : function (
-matrix_stack_type 
+* @param {cc.MATRIX_STACK_TYPE|cc.MATRIX_STACK_TYPE} matrix_stack_type
+* @param {mat4_object} mat4
+*/
+pushMatrix : function(
+matrix_stack_type,
+mat4 
 )
 {
 },
@@ -13729,6 +13761,24 @@ int
 begin : function (
 )
 {
+},
+
+/**
+ * @method saveToFile
+* @param {String|String} str
+* @param {cc.Image::Format|bool} format
+* @param {bool|function} bool
+* @param {function} func
+* @return {bool|bool}
+*/
+saveToFile : function(
+str,
+format,
+bool,
+func 
+)
+{
+    return false;
 },
 
 /**
