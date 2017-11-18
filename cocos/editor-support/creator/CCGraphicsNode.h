@@ -196,6 +196,11 @@ public:
     void circle(float cx, float cy, float r);
 
     void fillRect(float x, float y, float w, float h);
+    
+    //add by chl
+    void polygon(const cocos2d::Vec2 *verts, unsigned int count);
+    void fillPolygon(const cocos2d::Vec2 *verts, unsigned int count);
+    //end add
 
     void close();
 

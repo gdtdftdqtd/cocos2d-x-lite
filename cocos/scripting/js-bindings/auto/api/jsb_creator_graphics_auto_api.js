@@ -149,6 +149,30 @@ linecap
 },
 
 /**
+ * @method polygon
+ * @param {vec2_object} arg0
+ * @param {unsigned int} arg1
+ */
+polygon : function (
+vec2, 
+int 
+)
+{
+},
+
+/**
+ * @method fillPolygon
+ * @param {vec2_object} arg0
+ * @param {unsigned int} arg1
+ */
+fillPolygon : function (
+vec2, 
+int 
+)
+{
+},
+
+/**
  * @method circle
  * @param {float} arg0
  * @param {float} arg1

@@ -247,6 +247,48 @@ static bool js_creator_graphics_GraphicsNode_setLineCap(se::State& s)
 }
 SE_BIND_FUNC(js_creator_graphics_GraphicsNode_setLineCap)
 
+static bool js_creator_graphics_GraphicsNode_polygon(se::State& s)
+{
+    creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_creator_graphics_GraphicsNode_polygon : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        const cocos2d::Vec2* arg0 = nullptr;
+        unsigned int arg1 = 0;
+        std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_Vec2(args[0], &tempData);arg0=tempData.data();
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
+        SE_PRECONDITION2(ok, false, "js_creator_graphics_GraphicsNode_polygon : Error processing arguments");
+        cobj->polygon(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_creator_graphics_GraphicsNode_polygon)
+
+static bool js_creator_graphics_GraphicsNode_fillPolygon(se::State& s)
+{
+    creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_creator_graphics_GraphicsNode_fillPolygon : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        const cocos2d::Vec2* arg0 = nullptr;
+        unsigned int arg1 = 0;
+        std::vector<cocos2d::Vec2> tempData;ok &= seval_to_std_vector_Vec2(args[0], &tempData);arg0=tempData.data();
+        ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
+        SE_PRECONDITION2(ok, false, "js_creator_graphics_GraphicsNode_fillPolygon : Error processing arguments");
+        cobj->fillPolygon(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_creator_graphics_GraphicsNode_fillPolygon)
+
 static bool js_creator_graphics_GraphicsNode_circle(se::State& s)
 {
     creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
@@ -738,6 +780,8 @@ bool js_register_creator_graphics_GraphicsNode(se::Object* obj)
     cls->defineFunction("fill", _SE(js_creator_graphics_GraphicsNode_fill));
     cls->defineFunction("getStrokeColor", _SE(js_creator_graphics_GraphicsNode_getStrokeColor));
     cls->defineFunction("setLineCap", _SE(js_creator_graphics_GraphicsNode_setLineCap));
+    cls->defineFunction("polygon", _SE(js_creator_graphics_GraphicsNode_polygon));
+    cls->defineFunction("fillPolygon", _SE(js_creator_graphics_GraphicsNode_fillPolygon));
     cls->defineFunction("circle", _SE(js_creator_graphics_GraphicsNode_circle));
     cls->defineFunction("roundRect", _SE(js_creator_graphics_GraphicsNode_roundRect));
     cls->defineFunction("draw", _SE(js_creator_graphics_GraphicsNode_draw));

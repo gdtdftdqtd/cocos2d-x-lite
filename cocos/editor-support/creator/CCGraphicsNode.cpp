@@ -382,6 +382,21 @@ void GraphicsNode::fillRect(float x, float y, float w, float h)
     fill();
 }
 
+void GraphicsNode::polygon(const cocos2d::Vec2 *verts, unsigned int count)
+{
+    CCASSERT(count >= 0, "invalid count value");
+    moveTo(verts[0].x, verts[0].y);
+    for (int i=1; i<count; ++i) {
+        lineTo(verts[i].x, verts[i].y);
+    }
+    close();
+}
+void GraphicsNode::fillPolygon(const cocos2d::Vec2 *verts, unsigned int count)
+{
+    polygon(verts, count);
+    fill();
+}
+
 void GraphicsNode::close()
 {
     _curPath->closed = true;
