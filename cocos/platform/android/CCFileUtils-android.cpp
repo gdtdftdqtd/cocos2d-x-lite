@@ -426,7 +426,7 @@ FileUtils::Status FileUtilsAndroid::getReverseSuffixContents(const std::string& 
             }
             return FileUtils::Status::NotExists;
         }
-        else if (suffix == ".js" || suffix == ".jsc") {
+        else if (suffix == ".js" || suffix == ".jsc" || suffix == ".json") {
             if (!copyFileToSearchPathFromAssets(relativePath))
             {
                 return FileUtils::Status::NotExists;

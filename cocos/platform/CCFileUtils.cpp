@@ -725,7 +725,7 @@ FileUtils::Status FileUtils::getReverseSuffixContents(const std::string& filenam
             }
             return Status::NotExists;
         }
-        else if (suffix == ".js" || suffix == ".jsc") {
+        else if (suffix == ".js" || suffix == ".jsc" || suffix == ".json") {
             std::string baseFileName = basename(filename);
             std::string password = getReverseSuffixFilePassword(filename);
             ssize_t size = 0;
