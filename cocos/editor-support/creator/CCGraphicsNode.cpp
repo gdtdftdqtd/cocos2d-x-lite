@@ -141,6 +141,10 @@ GraphicsNode::GraphicsNode()
 
     _strokeColor = Color4F::BLACK;
     _fillColor = Color4F::WHITE;
+    
+//    _strokeOpacity = 255;
+//    _fillOpacity = 255;
+    _graphicsOpacity = 255;
 
     auto glprogram = GLProgram::createWithByteArrays(ccGraphicsVert, ccGraphicsFrag);
     auto glprogramstate = GLProgramState::getOrCreateWithGLProgram(glprogram);
@@ -390,10 +394,69 @@ void GraphicsNode::polygon(const cocos2d::Vec2 *verts, unsigned int count)
         lineTo(verts[i].x, verts[i].y);
     }
     close();
+    _curPath->complex = true;
 }
+    
+//void GraphicsNode::polygon(const cocos2d::Vec2 *verts, unsigned int count)
+//{
+//    CCASSERT(count >= 0, "invalid count value");
+//    float r = 5;
+//    moveTo(verts[count-2].x, verts[count-2].y);
+//    for (int i=0; i<count; ++i) {
+//        auto p1 = i <= 1 ? verts[count-2-i] : verts[i - 2];
+//        auto p2 = i == 0 ? verts[count-1] : verts[i - 1];
+//        auto p3 = verts[i];
+//
+//        auto mid = Vec2((p1.x+p3.x)/2, (p1.y+p3.y)/2);
+//        if(mid.x-p2.x < 0 && mid.y-p2.y < 0){
+//            if(p3.y - p1.y < 0){
+//                lineTo(p2.x-r, p2.y);
+//                bezierCurveTo(p2.x-r*(1-VECTOR_KAPPA90), p2.y, p2.x, p2.y-r*(1-VECTOR_KAPPA90), p2.x-r, p2.y-r);
+//            }
+//            else{
+//                lineTo(p2.x, p2.y-r);
+//                bezierCurveTo(p2.x, p2.y-r*(1-VECTOR_KAPPA90), p2.x-r*(1-VECTOR_KAPPA90), p2.y, p2.x-r, p2.y-r);
+//            }
+//        }
+//        else if(mid.x-p2.x < 0 && mid.y-p2.y > 0){
+//            if(p3.y - p1.y < 0){
+//                lineTo(p2.x, p2.y+r);
+//                bezierCurveTo(p2.x, p2.y+r*(1-VECTOR_KAPPA90), p2.x-r*(1-VECTOR_KAPPA90), p2.y, p2.x-r, p2.y+r);
+//            }
+//            else{
+//                lineTo(p2.x-r, p2.y);
+//                bezierCurveTo(p2.x-r*(1-VECTOR_KAPPA90), p2.y, p2.x, p2.y+r*(1-VECTOR_KAPPA90), p2.x-r, p2.y+r);
+//            }
+//        }
+//        else if(mid.x-p2.x > 0 && mid.y-p2.y < 0){
+//            if(p3.y - p1.y < 0){
+//                lineTo(p2.x+r, p2.y);
+//                bezierCurveTo(p2.x+r*(1-VECTOR_KAPPA90), p2.y, p2.x, p2.y-r*(1-VECTOR_KAPPA90), p2.x+r, p2.y-r);
+//            }
+//            else{
+//                lineTo(p2.x, p2.y-r);
+//                bezierCurveTo(p2.x, p2.y-r*(1-VECTOR_KAPPA90), p2.x+r*(1-VECTOR_KAPPA90), p2.y, p2.x+r, p2.y-r);
+//            }
+//        }
+//        else if(mid.x-p2.x > 0 && mid.y-p2.y > 0){
+//            if(p3.y - p1.y < 0){
+//                lineTo(p2.x, p2.y+r);
+//                bezierCurveTo(p2.x, p2.y+r*(1-VECTOR_KAPPA90), p2.x+r*(1-VECTOR_KAPPA90), p2.y, p2.x+r, p2.y+r);
+//            }
+//            else{
+//                lineTo(p2.x+r, p2.y);
+//                bezierCurveTo(p2.x+r*(1-VECTOR_KAPPA90), p2.y, p2.x, p2.y+r*(1-VECTOR_KAPPA90), p2.x+r, p2.y+r);
+//            }
+//        }
+//    }
+//    close();
+//    _curPath->complex = true;
+//}
+    
 void GraphicsNode::fillPolygon(const cocos2d::Vec2 *verts, unsigned int count)
 {
     polygon(verts, count);
+    stroke();
     fill();
 }
 
@@ -1343,7 +1406,7 @@ void GraphicsNode::onDraw(const Mat4 &transform, uint32_t flags)
         
         if (cmd->nIndices) {
             Color4F& color = cmd->color;
-            program->setUniformLocationWith4f(colorLocation, color.r, color.g, color.b, color.a);
+            program->setUniformLocationWith4f(colorLocation, color.r, color.g, color.b, color.a * _graphicsOpacity/255);
             program->setUniformLocationWith1f(strokeMultLocation, cmd->strokeMult);
             
             glDrawElements(GL_TRIANGLES, (GLsizei)cmd->nIndices, GL_UNSIGNED_SHORT, (const GLvoid *)((size_t)cmd->indicesOffset*2));

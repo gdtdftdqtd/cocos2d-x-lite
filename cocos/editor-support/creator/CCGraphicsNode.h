@@ -200,6 +200,15 @@ public:
     //add by chl
     void polygon(const cocos2d::Vec2 *verts, unsigned int count);
     void fillPolygon(const cocos2d::Vec2 *verts, unsigned int count);
+    
+//    void setStrokeOpacity(const float opacity) { _strokeOpacity = opacity; }
+//    float getStrokeOpacity() { return _strokeOpacity; }
+//
+//    void setFillOpacity(const float opacity) { _fillOpacity = opacity; }
+//    float getFillOpacity() { return _fillOpacity; }
+    
+    void setGraphicsOpacity(const float opacity) { _graphicsOpacity = opacity; }
+    float getGraphicsOpacity() { return _graphicsOpacity; }
     //end add
 
     void close();
@@ -284,6 +293,10 @@ protected:
     LineJoin _lineJoin;
     cocos2d::Color4F _strokeColor;
     cocos2d::Color4F _fillColor;
+    
+//    float _strokeOpacity;
+//    float _fillOpacity;
+    float _graphicsOpacity;
     
     float _fringeWidth;
 

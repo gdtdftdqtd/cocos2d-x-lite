@@ -268,6 +268,25 @@ static bool js_creator_graphics_GraphicsNode_polygon(se::State& s)
 }
 SE_BIND_FUNC(js_creator_graphics_GraphicsNode_polygon)
 
+static bool js_creator_graphics_GraphicsNode_setGraphicsOpacity(se::State& s)
+{
+    creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_creator_graphics_GraphicsNode_setGraphicsOpacity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        float arg0 = 0;
+        ok &= seval_to_float(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_creator_graphics_GraphicsNode_setGraphicsOpacity : Error processing arguments");
+        cobj->setGraphicsOpacity(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_creator_graphics_GraphicsNode_setGraphicsOpacity)
+
 static bool js_creator_graphics_GraphicsNode_fillPolygon(se::State& s)
 {
     creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
@@ -656,6 +675,24 @@ static bool js_creator_graphics_GraphicsNode_clear(se::State& s)
 }
 SE_BIND_FUNC(js_creator_graphics_GraphicsNode_clear)
 
+static bool js_creator_graphics_GraphicsNode_getGraphicsOpacity(se::State& s)
+{
+    creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_creator_graphics_GraphicsNode_getGraphicsOpacity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        float result = cobj->getGraphicsOpacity();
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_creator_graphics_GraphicsNode_getGraphicsOpacity : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_creator_graphics_GraphicsNode_getGraphicsOpacity)
+
 static bool js_creator_graphics_GraphicsNode_getDeviceRatio(se::State& s)
 {
     creator::GraphicsNode* cobj = (creator::GraphicsNode*)s.nativeThisObject();
@@ -781,6 +818,7 @@ bool js_register_creator_graphics_GraphicsNode(se::Object* obj)
     cls->defineFunction("getStrokeColor", _SE(js_creator_graphics_GraphicsNode_getStrokeColor));
     cls->defineFunction("setLineCap", _SE(js_creator_graphics_GraphicsNode_setLineCap));
     cls->defineFunction("polygon", _SE(js_creator_graphics_GraphicsNode_polygon));
+    cls->defineFunction("setGraphicsOpacity", _SE(js_creator_graphics_GraphicsNode_setGraphicsOpacity));
     cls->defineFunction("fillPolygon", _SE(js_creator_graphics_GraphicsNode_fillPolygon));
     cls->defineFunction("circle", _SE(js_creator_graphics_GraphicsNode_circle));
     cls->defineFunction("roundRect", _SE(js_creator_graphics_GraphicsNode_roundRect));
@@ -799,6 +837,7 @@ bool js_register_creator_graphics_GraphicsNode(se::Object* obj)
     cls->defineFunction("getLineCap", _SE(js_creator_graphics_GraphicsNode_getLineCap));
     cls->defineFunction("setMiterLimit", _SE(js_creator_graphics_GraphicsNode_setMiterLimit));
     cls->defineFunction("clear", _SE(js_creator_graphics_GraphicsNode_clear));
+    cls->defineFunction("getGraphicsOpacity", _SE(js_creator_graphics_GraphicsNode_getGraphicsOpacity));
     cls->defineFunction("getDeviceRatio", _SE(js_creator_graphics_GraphicsNode_getDeviceRatio));
     cls->defineFunction("getLineWidth", _SE(js_creator_graphics_GraphicsNode_getLineWidth));
     cls->defineFunction("setStrokeColor", _SE(js_creator_graphics_GraphicsNode_setStrokeColor));

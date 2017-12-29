@@ -161,6 +161,16 @@ int
 },
 
 /**
+ * @method setGraphicsOpacity
+ * @param {float} arg0
+ */
+setGraphicsOpacity : function (
+float 
+)
+{
+},
+
+/**
  * @method fillPolygon
  * @param {vec2_object} arg0
  * @param {unsigned int} arg1
@@ -384,6 +394,16 @@ float
 clear : function (
 )
 {
+},
+
+/**
+ * @method getGraphicsOpacity
+ * @return {float}
+ */
+getGraphicsOpacity : function (
+)
+{
+    return 0;
 },
 
 /**
