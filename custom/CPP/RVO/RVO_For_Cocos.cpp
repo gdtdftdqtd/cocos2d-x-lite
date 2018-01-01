@@ -12,7 +12,7 @@
 using namespace cocos2d;
 
 
-static CocosRVO * cocosRVO = nullptr;
+//static CocosRVO * cocosRVO = nullptr;
 
 /**
  * \brief      Constructs a m_simulator instance.
@@ -117,27 +117,30 @@ RVO::Vector2 CocosRVO::splitStringToVcetor2(const std::string& s, const std::str
 
 CocosRVO * CocosRVO::create()
 {
-    if (cocosRVO) {
-        cocosRVO->release();
-    }
-    cocosRVO = new CocosRVO();
-    return cocosRVO;
+//    if (cocosRVO) {
+//        cocosRVO->release();
+//    }
+//    cocosRVO = new CocosRVO();
+//    return cocosRVO;
+    
+    return new CocosRVO();
 }
 CocosRVO * CocosRVO::create(float timeStep, float neighborDist, size_t maxNeighbors,
                          float timeHorizon, float timeHorizonObst, float radius,
                          float maxSpeed, const Vec2 &velocity)
 {
-    if (cocosRVO) {
-        cocosRVO->release();
-    }
-    cocosRVO = new CocosRVO(timeStep,neighborDist,maxNeighbors,timeHorizon,timeHorizonObst,radius,maxSpeed,velocity);
-    return cocosRVO;
+//    if (cocosRVO) {
+//        cocosRVO->release();
+//    }
+//    cocosRVO = new CocosRVO(timeStep,neighborDist,maxNeighbors,timeHorizon,timeHorizonObst,radius,maxSpeed,velocity);
+//    return cocosRVO;
+    
+    return new CocosRVO(timeStep,neighborDist,maxNeighbors,timeHorizon,timeHorizonObst,radius,maxSpeed,velocity);
 }
 
 void CocosRVO::release()
 {
-    delete cocosRVO;
-    cocosRVO = nullptr;
+    delete this;
 }
 
 /**
@@ -748,32 +751,32 @@ size_t CocosRVO::setAgentsNextPos(const std::vector<Vec2> &poses)
 
 void CocosRVO::updateVisualization()
 {
-    std::vector<Node*> locals;
+//    std::vector<Node*> locals;
     for (size_t i=0; i<this->getNumAgents(); ++i) {
         if(this->m_agentsNode.size() > i){
             Vec2 curPos = this->getAgentPosition(i);
             this->m_agentsNode[i]->setPosition(curPos);
-            locals.push_back(this->m_agentsNode[i]);
+//            locals.push_back(this->m_agentsNode[i]);
         }
     }
-    if (locals.size() <= 0) {
-        return;
-    }
-    std::sort(locals.begin(), locals.end(), [](const Node* n1, const Node* n2){
-        auto pos1 = n1->getPosition();
-        auto pos2 = n2->getPosition();
-        return pos1.y > pos2.y;
-//        if (pos1.y > pos2.y) {
-//            return true;
-//        }
-//        else if (fabs(pos1.y-pos2.y) < 0.1){
-//            return pos1.x < pos2.x;
-//        }
-//        return false;
-    });
-    for (size_t i=0;i<locals.size();++i){
-        locals[i]->setLocalZOrder(static_cast<int>(i+10));
-    }
+//    if (locals.size() <= 0) {
+//        return;
+//    }
+//    std::sort(locals.begin(), locals.end(), [](const Node* n1, const Node* n2){
+//        auto pos1 = n1->getPosition();
+//        auto pos2 = n2->getPosition();
+//        return pos1.y > pos2.y;
+////        if (pos1.y > pos2.y) {
+////            return true;
+////        }
+////        else if (fabs(pos1.y-pos2.y) < 0.1){
+////            return pos1.x < pos2.x;
+////        }
+////        return false;
+//    });
+//    for (size_t i=0;i<locals.size();++i){
+//        locals[i]->setLocalZOrder(static_cast<int>(i+10));
+//    }
 }
 
 void CocosRVO::setPreferredVelocities()
@@ -805,6 +808,7 @@ std::vector<int> CocosRVO::reachedGoal()
             if (v.dot(v) < this->getAgentRadius(i) * this->getAgentRadius(i)) {
 //                this->setAgentPosition(i, this->getAgentPosition(i));
                 this->setAgentPosition(i, this->m_agentsNextPos[i]);
+                this->m_agentsNode[i]->setPosition(this->m_agentsNextPos[i]);
                 reachs.push_back(static_cast<int>(i));
             }
         }
