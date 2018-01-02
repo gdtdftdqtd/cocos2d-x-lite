@@ -119,6 +119,16 @@ getAlphaTextureName : function (
 },
 
 /**
+ * @method getName
+ * @return {unsigned int}
+ */
+getName : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method initWithString
 * @param {String|String} str
 * @param {cc.FontDefinition|String} fontdefinition
@@ -809,14 +819,6 @@ getChildren : function(
 )
 {
     return new Array();
-},
-
-/**
- * @method markTransformUpdated
- */
-markTransformUpdated : function (
-)
-{
 },
 
 /**
@@ -2015,6 +2017,14 @@ isCascadeColorEnabled : function (
 },
 
 /**
+ * @method markCullingDirty
+ */
+markCullingDirty : function (
+)
+{
+},
+
+/**
  * @method stopAction
  * @param {cc.Action} arg0
  */
@@ -2179,13 +2189,13 @@ bool
 },
 
 /**
- * @method isAntiAliasEnabled
- * @return {bool}
+ * @method getSafeAreaRect
+ * @return {rect_object}
  */
-isAntiAliasEnabled : function (
+getSafeAreaRect : function (
 )
 {
-    return false;
+    return cc.Rect;
 },
 
 /**
@@ -2454,6 +2464,16 @@ pollEvents : function (
 {
 },
 
+/**
+ * @method isAntiAliasEnabled
+ * @return {bool}
+ */
+isAntiAliasEnabled : function (
+)
+{
+    return false;
+},
+
 };
 
 /**
@@ -2500,6 +2520,16 @@ float
 },
 
 /**
+ * @method getDeltaTime
+ * @return {float}
+ */
+getDeltaTime : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method getContentScaleFactor
  * @return {float}
  */
@@ -2520,13 +2550,23 @@ getWinSizeInPixels : function (
 },
 
 /**
- * @method getDeltaTime
- * @return {float}
+ * @method getSafeAreaRect
+ * @return {rect_object}
  */
-getDeltaTime : function (
+getSafeAreaRect : function (
 )
 {
-    return 0;
+    return cc.Rect;
+},
+
+/**
+ * @method isCullingEnabled
+ * @return {bool}
+ */
+isCullingEnabled : function (
+)
+{
+    return false;
 },
 
 /**
@@ -2573,6 +2613,16 @@ popToRootScene : function (
 loadMatrix : function (
 matrix_stack_type, 
 mat4 
+)
+{
+},
+
+/**
+ * @method setCullingEnabled
+ * @param {bool} arg0
+ */
+setCullingEnabled : function (
+bool 
 )
 {
 },
@@ -2695,10 +2745,12 @@ vec2
 
 /**
  * @method pushMatrix
- * @param {cc.MATRIX_STACK_TYPE} arg0
- */
-pushMatrix : function (
-matrix_stack_type 
+* @param {cc.MATRIX_STACK_TYPE|cc.MATRIX_STACK_TYPE} matrix_stack_type
+* @param {mat4_object} mat4
+*/
+pushMatrix : function(
+matrix_stack_type,
+mat4 
 )
 {
 },
@@ -13732,6 +13784,24 @@ begin : function (
 },
 
 /**
+ * @method saveToFile
+* @param {String|String} str
+* @param {cc.Image::Format|bool} format
+* @param {bool|function} bool
+* @param {function} func
+* @return {bool|bool}
+*/
+saveToFile : function(
+str,
+format,
+bool,
+func 
+)
+{
+    return false;
+},
+
+/**
  * @method setAutoDraw
  * @param {bool} arg0
  */
@@ -13970,12 +14040,28 @@ str
 },
 
 /**
- * @method setUniformLocationWith1f
- * @param {int} arg0
- * @param {float} arg1
+ * @method getProgram
+ * @return {unsigned int}
  */
-setUniformLocationWith1f : function (
-int, 
+getProgram : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method setUniformLocationWith2f
+* @param {int|int|int|int} int
+* @param {float|float|float|float} float
+* @param {float|float|float} float
+* @param {float|float} float
+* @param {float} float
+*/
+setUniformLocationWith2f : function(
+int,
+float,
+float,
+float,
 float 
 )
 {
@@ -13998,22 +14084,6 @@ str
 },
 
 /**
- * @method setUniformLocationWith3f
- * @param {int} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {float} arg3
- */
-setUniformLocationWith3f : function (
-int, 
-float, 
-float, 
-float 
-)
-{
-},
-
-/**
  * @method setUniformsForBuiltins
 * @param {mat4_object} mat4
 */
@@ -14024,57 +14094,11 @@ mat4
 },
 
 /**
- * @method setUniformLocationWith3i
- * @param {int} arg0
- * @param {int} arg1
- * @param {int} arg2
- * @param {int} arg3
- */
-setUniformLocationWith3i : function (
-int, 
-int, 
-int, 
-int 
-)
-{
-},
-
-/**
- * @method setUniformLocationWith4f
- * @param {int} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {float} arg3
- * @param {float} arg4
- */
-setUniformLocationWith4f : function (
-int, 
-float, 
-float, 
-float, 
-float 
-)
-{
-},
-
-/**
  * @method updateUniforms
  */
 updateUniforms : function (
 )
 {
-},
-
-/**
- * @method getUniformLocation
- * @param {String} arg0
- * @return {int}
- */
-getUniformLocation : function (
-str 
-)
-{
-    return 0;
 },
 
 /**
@@ -14096,6 +14120,16 @@ reset : function (
 },
 
 /**
+ * @method getProgramLog
+ * @return {String}
+ */
+getProgramLog : function (
+)
+{
+    return ;
+},
+
+/**
  * @method getAttribLocation
  * @param {String} arg0
  * @return {int}
@@ -14108,58 +14142,30 @@ str
 },
 
 /**
- * @method setUniformLocationWith2f
- * @param {int} arg0
- * @param {float} arg1
- * @param {float} arg2
+ * @method getUniformLocation
+ * @param {String} arg0
+ * @return {int}
  */
-setUniformLocationWith2f : function (
-int, 
-float, 
-float 
+getUniformLocation : function (
+str 
 )
 {
-},
-
-/**
- * @method setUniformLocationWith4i
- * @param {int} arg0
- * @param {int} arg1
- * @param {int} arg2
- * @param {int} arg3
- * @param {int} arg4
- */
-setUniformLocationWith4i : function (
-int, 
-int, 
-int, 
-int, 
-int 
-)
-{
-},
-
-/**
- * @method setUniformLocationWith1i
- * @param {int} arg0
- * @param {int} arg1
- */
-setUniformLocationWith1i : function (
-int, 
-int 
-)
-{
+    return 0;
 },
 
 /**
  * @method setUniformLocationWith2i
- * @param {int} arg0
- * @param {int} arg1
- * @param {int} arg2
- */
-setUniformLocationWith2i : function (
-int, 
-int, 
+* @param {int|int|int|int} int
+* @param {int|int|int|int} int
+* @param {int|int|int} int
+* @param {int|int} int
+* @param {int} int
+*/
+setUniformLocationWith2i : function(
+int,
+int,
+int,
+int,
 int 
 )
 {
@@ -15895,11 +15901,13 @@ int
  * @method initWithXML
  * @param {String} arg0
  * @param {String} arg1
+ * @param {map_object} arg2
  * @return {bool}
  */
 initWithXML : function (
 str, 
-str 
+str, 
+map 
 )
 {
     return false;
@@ -16151,11 +16159,13 @@ str
  * @method createWithXML
  * @param {String} arg0
  * @param {String} arg1
+ * @param {map_object} arg2
  * @return {cc.TMXMapInfo}
  */
 createWithXML : function (
 str, 
-str 
+str, 
+map 
 )
 {
     return cc.TMXMapInfo;
@@ -16543,13 +16553,15 @@ getMapSize : function (
 
 /**
  * @method initWithXML
- * @param {String} arg0
- * @param {String} arg1
- * @return {bool}
- */
-initWithXML : function (
-str, 
-str 
+* @param {String|String} str
+* @param {String|String} str
+* @param {map_object} map
+* @return {bool|bool}
+*/
+initWithXML : function(
+str,
+str,
+map 
 )
 {
     return false;
