@@ -1033,43 +1033,6 @@ _p.setBoundingWidth = _p.setWidth;
 _p.setBoundingHeight = _p.setHeight;
 
 //
-// cc.Scheduler scheduleCallbackForTarget
-//
-_p = cc.Scheduler.prototype;
-_p.unscheduleUpdateForTarget = _p.unscheduleUpdate;
-_p.unscheduleAllCallbacksForTarget = function (target) {
-    this.unschedule(target.__instanceId + "", target);
-};
-_p._schedule = _p.schedule;
-_p.schedule = function (callback, target, interval, repeat, delay, paused, key) {
-    var isSelector = false;
-    if (typeof callback !== "function") {
-        var selector = callback;
-        isSelector = true;
-    }
-    if (isSelector === false) {
-        //callback, target, interval, repeat, delay, paused, key
-        //callback, target, interval, paused, key
-        if (repeat !== undefined && (delay === undefined || paused === undefined)) {
-            key = delay;
-            paused = repeat;
-            delay = 0;
-            repeat = cc.REPEAT_FOREVER;
-        }
-    } else {
-        //selector, target, interval, repeat, delay, paused
-        //selector, target, interval, paused
-        if (repeat !== undefined && delay === undefined) {
-            paused = repeat;
-            repeat = cc.REPEAT_FOREVER;
-            delay = 0;
-        }
-    }
-
-    this._schedule(callback, target, interval, repeat, delay, paused, key);
-};
-
-//
 // cc.BlendFunc
 //
 /**
@@ -1126,23 +1089,3 @@ cc.GLProgram.prototype.setUniformLocationWithMatrix4fv = function(){
     tempArray.push(4);
     this.setUniformLocationWithMatrixfvUnion.apply(this, tempArray);
 };
-
-//
-// LocalStorage
-//
-sys.localStorage._setItem = sys.localStorage.setItem;
-sys.localStorage.setItem = function(itemKey,itemValue) {
-    if (typeof itemKey === 'string') {
-        if(itemValue !== undefined && itemValue !== null)
-        {
-            if (typeof itemValue !== 'string') {
-                cc.log("sys.localStorage.setItem Warning: itemValue[" + itemValue + "] is not string!");
-                itemValue = '' + itemValue;
-            }
-            sys.localStorage._setItem(itemKey, itemValue);
-        }
-    }
-    else
-        cc.log("sys.localStorage.setItem Warning: itemKey[" + itemKey + "] is not string!");
-}
-
