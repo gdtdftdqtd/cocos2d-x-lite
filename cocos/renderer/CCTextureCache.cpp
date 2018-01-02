@@ -2,7 +2,7 @@
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2013-2017 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -56,8 +56,10 @@ TextureCache* TextureCache::getInstance()
 
 TextureCache::TextureCache()
 : _loadingThread(nullptr)
-, _needQuit(false)
+, _textureCreateHook(nullptr)
+, _textureDestroyHook(nullptr)
 , _asyncRefCount(0)
+, _needQuit(false)
 {
 }
 
@@ -158,8 +160,8 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
     if (_loadingThread == nullptr)
     {
         // create a new thread to load images
-        _loadingThread = new (std::nothrow) std::thread(&TextureCache::loadImage, this);
         _needQuit = false;
+        _loadingThread = new (std::nothrow) std::thread(&TextureCache::loadImage, this);
     }
 
     if (0 == _asyncRefCount)
@@ -174,10 +176,8 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
 
     // add async struct into queue
     _asyncStructQueue.push_back(data);
-    _requestMutex.lock();
+    std::unique_lock<std::mutex> ul(_requestMutex);
     _requestQueue.push_back(data);
-    _requestMutex.unlock();
-
     _sleepCondition.notify_one();
 }
 
@@ -213,13 +213,11 @@ void TextureCache::unbindAllImageAsync()
 void TextureCache::loadImage()
 {
     AsyncStruct *asyncStruct = nullptr;
-    std::mutex signalMutex;
-    std::unique_lock<std::mutex> signal(signalMutex);
     while (!_needQuit)
     {
+        std::unique_lock<std::mutex> ul(_requestMutex);
         // pop an AsyncStruct from request queue
-        _requestMutex.lock();
-        if(_requestQueue.empty())
+        if (_requestQueue.empty())
         {
             asyncStruct = nullptr;
         }
@@ -228,12 +226,15 @@ void TextureCache::loadImage()
             asyncStruct = _requestQueue.front();
             _requestQueue.pop_front();
         }
-        _requestMutex.unlock();
 
         if (nullptr == asyncStruct) {
-            _sleepCondition.wait(signal);
+            if (_needQuit) {
+                break;
+            }
+            _sleepCondition.wait(ul);
             continue;
         }
+        ul.unlock();
 
         // load image
         asyncStruct->loadSuccess = asyncStruct->image->initWithImageFile(asyncStruct->filename);
@@ -299,6 +300,9 @@ void TextureCache::addImageAsyncCallBack(float dt)
                 texture->retain();
 
                 texture->autorelease();
+
+                if (_textureCreateHook != nullptr)
+                    _textureCreateHook(this, texture);
             } else {
                 texture = nullptr;
                 CCLOG("cocos2d: failed to call TextureCache::addImageAsync(%s)", asyncStruct->filename.c_str());
@@ -361,6 +365,9 @@ Texture2D * TextureCache::addImage(const std::string &path)
                 // texture already retained, no need to re-retain it
                 _textures.insert( std::make_pair(fullpath, texture) );
 
+                if (_textureCreateHook != nullptr)
+                    _textureCreateHook(this, texture);
+
                 //parse 9-patch info
                 this->parseNinePatchImage(image, texture, path);
             }
@@ -411,6 +418,9 @@ Texture2D* TextureCache::addImage(Image *image, const std::string &key)
             texture->retain();
 
             texture->autorelease();
+
+            if (_textureCreateHook != nullptr)
+                _textureCreateHook(this, texture);
         }
         else
         {
@@ -484,6 +494,9 @@ cocos2d::Vector<Texture2D*> TextureCache::getAllTextures() const
 void TextureCache::removeAllTextures()
 {
     for( auto it=_textures.begin(); it!=_textures.end(); ++it ) {
+        if (_textureDestroyHook != nullptr)
+            _textureDestroyHook(this, it->second);
+
         (it->second)->release();
     }
     _textures.clear();
@@ -495,6 +508,8 @@ void TextureCache::removeUnusedTextures()
         Texture2D *tex = it->second;
         if( tex->getReferenceCount() == 1 ) {
             CCLOG("cocos2d: TextureCache: removing unused texture: %s", it->first.c_str());
+            if (_textureDestroyHook != nullptr)
+                _textureDestroyHook(this, tex);
 
             tex->release();
             it = _textures.erase(it);
@@ -515,6 +530,9 @@ void TextureCache::removeTexture(Texture2D* texture)
 
     for( auto it=_textures.cbegin(); it!=_textures.cend(); /* nothing */ ) {
         if( it->second == texture ) {
+            if (_textureDestroyHook != nullptr)
+                _textureDestroyHook(this, texture);
+
             it->second->release();
             it = _textures.erase(it);
             break;
@@ -535,6 +553,9 @@ void TextureCache::removeTextureForKey(const std::string &textureKeyName)
     }
 
     if( it != _textures.end() ) {
+        if (_textureDestroyHook != nullptr)
+            _textureDestroyHook(this, it->second);
+
         (it->second)->release();
         _textures.erase(it);
     }
@@ -582,8 +603,10 @@ std::string TextureCache::getTextureFilePath( cocos2d::Texture2D *texture )const
 void TextureCache::waitForQuit()
 {
     // notify sub thread to quick
+    std::unique_lock<std::mutex> ul(_requestMutex);
     _needQuit = true;
     _sleepCondition.notify_one();
+    ul.unlock();
     if (_loadingThread) _loadingThread->join();
 
     // Clear async tasks which are still in the queue.
@@ -654,6 +677,16 @@ void TextureCache::renameTextureWithKey(const std::string& srcName, const std::s
             CC_SAFE_RELEASE(image);
         }
     }
+}
+
+void TextureCache::setTextureCreateHook(TextureLifeCycleHook hook)
+{
+    _textureCreateHook = hook;
+}
+
+void TextureCache::setTextureDestroyHook(TextureLifeCycleHook hook)
+{
+    _textureDestroyHook = hook;
 }
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA

@@ -1033,43 +1033,6 @@ _p.setBoundingWidth = _p.setWidth;
 _p.setBoundingHeight = _p.setHeight;
 
 //
-// cc.Scheduler scheduleCallbackForTarget
-//
-_p = cc.Scheduler.prototype;
-_p.unscheduleUpdateForTarget = _p.unscheduleUpdate;
-_p.unscheduleAllCallbacksForTarget = function (target) {
-    this.unschedule(target.__instanceId + "", target);
-};
-_p._schedule = _p.schedule;
-_p.schedule = function (callback, target, interval, repeat, delay, paused, key) {
-    var isSelector = false;
-    if (typeof callback !== "function") {
-        var selector = callback;
-        isSelector = true;
-    }
-    if (isSelector === false) {
-        //callback, target, interval, repeat, delay, paused, key
-        //callback, target, interval, paused, key
-        if (repeat !== undefined && (delay === undefined || paused === undefined)) {
-            key = delay;
-            paused = repeat;
-            delay = 0;
-            repeat = cc.REPEAT_FOREVER;
-        }
-    } else {
-        //selector, target, interval, repeat, delay, paused
-        //selector, target, interval, paused
-        if (repeat !== undefined && delay === undefined) {
-            paused = repeat;
-            repeat = cc.REPEAT_FOREVER;
-            delay = 0;
-        }
-    }
-
-    this._schedule(callback, target, interval, repeat, delay, paused, key);
-};
-
-//
 // cc.BlendFunc
 //
 /**
@@ -1127,22 +1090,56 @@ cc.GLProgram.prototype.setUniformLocationWithMatrix4fv = function(){
     this.setUniformLocationWithMatrixfvUnion.apply(this, tempArray);
 };
 
-//
-// LocalStorage
-//
-sys.localStorage._setItem = sys.localStorage.setItem;
-sys.localStorage.setItem = function(itemKey,itemValue) {
-    if (typeof itemKey === 'string') {
-        if(itemValue !== undefined && itemValue !== null)
-        {
-            if (typeof itemValue !== 'string') {
-                cc.log("sys.localStorage.setItem Warning: itemValue[" + itemValue + "] is not string!");
-                itemValue = '' + itemValue;
-            }
-            sys.localStorage._setItem(itemKey, itemValue);
-        }
+// Hack for the lifecycle of JS objects
+cc.Director.prototype._jsb_getScheduler = cc.Director.prototype.getScheduler;
+cc.Director.prototype.getScheduler = function() {
+    var scheduler = this._jsb_getScheduler();
+    if (this._jsb_scheduler != scheduler)
+    {
+        this._jsb_scheduler = scheduler;
     }
-    else
-        cc.log("sys.localStorage.setItem Warning: itemKey[" + itemKey + "] is not string!");
+    return scheduler;
 }
+
+cc.Director.prototype._jsb_getActionManager = cc.Director.prototype.getActionManager;
+cc.Director.prototype.getActionManager = function() {
+    var actionManager = this._jsb_getActionManager();
+    if (this._jsb_actionManager != actionManager)
+    {
+        this._jsb_actionManager = actionManager;
+    }
+    return actionManager;
+}
+
+cc.Director.prototype._jsb_getEventDispatcher = cc.Director.prototype.getEventDispatcher;
+cc.Director.prototype.getEventDispatcher = function() {
+    var eventDispatcher = this._jsb_getEventDispatcher();
+    if (this._jsb_eventDispatcher != eventDispatcher)
+    {
+        this._jsb_eventDispatcher = eventDispatcher;
+    }
+    return eventDispatcher;
+}
+
+cc.SpriteFrame.prototype._jsb_getTexture = cc.SpriteFrame.prototype.getTexture;
+cc.SpriteFrame.prototype.getTexture = function() {
+    var texture = this._jsb_getTexture();
+    if (this._jsb_texture != texture)
+    {
+        this._jsb_texture = texture;
+    }
+    return texture;
+}
+
+cc.Sprite.prototype._jsb_getTexture = cc.Sprite.prototype.getTexture;
+cc.Sprite.prototype.getTexture = function() {
+    var texture = this._jsb_getTexture();
+    if (this._jsb_texture != texture)
+    {
+        this._jsb_texture = texture;
+    }
+    return texture;
+}
+
+//
 
