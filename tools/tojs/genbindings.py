@@ -186,7 +186,7 @@ def main():
                     }
         # cmd_args = {'cocos2dx.ini' : ('cocos2d-x', 'jsb_cocos2dx_auto')}
         # cmd_args = {'rvo.ini' : ('RVO', 'jsb_RVO_auto')}
-        cmd_args = {'creator_graphics.ini': ('creator', 'jsb_creator_graphics_auto')}
+        # cmd_args = {'creator_graphics.ini': ('creator', 'jsb_creator_graphics_auto')}
         target = 'spidermonkey'
         generator_py = '%s/generator.py' % cxx_generator_root
         for key in cmd_args.keys():
