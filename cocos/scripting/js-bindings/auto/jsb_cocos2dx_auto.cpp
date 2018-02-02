@@ -33751,6 +33751,24 @@ static bool js_cocos2dx_Application_getFreeDiskSpace(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_Application_getFreeDiskSpace)
 
+static bool js_cocos2dx_Application_getAppUUID(se::State& s)
+{
+    cocos2d::Application* cobj = (cocos2d::Application*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_Application_getAppUUID : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        std::string result = cobj->getAppUUID();
+        ok &= std_string_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_Application_getAppUUID : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_Application_getAppUUID)
+
 static bool js_cocos2dx_Application_getTargetPlatform(se::State& s)
 {
     cocos2d::Application* cobj = (cocos2d::Application*)s.nativeThisObject();
@@ -33881,6 +33899,7 @@ bool js_register_cocos2dx_Application(se::Object* obj)
     auto cls = se::Class::create("Application", obj, nullptr, nullptr);
 
     cls->defineFunction("getFreeDiskSpace", _SE(js_cocos2dx_Application_getFreeDiskSpace));
+    cls->defineFunction("getAppUUID", _SE(js_cocos2dx_Application_getAppUUID));
     cls->defineFunction("getTargetPlatform", _SE(js_cocos2dx_Application_getTargetPlatform));
     cls->defineFunction("getCurrentLanguage", _SE(js_cocos2dx_Application_getCurrentLanguage));
     cls->defineFunction("getCurrentLanguageString", _SE(js_cocos2dx_Application_getCurrentLanguageString));

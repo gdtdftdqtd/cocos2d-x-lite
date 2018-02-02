@@ -163,6 +163,7 @@ public:
     
     //add by chl
     virtual long long getFreeDiskSpace() = 0;
+    virtual std::string getAppUUID() = 0;
     
 };
 

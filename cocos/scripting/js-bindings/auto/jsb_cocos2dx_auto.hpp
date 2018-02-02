@@ -2207,6 +2207,7 @@ extern se::Class* __jsb_cocos2d_Application_class;
 bool js_register_cocos2d_Application(se::Object* obj);
 bool register_all_cocos2dx(se::Object* obj);
 SE_DECLARE_FUNC(js_cocos2dx_Application_getFreeDiskSpace);
+SE_DECLARE_FUNC(js_cocos2dx_Application_getAppUUID);
 SE_DECLARE_FUNC(js_cocos2dx_Application_getTargetPlatform);
 SE_DECLARE_FUNC(js_cocos2dx_Application_getCurrentLanguage);
 SE_DECLARE_FUNC(js_cocos2dx_Application_getCurrentLanguageString);

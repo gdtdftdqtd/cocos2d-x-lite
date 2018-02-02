@@ -14786,6 +14786,16 @@ getFreeDiskSpace : function (
 },
 
 /**
+ * @method getAppUUID
+ * @return {String}
+ */
+getAppUUID : function (
+)
+{
+    return ;
+},
+
+/**
  * @method getTargetPlatform
  * @return {cc.ApplicationProtocol::Platform}
  */

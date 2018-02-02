@@ -117,6 +117,7 @@ public:
     
     //add by chl
     virtual long long getFreeDiskSpace() override;
+    virtual std::string getAppUUID() override;
     
 protected:
     static Application * sm_pSharedApplication;

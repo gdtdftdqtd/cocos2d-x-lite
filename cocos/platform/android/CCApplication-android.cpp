@@ -222,6 +222,12 @@ long long Application::getFreeDiskSpace()
     return atoll(ret.c_str());
 }
 
+std::string Application::getAppUUID()
+{
+    std::string ret = JniHelper::callStaticStringMethod(helperClassName, "getAppUUID");
+    return ret;
+}
+
 NS_CC_END
 
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
