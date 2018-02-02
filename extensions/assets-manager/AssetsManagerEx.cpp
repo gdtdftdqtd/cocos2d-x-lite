@@ -1042,6 +1042,15 @@ void AssetsManagerEx::checkUpdate()
             break;
         case State::NEED_UPDATE:
         {
+            _totalSize = 0;
+            for(auto iter : _downloadUnits)
+            {
+                const DownloadUnit& unit = iter.second;
+                if (unit.size > 0)
+                {
+                    _totalSize += unit.size;
+                }
+            }
             dispatchUpdateEvent(EventAssetsManagerEx::EventCode::NEW_VERSION_FOUND);
         }
             break;
@@ -1379,6 +1388,7 @@ void AssetsManagerEx::destroyDownloadedVersion()
 void AssetsManagerEx::batchDownload()
 {
     _queue.clear();
+    _totalSize = 0;
     for(auto iter : _downloadUnits)
     {
         const DownloadUnit& unit = iter.second;
