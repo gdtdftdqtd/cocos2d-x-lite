@@ -275,6 +275,14 @@
 		4DFA4C111CBCC49000E3B736 /* jsb_creator_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DFA4C0E1CBCC49000E3B736 /* jsb_creator_auto.cpp */; };
 		4DFA4C121CBCC49000E3B736 /* jsb_creator_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4DFA4C0F1CBCC49000E3B736 /* jsb_creator_auto.hpp */; };
 		4DFA4C131CBCC49000E3B736 /* jsb_creator_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4DFA4C0F1CBCC49000E3B736 /* jsb_creator_auto.hpp */; };
+		87AA3D1D206BBE020080B19D /* jsb_creator_texturedSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87AA3D19206BBE020080B19D /* jsb_creator_texturedSpline.cpp */; };
+		87AA3D1E206BBE020080B19D /* jsb_creator_texturedSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87AA3D19206BBE020080B19D /* jsb_creator_texturedSpline.cpp */; };
+		87AA3D1F206BBE020080B19D /* jsb_creator_edgeNode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 87AA3D1A206BBE020080B19D /* jsb_creator_edgeNode.hpp */; };
+		87AA3D20206BBE020080B19D /* jsb_creator_edgeNode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 87AA3D1A206BBE020080B19D /* jsb_creator_edgeNode.hpp */; };
+		87AA3D21206BBE020080B19D /* jsb_creator_edgeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87AA3D1B206BBE020080B19D /* jsb_creator_edgeNode.cpp */; };
+		87AA3D22206BBE020080B19D /* jsb_creator_edgeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87AA3D1B206BBE020080B19D /* jsb_creator_edgeNode.cpp */; };
+		87AA3D23206BBE020080B19D /* jsb_creator_texturedSpline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 87AA3D1C206BBE020080B19D /* jsb_creator_texturedSpline.hpp */; };
+		87AA3D24206BBE020080B19D /* jsb_creator_texturedSpline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 87AA3D1C206BBE020080B19D /* jsb_creator_texturedSpline.hpp */; };
 		B38AD56E1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B38AD56C1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.cpp */; };
 		B38AD56F1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B38AD56D1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.hpp */; };
 		BA4F59841E28DCD3003F5096 /* jsb_cocos2dx_network_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA4F59821E28DCD3003F5096 /* jsb_cocos2dx_network_auto.cpp */; };
@@ -447,6 +455,10 @@
 		4D9BB1F71DFAB8B300B58565 /* jsb_box2d_auto.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_box2d_auto.hpp; sourceTree = "<group>"; };
 		4DFA4C0E1CBCC49000E3B736 /* jsb_creator_auto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_creator_auto.cpp; sourceTree = "<group>"; };
 		4DFA4C0F1CBCC49000E3B736 /* jsb_creator_auto.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_creator_auto.hpp; sourceTree = "<group>"; };
+		87AA3D19206BBE020080B19D /* jsb_creator_texturedSpline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_creator_texturedSpline.cpp; sourceTree = "<group>"; };
+		87AA3D1A206BBE020080B19D /* jsb_creator_edgeNode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_creator_edgeNode.hpp; sourceTree = "<group>"; };
+		87AA3D1B206BBE020080B19D /* jsb_creator_edgeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_creator_edgeNode.cpp; sourceTree = "<group>"; };
+		87AA3D1C206BBE020080B19D /* jsb_creator_texturedSpline.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_creator_texturedSpline.hpp; sourceTree = "<group>"; };
 		B38AD56C1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_cocos2dx_experimental_video_auto.cpp; sourceTree = "<group>"; };
 		B38AD56D1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_cocos2dx_experimental_video_auto.hpp; sourceTree = "<group>"; };
 		BA4F59821E28DCD3003F5096 /* jsb_cocos2dx_network_auto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_cocos2dx_network_auto.cpp; sourceTree = "<group>"; };
@@ -490,6 +502,10 @@
 		1A119E2E18BDF19200352BAA /* auto */ = {
 			isa = PBXGroup;
 			children = (
+				87AA3D1B206BBE020080B19D /* jsb_creator_edgeNode.cpp */,
+				87AA3D1A206BBE020080B19D /* jsb_creator_edgeNode.hpp */,
+				87AA3D19206BBE020080B19D /* jsb_creator_texturedSpline.cpp */,
+				87AA3D1C206BBE020080B19D /* jsb_creator_texturedSpline.hpp */,
 				4D672A811F8E0EE30073B9A4 /* jsb_creator_camera_auto.cpp */,
 				4D672A821F8E0EE30073B9A4 /* jsb_creator_camera_auto.hpp */,
 				4D672A831F8E0EE30073B9A4 /* jsb_creator_graphics_auto.cpp */,
@@ -739,6 +755,7 @@
 				1AFD36FC1EF116190097DBB1 /* jsb_xmlhttprequest.hpp in Headers */,
 				1AFD36921EF115100097DBB1 /* ObjectWrap.h in Headers */,
 				1AFD36741EF115100097DBB1 /* Object.hpp in Headers */,
+				87AA3D1F206BBE020080B19D /* jsb_creator_edgeNode.hpp in Headers */,
 				1AFD36381EF115100097DBB1 /* Class.hpp in Headers */,
 				1AD53AD51FB1B2BF000F476C /* jsb_opengl_manual.hpp in Headers */,
 				1A7759E81F3411050012A210 /* util-inl.h in Headers */,
@@ -774,6 +791,7 @@
 				1AFD364A1EF115100097DBB1 /* config.hpp in Headers */,
 				1AB5E62D18D05BC80088DAA4 /* jsb_cocos2dx_ui_auto.hpp in Headers */,
 				1A5F22981F0E306C0008BF09 /* jsb_box2d_manual.hpp in Headers */,
+				87AA3D23206BBE020080B19D /* jsb_creator_texturedSpline.hpp in Headers */,
 				1AFD364C1EF115100097DBB1 /* Base.h in Headers */,
 				1A81B41E1F137BFE008C38F8 /* JavaScriptObjCBridge.h in Headers */,
 				FA6F1BB51D815C2C007DD223 /* jsb_cocos2dx_dragonbones_auto.hpp in Headers */,
@@ -858,11 +876,13 @@
 				1AFD36511EF115100097DBB1 /* Class.hpp in Headers */,
 				1A6821421FAC20B300C18C60 /* jsb_platform_ios.h in Headers */,
 				1AFD36491EF115100097DBB1 /* Utils.hpp in Headers */,
+				87AA3D24206BBE020080B19D /* jsb_creator_texturedSpline.hpp in Headers */,
 				1A159D531F13216F00558E38 /* jsb_socketio.hpp in Headers */,
 				1AFD36691EF115100097DBB1 /* SeApi.h in Headers */,
 				1AFD367F1EF115100097DBB1 /* Utils.hpp in Headers */,
 				4DFA4C131CBCC49000E3B736 /* jsb_creator_auto.hpp in Headers */,
 				1AFD36391EF115100097DBB1 /* Class.hpp in Headers */,
+				87AA3D20206BBE020080B19D /* jsb_creator_edgeNode.hpp in Headers */,
 				1AFD36F51EF116190097DBB1 /* jsb_spine_manual.hpp in Headers */,
 				BAF638DF1B5F5DC900CDB43A /* jsb_cocos2dx_audioengine_auto.hpp in Headers */,
 				1AFD368F1EF115100097DBB1 /* Object.hpp in Headers */,
@@ -996,6 +1016,7 @@
 				4D672A8B1F8E0EE30073B9A4 /* jsb_creator_physics_auto.cpp in Sources */,
 				1A119E8318BDF19200352BAA /* jsb_cocos2dx_auto.cpp in Sources */,
 				1A5F228A1F0DDD6B0008BF09 /* jsb_dragonbones_manual.cpp in Sources */,
+				87AA3D21206BBE020080B19D /* jsb_creator_edgeNode.cpp in Sources */,
 				4DFA4C101CBCC49000E3B736 /* jsb_creator_auto.cpp in Sources */,
 				1A7759F61F3421B90012A210 /* node.cc in Sources */,
 				1AD53AD81FB1B2BF000F476C /* jsb_opengl_node.cpp in Sources */,
@@ -1008,6 +1029,7 @@
 				1AFD36D21EF116190097DBB1 /* jsb_conversions.cpp in Sources */,
 				1A7759CD1F340FB10012A210 /* inspector_io.cc in Sources */,
 				1AFD36761EF115100097DBB1 /* ScriptEngine.cpp in Sources */,
+				87AA3D1D206BBE020080B19D /* jsb_creator_texturedSpline.cpp in Sources */,
 				1AFD36FA1EF116190097DBB1 /* jsb_xmlhttprequest.cpp in Sources */,
 				4D672A891F8E0EE30073B9A4 /* jsb_creator_graphics_auto.cpp in Sources */,
 				BA4F59841E28DCD3003F5096 /* jsb_cocos2dx_network_auto.cpp in Sources */,
@@ -1065,6 +1087,7 @@
 				1A81B4211F137BFE008C38F8 /* JavaScriptObjCBridge.mm in Sources */,
 				B38AD56E1B1D38700057DD7F /* jsb_cocos2dx_experimental_video_auto.cpp in Sources */,
 				1AFD36D31EF116190097DBB1 /* jsb_conversions.cpp in Sources */,
+				87AA3D1E206BBE020080B19D /* jsb_creator_texturedSpline.cpp in Sources */,
 				4D6E0D601E0384CF00DA5DB6 /* jsb_box2d_auto.cpp in Sources */,
 				1AFD36871EF115100097DBB1 /* Class.cpp in Sources */,
 				1A6293F11F44128300A07B77 /* BaseJSAction.cpp in Sources */,
@@ -1086,6 +1109,7 @@
 				1AFD36911EF115100097DBB1 /* ObjectWrap.cpp in Sources */,
 				4D558C8F1F9700790083B43B /* jsb_creator_camera_auto.cpp in Sources */,
 				1AD4AE681F0F920700A823D8 /* jsb_websocket.cpp in Sources */,
+				87AA3D22206BBE020080B19D /* jsb_creator_edgeNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

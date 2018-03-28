@@ -87,6 +87,9 @@
 #include "cocos/scripting/js-bindings/manual/JavaScriptJavaBridge.h"
 #endif
 
+#include "cocos/scripting/js-bindings/auto/jsb_creator_texturedSpline.hpp"
+#include "cocos/scripting/js-bindings/auto/jsb_creator_edgeNode.hpp"
+
 #include "cocos2d.h"
 
 using namespace cocos2d;
@@ -181,6 +184,10 @@ bool jsb_register_all_modules()
     
     se->addRegisterCallback(register_all_creator);
     se->addRegisterCallback(register_all_creator_manual);
+    
+    //add by chl
+    se->addRegisterCallback(register_all_creator_texturedSpline);
+    se->addRegisterCallback(register_all_creator_edgeNode);
 
     se->addRegisterCallback(register_all_cocos2dx_extension);
     se->addRegisterCallback(register_all_cocos2dx_extension_manual);

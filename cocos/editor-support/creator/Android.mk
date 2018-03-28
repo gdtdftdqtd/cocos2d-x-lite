@@ -16,7 +16,9 @@ LOCAL_SRC_FILES := CCScale9Sprite.cpp \
     physics/CCPhysicsManifoldWrapper.cpp \
     physics/CCPhysicsWorldManifoldWrapper.cpp \
     physics/CCPhysicsContactImpulse.cpp \
-    CCCameraNode.cpp
+    CCCameraNode.cpp \
+    CCTexturedSplineNode.cpp \
+    CCEdgeNode.cpp
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/.. \
                            $(LOCAL_PATH)/../.. \

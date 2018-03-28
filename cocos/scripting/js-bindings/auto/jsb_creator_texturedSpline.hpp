@@ -1,0 +1,22 @@
+#pragma once
+#include "base/ccConfig.h"
+
+#include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
+
+extern se::Object* __jsb_creator_TexturedSplineNode_proto;
+extern se::Class* __jsb_creator_TexturedSplineNode_class;
+
+bool js_register_creator_TexturedSplineNode(se::Object* obj);
+bool register_all_creator_texturedSpline(se::Object* obj);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_setTexture);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_initWithTexture);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_getTexture);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_getStrokeScale);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_setBlendFunc);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_setStrokeScale);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_initWithImagePath);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_getBlendFunc);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_setIsTextureRepeated);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_getIsTextureRepeated);
+SE_DECLARE_FUNC(js_creator_texturedSpline_TexturedSplineNode_TexturedSplineNode);
+

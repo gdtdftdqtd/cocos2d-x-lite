@@ -46,6 +46,8 @@ LOCAL_SRC_FILES := \
 					../auto/jsb_creator_camera_auto.cpp \
 					../auto/jsb_creator_graphics_auto.cpp \
 					../auto/jsb_creator_physics_auto.cpp \
+					../auto/jsb_creator_texturedSpline.cpp \
+					../auto/jsb_creator_edgeNode.cpp \
 					../manual/BaseJSAction.cpp \
 					../manual/JavaScriptJavaBridge.cpp \
 					../manual/ScriptingCore.cpp \
