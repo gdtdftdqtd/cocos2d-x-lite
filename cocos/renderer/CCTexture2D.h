@@ -183,8 +183,6 @@ public:
      */
     static Texture2D::PixelFormat getDefaultAlphaPixelFormat();
     
-    static void forceDeleteALLTexture2D();
-    
     //add by chl
     static void setSpecialAlphaPixelFormat(std::map<std::string, std::string> &specialFormatPathAndFormatList);
     static Texture2D::PixelFormat getSpecialAlphaPixelFormat(const std::string &path);

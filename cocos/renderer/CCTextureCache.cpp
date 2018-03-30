@@ -41,11 +41,14 @@ THE SOFTWARE.
 #include "base/ccUtils.h"
 #include "base/CCNinePatchImageParser.h"
 
-
-
 using namespace std;
 
 NS_CC_BEGIN
+
+namespace {
+    TextureCache::TextureLifeCycleHook __textureCreateHook = nullptr;
+    TextureCache::TextureLifeCycleHook __textureDestroyHook = nullptr;
+}
 
 // implementation TextureCache
 
@@ -56,8 +59,8 @@ TextureCache* TextureCache::getInstance()
 
 TextureCache::TextureCache()
 : _loadingThread(nullptr)
-, _needQuit(false)
 , _asyncRefCount(0)
+, _needQuit(false)
 {
 }
 
@@ -298,6 +301,9 @@ void TextureCache::addImageAsyncCallBack(float dt)
                 texture->retain();
 
                 texture->autorelease();
+
+                if (__textureCreateHook != nullptr)
+                    __textureCreateHook(this, texture);
             } else {
                 texture = nullptr;
                 CCLOG("cocos2d: failed to call TextureCache::addImageAsync(%s)", asyncStruct->filename.c_str());
@@ -360,6 +366,9 @@ Texture2D * TextureCache::addImage(const std::string &path)
                 // texture already retained, no need to re-retain it
                 _textures.insert( std::make_pair(fullpath, texture) );
 
+                if (__textureCreateHook != nullptr)
+                    __textureCreateHook(this, texture);
+
                 //parse 9-patch info
                 this->parseNinePatchImage(image, texture, path);
             }
@@ -410,6 +419,9 @@ Texture2D* TextureCache::addImage(Image *image, const std::string &key)
             texture->retain();
 
             texture->autorelease();
+
+            if (__textureCreateHook != nullptr)
+                __textureCreateHook(this, texture);
         }
         else
         {
@@ -483,6 +495,9 @@ cocos2d::Vector<Texture2D*> TextureCache::getAllTextures() const
 void TextureCache::removeAllTextures()
 {
     for( auto it=_textures.begin(); it!=_textures.end(); ++it ) {
+        if (__textureDestroyHook != nullptr)
+            __textureDestroyHook(this, it->second);
+
         (it->second)->release();
     }
     _textures.clear();
@@ -494,6 +509,8 @@ void TextureCache::removeUnusedTextures()
         Texture2D *tex = it->second;
         if( tex->getReferenceCount() == 1 ) {
             CCLOG("cocos2d: TextureCache: removing unused texture: %s", it->first.c_str());
+            if (__textureDestroyHook != nullptr)
+                __textureDestroyHook(this, tex);
 
             tex->release();
             it = _textures.erase(it);
@@ -514,6 +531,9 @@ void TextureCache::removeTexture(Texture2D* texture)
 
     for( auto it=_textures.cbegin(); it!=_textures.cend(); /* nothing */ ) {
         if( it->second == texture ) {
+            if (__textureDestroyHook != nullptr)
+                __textureDestroyHook(this, texture);
+
             it->second->release();
             it = _textures.erase(it);
             break;
@@ -534,6 +554,9 @@ void TextureCache::removeTextureForKey(const std::string &textureKeyName)
     }
 
     if( it != _textures.end() ) {
+        if (__textureDestroyHook != nullptr)
+            __textureDestroyHook(this, it->second);
+
         (it->second)->release();
         _textures.erase(it);
     }
@@ -655,6 +678,18 @@ void TextureCache::renameTextureWithKey(const std::string& srcName, const std::s
             CC_SAFE_RELEASE(image);
         }
     }
+}
+
+/* static */
+void TextureCache::setTextureCreateHook(TextureLifeCycleHook hook)
+{
+    __textureCreateHook = hook;
+}
+
+/* static */
+void TextureCache::setTextureDestroyHook(TextureLifeCycleHook hook)
+{
+    __textureDestroyHook = hook;
 }
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA

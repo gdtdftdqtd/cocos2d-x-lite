@@ -180,6 +180,8 @@ def main():
                     'creator_camera.ini': ('creator', 'jsb_creator_camera_auto'),
                     'creator_graphics.ini': ('creator', 'jsb_creator_graphics_auto'),
                     'creator_physics.ini': ('creator', 'jsb_creator_physics_auto'),
+                    'creator_texturedSpline.ini': ('creator', 'creator_texturedSpline'),
+                    'creator_edgeNode.ini': ('creator', 'jsb_creator_edgeNode'),
                     'box2d.ini' : ('box2d', 'jsb_box2d_auto'),
                     'anysdk-common.ini': ('protocols', 'jsb_anysdk_protocols_auto'),
                     'anysdk-appstore.ini': ('protocols', 'jsb_anysdk_protocols_auto'),
@@ -187,6 +189,7 @@ def main():
         # cmd_args = {'cocos2dx.ini' : ('cocos2d-x', 'jsb_cocos2dx_auto')}
         # cmd_args = {'rvo.ini' : ('RVO', 'jsb_RVO_auto')}
         # cmd_args = {'creator_graphics.ini': ('creator', 'jsb_creator_graphics_auto')}
+        # cmd_args = {'creator_edgeNode.ini': ('creator', 'jsb_creator_edgeNode')}
         target = 'spidermonkey'
         generator_py = '%s/generator.py' % cxx_generator_root
         for key in cmd_args.keys():

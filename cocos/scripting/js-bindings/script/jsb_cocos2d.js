@@ -26,7 +26,7 @@
 
 // CCConfig.js
 //
-cc.ENGINE_VERSION = "Cocos2d-x-lite v1.7.0";
+cc.ENGINE_VERSION = "Cocos2d-x-lite v1.8.2";
 
 // Resolution policies
 
@@ -629,15 +629,45 @@ cc.TMXTiledMap.prototype.allLayers = function(){
         length = locChildren.length;
     for(var i = 0; i< length; i++){
         var layer = locChildren[i];
-        if(layer && layer instanceof cc.TMXLayer)
+        if(layer && layer instanceof cc.TMXLayer) {
+            jsb.registerNativeRef(this, layer);
             retArr.push(layer);
+        }
     }
     return retArr;
 };
+
+cc.TMXTiledMap.prototype._getLayer = cc.TMXTiledMap.prototype.getLayer;
+cc.TMXTiledMap.prototype.getLayer = function(layerName) {
+    var ret = this._getLayer(layerName);
+    jsb.registerNativeRef(this, ret);
+    return ret;
+};
+
+cc.TMXTiledMap.prototype._getObjectGroup = cc.TMXTiledMap.prototype.getObjectGroup;
+cc.TMXTiledMap.prototype.getObjectGroup = function(groupName) {
+    var ret = this._getObjectGroup(groupName);
+    jsb.registerNativeRef(this, ret);
+    return ret;
+};
+
+cc.TMXTiledMap.prototype._getObjectGroups = cc.TMXTiledMap.prototype.getObjectGroups;
+cc.TMXTiledMap.prototype.getObjectGroups = function() {
+    var ret = this._getObjectGroups();
+    if (ret && ret instanceof Array) {
+        for (var i = 0, len = ret.length; i < len; ++i) {
+            jsb.registerNativeRef(this, ret[i]);
+        }
+    }
+    return ret;
+};
+
 cc.TMXLayer.prototype._getTileAt = cc.TMXLayer.prototype.getTileAt;
 cc.TMXLayer.prototype.getTileAt = function(x, y){
     var pos = y !== undefined ? cc.p(x, y) : x;
-    return this._getTileAt(pos);
+    var ret = this._getTileAt(pos);
+    jsb.registerNativeRef(this, ret);
+    return ret;
 };
 cc.TMXLayer.prototype._getTileGIDAt = cc.TMXLayer.prototype.getTileGIDAt;
 cc.TMXLayer.prototype.getTileGIDAt = function(x, y){
@@ -670,6 +700,31 @@ cc.TMXLayer.prototype.getPositonAt = function(x, y){
 };
 
 cc.TMXLayer.prototype.tileFlagsAt = cc.TMXLayer.prototype.getTileFlagsAt;
+
+cc.TMXObjectGroup.prototype._getObject = cc.TMXObjectGroup.prototype.getObject;
+cc.TMXObjectGroup.prototype.getObject = function(objectName) {
+    var ret = this._getObject(objectName);
+    jsb.registerNativeRef(this, ret);
+    return ret;
+};
+
+cc.TMXObjectGroup.prototype._getObjects = cc.TMXObjectGroup.prototype.getObjects;
+cc.TMXObjectGroup.prototype.getObjects = function() {
+    var ret = this._getObjects();
+    if (ret && ret instanceof Array) {
+        for (var i = 0, len = ret.length; i < len; ++i) {
+            jsb.registerNativeRef(this, ret[i]);
+        }
+    }
+    return ret;
+};
+
+cc.TMXObject.prototype._getNode = cc.TMXObject.prototype.getNode;
+cc.TMXObject.prototype.getNode = function() {
+    var ret = this._getNode();
+    jsb.registerNativeRef(this, ret);
+    return ret;
+};
 
 //
 // setBlendFunc JS API Wrapper
@@ -1089,3 +1144,57 @@ cc.GLProgram.prototype.setUniformLocationWithMatrix4fv = function(){
     tempArray.push(4);
     this.setUniformLocationWithMatrixfvUnion.apply(this, tempArray);
 };
+
+// Hack for the lifecycle of JS objects
+cc.Director.prototype._jsb_getScheduler = cc.Director.prototype.getScheduler;
+cc.Director.prototype.getScheduler = function() {
+    var scheduler = this._jsb_getScheduler();
+    if (this._jsb_scheduler != scheduler)
+    {
+        this._jsb_scheduler = scheduler;
+    }
+    return scheduler;
+}
+
+cc.Director.prototype._jsb_getActionManager = cc.Director.prototype.getActionManager;
+cc.Director.prototype.getActionManager = function() {
+    var actionManager = this._jsb_getActionManager();
+    if (this._jsb_actionManager != actionManager)
+    {
+        this._jsb_actionManager = actionManager;
+    }
+    return actionManager;
+}
+
+cc.Director.prototype._jsb_getEventDispatcher = cc.Director.prototype.getEventDispatcher;
+cc.Director.prototype.getEventDispatcher = function() {
+    var eventDispatcher = this._jsb_getEventDispatcher();
+    if (this._jsb_eventDispatcher != eventDispatcher)
+    {
+        this._jsb_eventDispatcher = eventDispatcher;
+    }
+    return eventDispatcher;
+}
+
+cc.SpriteFrame.prototype._jsb_getTexture = cc.SpriteFrame.prototype.getTexture;
+cc.SpriteFrame.prototype.getTexture = function() {
+    var texture = this._jsb_getTexture();
+    if (this._jsb_texture != texture)
+    {
+        this._jsb_texture = texture;
+    }
+    return texture;
+}
+
+cc.Sprite.prototype._jsb_getTexture = cc.Sprite.prototype.getTexture;
+cc.Sprite.prototype.getTexture = function() {
+    var texture = this._jsb_getTexture();
+    if (this._jsb_texture != texture)
+    {
+        this._jsb_texture = texture;
+    }
+    return texture;
+}
+
+//
+

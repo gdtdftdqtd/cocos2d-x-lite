@@ -501,13 +501,21 @@ Touch : function (
 cc.Event = {
 
 /**
- * @method isStopped
- * @return {bool}
+ * @method reset
  */
-isStopped : function (
+reset : function (
 )
 {
-    return false;
+},
+
+/**
+ * @method getCurrentTarget
+ * @return {cc.Node}
+ */
+getCurrentTarget : function (
+)
+{
+    return cc.Node;
 },
 
 /**
@@ -521,13 +529,13 @@ getType : function (
 },
 
 /**
- * @method getCurrentTarget
- * @return {cc.Node}
+ * @method isStopped
+ * @return {bool}
  */
-getCurrentTarget : function (
+isStopped : function (
 )
 {
-    return cc.Node;
+    return false;
 },
 
 /**
@@ -14434,6 +14442,14 @@ GLProgram : function (
  * @class GLProgramCache
  */
 cc.ShaderCache = {
+
+/**
+ * @method notifyAllGLProgramsCreated
+ */
+notifyAllGLProgramsCreated : function (
+)
+{
+},
 
 /**
  * @method loadDefaultGLPrograms

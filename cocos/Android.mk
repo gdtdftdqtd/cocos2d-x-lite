@@ -166,6 +166,7 @@ renderer/CCVertexIndexData.cpp \
 renderer/ccGLStateCache.cpp \
 renderer/ccShaders.cpp \
 storage/local-storage/LocalStorage-android.cpp \
+../external/md5/md5.cpp \
 ../external/sources/ConvertUTF/ConvertUTFWrapper.cpp \
 ../external/sources/ConvertUTF/ConvertUTF.c \
 ../external/sources/tinyxml2/tinyxml2.cpp \
@@ -174,7 +175,6 @@ storage/local-storage/LocalStorage-android.cpp \
 ../external/sources/unzip/unzip.cpp \
 ../external/sources/edtaa3func/edtaa3func.cpp \
 ../external/sources/xxhash/xxhash.c \
-../external/sources/md5/md5.cpp \
 ../external/sources/poly2tri/common/shapes.cc \
 ../external/sources/poly2tri/sweep/advancing_front.cc \
 ../external/sources/poly2tri/sweep/cdt.cc \
@@ -234,6 +234,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/platform \
                     $(LOCAL_PATH)/editor-support \
                     $(LOCAL_PATH)/../external/android/$(TARGET_ARCH_ABI)/include \
+                    $(LOCAL_PATH)/../external \
                     $(LOCAL_PATH)/../external/sources
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
@@ -241,6 +242,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/platform \
                     $(LOCAL_PATH)/base \
                     $(LOCAL_PATH)/../external/android/$(TARGET_ARCH_ABI)/include \
+                    $(LOCAL_PATH)/../external \
                     $(LOCAL_PATH)/../external/sources 
 
 LOCAL_EXPORT_LDLIBS := -lGLESv2 \

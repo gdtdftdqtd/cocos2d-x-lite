@@ -292,7 +292,9 @@ namespace se {
 
                 Value func;
                 bool ok = ScriptEngine::getInstance()->getGlobalObject()->getProperty(typedArrayCtor, &func);
-                if (ok && func.isObject() && func.toObject()->isFunction())
+                // On <= iOS 9, typed array constructor is an object rather than a function.
+                // Therefore, don't check whether typed array constructor is a function here.
+                if (ok && func.isObject()/* && func.toObject()->isFunction() */)
                 {
                     JSValueRef exception = nullptr;
                     JSObjectRef ret = JSObjectCallAsConstructor(__cx, func.toObject()->_obj, 1, &arr->_obj, &exception);
@@ -704,7 +706,50 @@ namespace se {
             return ret;
         }
 #endif
-        return isInstanceOfConstructor(__cx, _obj, "__jscTypedArrayConstructor");
+
+        bool isTypedArray = true;
+        if (isInstanceOfConstructor(__cx, _obj, "Int8Array"))
+        {
+            _type = Type::TYPED_ARRAY_INT8;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Int16Array"))
+        {
+            _type = Type::TYPED_ARRAY_INT16;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Int32Array"))
+        {
+            _type = Type::TYPED_ARRAY_INT32;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Uint8Array"))
+        {
+            _type = Type::TYPED_ARRAY_UINT8;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Uint8ClampedArray"))
+        {
+            _type = Type::TYPED_ARRAY_UINT8_CLAMPED;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Uint16Array"))
+        {
+            _type = Type::TYPED_ARRAY_UINT16;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Uint32Array"))
+        {
+            _type = Type::TYPED_ARRAY_UINT32;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Float32Array"))
+        {
+            _type = Type::TYPED_ARRAY_FLOAT32;
+        }
+        else if (isInstanceOfConstructor(__cx, _obj, "Float64Array"))
+        {
+            _type = Type::TYPED_ARRAY_FLOAT64;
+        }
+        else
+        {
+            isTypedArray = false;
+        }
+
+        return isTypedArray;
     }
 
     Object::TypedArrayType Object::getTypedArrayType() const
@@ -910,7 +955,17 @@ namespace se {
                             }
                             return true;
                         }
+                        else
+                        {
+                            *length = 0;
+                            *ptr = nullptr;
+                            return true;
+                        }
                     }
+                }
+                else
+                {
+                    assert(false);
                 }
             }
         }
