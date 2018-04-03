@@ -955,11 +955,11 @@ renderingtype
  * @method init
 * @param {cc.Sprite|cc.Sprite|cc.Sprite} sprite
 * @param {rect_object|rect_object|rect_object} rect
-* @param {bool|rect_object|bool} bool
+* @param {rect_object|bool|bool} rect
 * @param {rect_object|vec2_object} rect
 * @param {size_object} size
 * @param {rect_object} rect
-* @return {bool|bool|bool|bool}
+* @return {bool|bool|bool}
 */
 init : function(
 sprite,
@@ -1354,6 +1354,16 @@ color3b
 },
 
 /**
+ * @method isFocused
+ * @return {bool}
+ */
+isFocused : function (
+)
+{
+    return false;
+},
+
+/**
  * @method setPlaceholderFont
  * @param {char} arg0
  * @param {int} arg1
@@ -1397,6 +1407,14 @@ char
  */
 setReturnType : function (
 keyboardreturntype 
+)
+{
+},
+
+/**
+ * @method setFocus
+ */
+setFocus : function (
 )
 {
 },

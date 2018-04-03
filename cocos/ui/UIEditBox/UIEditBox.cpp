@@ -66,6 +66,18 @@ void EditBox::touchDownAction(Ref *sender, TouchEventType controlEvent)
         _editBoxImpl->openKeyboard();
     }
 }
+    
+void EditBox::setFocus()
+{
+    if (isFocusEnabled())
+    {
+        requestFocus();
+    }
+    _editBoxImpl->openKeyboard();
+}
+bool EditBox::isFocused()const{
+    return Widget::isFocused();
+}
 
 EditBox* EditBox::create(const Size& size,
                          const std::string& normalSprite,

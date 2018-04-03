@@ -2940,6 +2940,24 @@ static bool js_cocos2dx_ui_EditBox_setFontColor(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_ui_EditBox_setFontColor)
 
+static bool js_cocos2dx_ui_EditBox_isFocused(se::State& s)
+{
+    cocos2d::ui::EditBox* cobj = (cocos2d::ui::EditBox*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_ui_EditBox_isFocused : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        bool result = cobj->isFocused();
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_ui_EditBox_isFocused : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_ui_EditBox_isFocused)
+
 static bool js_cocos2dx_ui_EditBox_setPlaceholderFont(se::State& s)
 {
     cocos2d::ui::EditBox* cobj = (cocos2d::ui::EditBox*)s.nativeThisObject();
@@ -3058,6 +3076,21 @@ static bool js_cocos2dx_ui_EditBox_setReturnType(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_ui_EditBox_setReturnType)
+
+static bool js_cocos2dx_ui_EditBox_setFocus(se::State& s)
+{
+    cocos2d::ui::EditBox* cobj = (cocos2d::ui::EditBox*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_ui_EditBox_setFocus : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->setFocus();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_ui_EditBox_setFocus)
 
 static bool js_cocos2dx_ui_EditBox_setInputFlag(se::State& s)
 {
@@ -3278,10 +3311,12 @@ bool js_register_cocos2dx_ui_EditBox(se::Object* obj)
     cls->defineFunction("setInputMode", _SE(js_cocos2dx_ui_EditBox_setInputMode));
     cls->defineFunction("setPlaceholderFontColor", _SE(js_cocos2dx_ui_EditBox_setPlaceholderFontColor));
     cls->defineFunction("setFontColor", _SE(js_cocos2dx_ui_EditBox_setFontColor));
+    cls->defineFunction("isFocused", _SE(js_cocos2dx_ui_EditBox_isFocused));
     cls->defineFunction("setPlaceholderFont", _SE(js_cocos2dx_ui_EditBox_setPlaceholderFont));
     cls->defineFunction("initWithSizeAndBackgroundSprite", _SE(js_cocos2dx_ui_EditBox_initWithSizeAndBackgroundSprite));
     cls->defineFunction("setPlaceHolder", _SE(js_cocos2dx_ui_EditBox_setPlaceHolder));
     cls->defineFunction("setReturnType", _SE(js_cocos2dx_ui_EditBox_setReturnType));
+    cls->defineFunction("setFocus", _SE(js_cocos2dx_ui_EditBox_setFocus));
     cls->defineFunction("setInputFlag", _SE(js_cocos2dx_ui_EditBox_setInputFlag));
     cls->defineFunction("getMaxLength", _SE(js_cocos2dx_ui_EditBox_getMaxLength));
     cls->defineFunction("setMaxLength", _SE(js_cocos2dx_ui_EditBox_setMaxLength));
