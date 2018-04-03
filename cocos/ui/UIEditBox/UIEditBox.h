@@ -467,6 +467,10 @@ namespace ui {
          * @lua NA
          */
         void touchDownAction(Ref *sender, TouchEventType controlEvent);
+        
+        //add by chl
+        void setFocus();
+        virtual bool isFocused()const override;
 
     protected:
         virtual void adaptRenderers() override;

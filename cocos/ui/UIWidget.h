@@ -612,7 +612,7 @@ public:
      * Query whether widget is focused or not.
      *@return  whether the widget is focused or not
      */
-    bool isFocused()const;
+    virtual bool isFocused()const;
 
     /**
      * Toggle widget focus status.
