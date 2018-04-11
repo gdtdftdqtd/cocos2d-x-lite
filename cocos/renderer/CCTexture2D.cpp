@@ -1499,6 +1499,15 @@ Texture2D::PixelFormat Texture2D::getSpecialAlphaPixelFormat(const std::string &
     std::string baseName = FileUtils::getInstance()->basename(path);
     std::map<std::string, Texture2D::PixelFormat>::iterator it = g_specialFormatList.find(baseName);
     if (it == g_specialFormatList.end()) {
+        std::string fileExtension = FileUtils::getInstance()->getFileExtension(baseName);
+        if (fileExtension == ".png")
+        {
+            return getDefaultAlphaPixelFormat();
+        }
+        else if (fileExtension == ".jpg")
+        {
+            return Texture2D::PixelFormat::RGB565;
+        }
         return getDefaultAlphaPixelFormat();
     }
     return it->second;
