@@ -1549,9 +1549,9 @@ void Label::updateContent()
         {
             createShadowSpriteForSystemFont(fontDef);
         }
-        if (_outlineSize > 0.f) {
-            createOutlineForSystemFont(fontDef);
-        }
+//        if (_outlineSize > 0.f) {
+//            createOutlineForSystemFont(fontDef);
+//        }
     }
 
     if (_underlineNode)
@@ -2236,8 +2236,10 @@ FontDefinition Label::_getFontDefinition() const
 
     if (_currLabelEffect == LabelEffect::OUTLINE && _outlineSize > 0.f)
     {
-        systemFontDef._stroke._strokeEnabled = false;
-        systemFontDef._stroke._strokeSize = 0;
+//        systemFontDef._stroke._strokeEnabled = false;
+//        systemFontDef._stroke._strokeSize = 0;
+		systemFontDef._stroke._strokeEnabled = true;
+        systemFontDef._stroke._strokeSize = _outlineSize;
         systemFontDef._stroke._strokeColor.r = _effectColorF.r * 255;
         systemFontDef._stroke._strokeColor.g = _effectColorF.g * 255;
         systemFontDef._stroke._strokeColor.b = _effectColorF.b * 255;
