@@ -584,17 +584,7 @@ SE_BIND_FUNC(JSB_core_restartVM)
 
 static bool JSB_closeWindow(se::State& s)
 {
-//cjh    EventListenerCustom* _event = Director::getInstance()->getEventDispatcher()->addCustomEventListener(Director::EVENT_AFTER_DRAW, [&](EventCustom *event) {
-//        Director::getInstance()->getEventDispatcher()->removeEventListener(_event);
-//        CC_SAFE_RELEASE(_event);
-//
-//        se::ScriptEngine::getInstance()->cleanup();
-//    });
-//    _event->retain();
-//    Director::getInstance()->end();
-//#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-//    exit(0);
-//#endif
+    Application::getInstance()->end();
     return true;
 }
 SE_BIND_FUNC(JSB_closeWindow)
@@ -741,13 +731,22 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
                 free(imageData);
             }
             else
+            {
                 loadSucceed = img->initWithImageFile(fullPath);
-            
-            auto imgInfo = createImageInfo(img);
+            }
+
+            struct ImageInfo* imgInfo = nullptr;
+            if(loadSucceed)
+            {
+                imgInfo = createImageInfo(img);
+            }
+
             Application::getInstance()->getScheduler()->performFunctionInCocosThread([=](){
+                se::AutoHandleScope hs;
+                se::ValueArray seArgs;
+
                 if (loadSucceed)
                 {
-                    se::AutoHandleScope hs;
                     se::HandleObject retObj(se::Object::createPlainObject());
                     Data data;
                     data.copy(imgInfo->data, imgInfo->length);
@@ -778,18 +777,18 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
                     retObj->setProperty("glFormat", se::Value(imgInfo->glFormat));
                     retObj->setProperty("glInternalFormat", se::Value(imgInfo->glInternalFormat));
                     retObj->setProperty("glType", se::Value(imgInfo->type));
-                    se::ValueArray seArgs;
+
                     seArgs.push_back(se::Value(retObj));
-                    callbackVal.toObject()->call(seArgs, nullptr);
+
+                    delete imgInfo;
                 }
                 else
                 {
                     SE_REPORT_ERROR("initWithImageFile: %s failed!", path.c_str());
-                    assert(false);
                 }
 
+                callbackVal.toObject()->call(seArgs, nullptr);
                 img->release();
-                delete imgInfo;
             });
 
         });
